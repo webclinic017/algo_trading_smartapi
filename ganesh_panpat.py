@@ -72,23 +72,8 @@ def get_token_df():
   token_df = pd.DataFrame.from_dict(d)
   token_df['expiry'] = pd.to_datetime(token_df['expiry']).apply(lambda x: x.date())
   token_df = token_df.astype({'strike': float})
-
-  symbol_token=token_df[(token_df.exch_seg=='NFO') & (token_df.instrumenttype=='FUTSTK')]
-  fnosymbol=symbol_token['name'].unique()
-  fnosymbol = numpy.append(fnosymbol, numpy.array(['GRAPHITE','NIFTYBEES','FEDERALBANK','TATAPOWER',
-              'IEX','INFY','TATAMOTORS','DRREDDY','EICHERMOT','ADANIPORTS,BANKBARODA',
-              'ICICIBANK','BEML','IOC','WIPRO','IGL','M & M','RVNL','IRCTC','TCS','SBIN','PNB','HDFC','HDFCBANK','RELIANCE',
-              'SAIL','TATASTEEL','ZOMATO','AXISBANK','BHEL','ASHOKLEY','AMBUJACEM','ACC','INDIACEM','LICI','MAHABANK']), axis=0)
-  numpy.unique(fnosymbol,return_inverse=True)
-  symbolDf=token_df[token_df.symbol.str.endswith('-EQ') & (token_df.exch_seg=='NSE') & token_df.name.isin(fnosymbol)].sort_values(by='symbol')
-  symbolDf.reset_index(inplace=True)
-  symbolDf['Revised_Name'] = symbolDf['symbol'].str.replace('-EQ','')
-  symbolDf['YF_Name'] = symbolDf['Revised_Name']
-  symbolDf['YF_Name'] = [sub + '.NS' for sub in symbolDf['YF_Name']]
-  symbolDf=symbolDf.append({'symbol':"^NSEI",'Revised_Name':"^NSEI",'YF_Name':"^NSEI"},ignore_index = True)
-  symbolDf=symbolDf.append({'symbol':"^NSEBANK",'Revised_Name':"^NSEBANK",'YF_Name':"^NSEBANK"},ignore_index = True)
-  return symbolDf,token_df
-symbolDf,token_df=get_token_df()
+  return token_df
+token_df=get_token_df()
 
 global lots_to_trade,banknifty_target,banknifty_sl,nifty_target
 global nifty_sl,trailing_stop_loss,percent_target,percent_loss,percent_trail
