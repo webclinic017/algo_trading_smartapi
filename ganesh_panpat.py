@@ -276,23 +276,21 @@ get_expiry_day_fut_token()
 #Place Order
 def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',
                 triggerprice=0,squareoff=0,stoploss=0,ordertag='-'):
-  for i in range(0,3):
-    try:
-      orderparams = {"variety": variety,"tradingsymbol": symbol,"symboltoken": token,"transactiontype": buy_sell,"exchange": exch_seg,
-        "ordertype": ordertype,"producttype": producttype,"duration": "DAY","price": int(float(price)),"squareoff":int(float(squareoff)),
-        "stoploss": int(float(stoploss)),"quantity": str(qty),"triggerprice":int(float(triggerprice)),"ordertag":ordertag,"trailingStopLoss":5}
-      orderId=obj.placeOrder(orderparams)
-      st.write(orderparams)
-      st.write(orderId)
-      LTP_Price=round(float(get_ltp_price(symbol=symbol,token=token,exch_seg=exch_seg)),2)
-      print(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
-      return orderId,LTP_Price
-      break
-    except Exception as e:
-      print("Order placement failed: ",e)
-      orderId='Order placement failed'
-      LTP_Price='Order placement failed'
-  return orderId,LTP_Price
+   for i in range(0,3):
+      try:
+         orderparams = {"variety": variety,"tradingsymbol": symbol,"symboltoken": token,"transactiontype": buy_sell,"exchange": exch_seg,
+           "ordertype": ordertype,"producttype": producttype,"duration": "DAY","price": int(float(price)),"squareoff":int(float(squareoff)),
+           "stoploss": int(float(stoploss)),"quantity": str(qty),"triggerprice":int(float(triggerprice)),"ordertag":ordertag,"trailingStopLoss":5}
+         orderId=obj.placeOrder(orderparams)
+         st.write(orderId)
+         LTP_Price=round(float(get_ltp_price(symbol=symbol,token=token,exch_seg=exch_seg)),2)
+         print(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
+         return orderId,LTP_Price
+      except Exception as e:
+         print("Order placement failed: ",e)
+         orderId='Order placement failed'
+         LTP_Price='Order placement failed'
+         return orderId,LTP_Price
 
 #Modify Order
 def modify_order(variety,orderid,ordertype,producttype,price,quantity,tradingsymbol,symboltoken,exchange,triggerprice=0,squareoff=0,stoploss=0):
