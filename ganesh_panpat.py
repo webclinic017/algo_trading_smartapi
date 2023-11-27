@@ -286,7 +286,8 @@ def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NO
       print(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
       return orderId,LTP_Price
    except Exception as e:
-      print("Order placement failed: ",e)
+      st.write("Order placement failed")
+      st.write(e)
       orderId='Order placement failed'
       LTP_Price='Order placement failed'
       return orderId,LTP_Price
