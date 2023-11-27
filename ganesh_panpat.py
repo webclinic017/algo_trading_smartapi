@@ -263,6 +263,7 @@ def get_ce_pe_data(symbol,indexLtp="-"):
   return indexLtp, ce_strike_symbol,pe_strike_symbol
 
 #Get Expire Days and future token
+@st.cache_resource
 def get_expiry_day_fut_token():
   global expiry_day,bnf_expiry_day,nf_expiry_day,monthly_expiry_day,bnf_future_symbol,bnf_future_token,nf_future_symbol,nf_future_token
   global bnf_future,nf_future
@@ -283,7 +284,6 @@ def get_expiry_day_fut_token():
   nf_future = getTokenInfo('NIFTY','NFO','FUTIDX','','',monthly_expiry_day).iloc[0]
   nf_future_symbol=nf_future['symbol']
   nf_future_token=nf_future['token']
-  expiry_day,bnf_expiry_day,nf_expiry_day,monthly_expiry_day,bnf_future_symbol,bnf_future_token,nf_future_symbol,nf_future_token
 get_expiry_day_fut_token()
 
 #@title Angel
@@ -764,7 +764,7 @@ def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
    indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(index_symbol,indexLtp=indexLtp)
    if ce_pe=="CE":symbol=ce_strike_symbol
    if ce_pe=="PE":symbol=pe_strike_symbol
-   st.write(f'Manual Buy {index_symbol}')
+   st.write(f'Manual Buy {index_symbol} {indexLtp}')
    buy_option(symbol,"Manual Buy","5m")
 
 #Index Trade Details
@@ -2092,8 +2092,6 @@ def ganesh_sl_trail():
         else: todays_trade_log['Stop Loss'].iloc[i]=float(max(price,close_price)*0.7)
       except Exception as e:
         print(e)
-
-"""#Thread"""
 
 def trail_sl_treading():
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
