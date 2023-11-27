@@ -787,56 +787,56 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
 
 #Buy Option and Place Stop Loss Order
 def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
-  try:
-    option_token=symbol['token']
-    option_symbol=symbol['symbol']
-    lotsize=int(symbol['lotsize'])*lots_to_trade
-    #LTP_Price=str(round(float(get_ltp_price(symbol=option_symbol,token=option_token,exch_seg='NFO')),2))
-    #indicator_strategy=indicator_strategy + " LTP: "+ LTP_Price
-    if 'Candle' in indicator_strategy:
-      index_symbol="BANKNIFTY" if option_symbol[:4]=='BANK' else 'NIFTY'
-      fut_data=get_historical_data(symbol=index_symbol,interval='3m',token="-",exch_seg="-",candle_type="NORMAL")
-      fut_data=fut_data.tail(2)
-      ce_sl=fut_data['Low'].min()
-      pe_sl=fut_data['High'].max()
-      index_sl = ce_sl if option_symbol[-2:]=="CE" else pe_sl
-      indicator_strategy=indicator_strategy+" Index SL: "+ str(int(float(index_sl)))
-    if "(" in indicator_strategy and ")" in indicator_strategy:
-      stop_loss=(indicator_strategy.split('('))[1].split(':')[0]
-      target_price=(indicator_strategy.split(stop_loss+':'))[1].split(')')[0]
-      stop_loss=int(float(stop_loss))
-      target_price=int(float(target_price))
-    else:
-      old_data=get_historical_data(symbol=option_symbol,interval='5m',token=option_token,exch_seg="NFO",candle_type="NORMAL")
-      ltp_price=float(old_data['Close'].iloc[-1])
-      st_price=float(old_data['Supertrend'].iloc[-1]) if float(old_data['Supertrend'].iloc[-1])<ltp_price else 0
-      st_10_price=float(old_data['Supertrend_10_2'].iloc[-1]) if float(old_data['Supertrend_10_2'].iloc[-1])<ltp_price else 0
-      stop_loss=int(max(st_price,st_10_price,ltp_price*0.7))
-      target_price=int(float(ltp_price)+(float(ltp_price)-float(stop_loss))*2)
-      indicator_strategy=indicator_strategy+ " (" +str(stop_loss)+":"+str(target_price)+') '
-    orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
-                          variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',ordertag=indicator_strategy)
-    if str(orderId)=='Order placement failed': return
-    orderbook=obj.orderBook()['data']
-    orderbook=pd.DataFrame(orderbook)
-    orders= orderbook[(orderbook['orderid'] == orderId)]
-    orders_status=orders.iloc[0]['orderstatus']; trade_price=orders.iloc[0]['averageprice']
-    if orders_status != 'complete': trade_price='-'
-    tm=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
-    order_price=ltp_price if trade_price=='-' else trade_price
-    if trade_price!='-':
-      if target_order_type=="Target":
-        place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='LIMIT',price=target_price,
-                    variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',ordertag=str(orderId)+" Target order Placed")
+   try:
+      option_token=symbol['token']
+      option_symbol=symbol['symbol']
+      lotsize=int(symbol['lotsize'])*lots_to_trade
+      #LTP_Price=str(round(float(get_ltp_price(symbol=option_symbol,token=option_token,exch_seg='NFO')),2))
+      #indicator_strategy=indicator_strategy + " LTP: "+ LTP_Price
+      if 'Candle' in indicator_strategy:
+        index_symbol="BANKNIFTY" if option_symbol[:4]=='BANK' else 'NIFTY'
+        fut_data=get_historical_data(symbol=index_symbol,interval='3m',token="-",exch_seg="-",candle_type="NORMAL")
+        fut_data=fut_data.tail(2)
+        ce_sl=fut_data['Low'].min()
+        pe_sl=fut_data['High'].max()
+        index_sl = ce_sl if option_symbol[-2:]=="CE" else pe_sl
+        indicator_strategy=indicator_strategy+" Index SL: "+ str(int(float(index_sl)))
+      if "(" in indicator_strategy and ")" in indicator_strategy:
+        stop_loss=(indicator_strategy.split('('))[1].split(':')[0]
+        target_price=(indicator_strategy.split(stop_loss+':'))[1].split(')')[0]
+        stop_loss=int(float(stop_loss))
+        target_price=int(float(target_price))
       else:
-        place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='STOPLOSS_LIMIT',price=stop_loss,
+        old_data=get_historical_data(symbol=option_symbol,interval='5m',token=option_token,exch_seg="NFO",candle_type="NORMAL")
+        ltp_price=float(old_data['Close'].iloc[-1])
+        st_price=float(old_data['Supertrend'].iloc[-1]) if float(old_data['Supertrend'].iloc[-1])<ltp_price else 0
+        st_10_price=float(old_data['Supertrend_10_2'].iloc[-1]) if float(old_data['Supertrend_10_2'].iloc[-1])<ltp_price else 0
+        stop_loss=int(max(st_price,st_10_price,ltp_price*0.7))
+        target_price=int(float(ltp_price)+(float(ltp_price)-float(stop_loss))*2)
+        indicator_strategy=indicator_strategy+ " (" +str(stop_loss)+":"+str(target_price)+') '
+      orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
+                          variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',ordertag=indicator_strategy)
+      if str(orderId)=='Order placement failed': return
+      orderbook=obj.orderBook()['data']
+      orderbook=pd.DataFrame(orderbook)
+      orders= orderbook[(orderbook['orderid'] == orderId)]
+      orders_status=orders.iloc[0]['orderstatus']; trade_price=orders.iloc[0]['averageprice']
+      if orders_status != 'complete': trade_price='-'
+      tm=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
+      order_price=ltp_price if trade_price=='-' else trade_price
+      if trade_price!='-':
+        if target_order_type=="Target":
+          place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='LIMIT',price=target_price,
+                    variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',ordertag=str(orderId)+" Target order Placed")
+        else:
+          place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='STOPLOSS_LIMIT',price=stop_loss,
                     variety='STOPLOSS',exch_seg='NFO',producttype='CARRYFORWARD',triggerprice=stop_loss,squareoff=stop_loss,
                     stoploss=stop_loss, ordertag=str(orderId)+" Stop Loss order Placed")
-    buy_msg=(f'Buy: {option_symbol}\nPrice: {trade_price} LTP: {ltp_price}\n{indicator_strategy}\nTarget: {target_price} Stop Loss: {stop_loss}')
-    print(buy_msg)
-    telegram_bot_sendtext(buy_msg)
-  except Exception as e:
-    print('Error in buy_option:',e)
+      buy_msg=(f'Buy: {option_symbol}\nPrice: {trade_price} LTP: {ltp_price}\n{indicator_strategy}\nTarget: {target_price} Stop Loss: {stop_loss}')
+      print(buy_msg)
+      telegram_bot_sendtext(buy_msg)
+    except Exception as e:
+      print('Error in buy_option:',e)
 
 #Exit Position
 def exit_position(symboltoken,tradingsymbol,qty,ltp_price,sl,ordertag='',producttype='CARRYFORWARD'):
