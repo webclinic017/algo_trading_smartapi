@@ -788,7 +788,6 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
 #Buy Option and Place Stop Loss Order
 def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
    try:
-      st.write("Buying")
       option_token=symbol['token']
       option_symbol=symbol['symbol']
       lotsize=int(symbol['lotsize'])*lots_to_trade
@@ -815,6 +814,7 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
         stop_loss=int(max(st_price,st_10_price,ltp_price*0.7))
         target_price=int(float(ltp_price)+(float(ltp_price)-float(stop_loss))*2)
         indicator_strategy=indicator_strategy+ " (" +str(stop_loss)+":"+str(target_price)+') '
+      st.write(indicator_strategy)
       orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
                           variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',ordertag=indicator_strategy)
       if str(orderId)=='Order placement failed': return
