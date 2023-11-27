@@ -788,6 +788,7 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
 #Buy Option and Place Stop Loss Order
 def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
    try:
+      st.write("Buying")
       option_token=symbol['token']
       option_symbol=symbol['symbol']
       lotsize=int(symbol['lotsize'])*lots_to_trade
