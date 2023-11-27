@@ -2232,5 +2232,6 @@ if bnf_ce:manual_buy("BANKNIFTY",ce_pe="CE",index_ltp="-")
 if bnf_pe:manual_buy("BANKNIFTY",ce_pe="PE",index_ltp="-")
 get_ltp=st.button("Get LTP")
 if get_ltp:
-   telegram_bot_sendtext("Test")
+   orderbook=obj.orderBook()['data']
+   st.write(orderbook)
    print_ltp()
