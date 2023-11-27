@@ -4,11 +4,13 @@ import time
 st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded", )
 st.header("Welcome Ganesh Panpat")
 current_time=st.empty()
-col1, col2 = st.columns(2)
+col1, col2 = st.columns(2,"small")
 with col1:
-   st.header("A cat")
+   nf_ce=st.button(label="NF CE")
+   bnf_ce=st.button(label="BNF CE")
 with col2:
-   st.header("A dog")
+   nf_pe=st.button(label="NF PE")
+   bnf_pe=st.button(label="BNF PE")
 for i in range(60):
   current_time.text(datetime.datetime.now().replace(microsecond=0))
   time.sleep(1)
