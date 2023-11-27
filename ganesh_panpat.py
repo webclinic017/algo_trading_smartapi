@@ -2234,4 +2234,3 @@ get_ltp=st.button("Get LTP")
 if get_ltp:
    orderbook=obj.orderBook()['data']
    st.write(orderbook)
-   print_ltp()
