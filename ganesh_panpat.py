@@ -1,5 +1,5 @@
 import streamlit as st
-st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded",padding=0,)
+st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded",)
 if 'user_name' not in st.session_state:
    st.session_state['user_name']="Guest"
    st.session_state['user_name']="Guest"
