@@ -835,7 +835,7 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
       buy_msg=(f'Buy: {option_symbol}\nPrice: {trade_price} LTP: {ltp_price}\n{indicator_strategy}\nTarget: {target_price} Stop Loss: {stop_loss}')
       print(buy_msg)
       telegram_bot_sendtext(buy_msg)
-    except Exception as e:
+   except Exception as e:
       print('Error in buy_option:',e)
 
 #Exit Position
