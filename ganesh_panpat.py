@@ -13,7 +13,7 @@ import datetime
 from dateutil.tz import gettz
 import time
 import math
-import numpy as np
+import numpy
 import warnings
 import yfinance as yf
 import sys
@@ -57,7 +57,7 @@ with c1:
       nf_pe=st.button(label="NF PE")
       bnf_pe=st.button(label="BNF PE")
 with c2:
-   st.table(pd.DataFrame(np.random.randn(10, 20), columns=("col %d" % i for i in range(20))))
+   st.table(pd.DataFrame(numpy.random.randn(10, 20), columns=("col %d" % i for i in range(20))))
 if nf_ce:manual_buy("NIFTY",ce_pe="CE",index_ltp="-")
 if nf_pe:manual_buy("NIFTY",ce_pe="PE",index_ltp="-")
 if bnf_ce:manual_buy("BANKNIFTY",ce_pe="CE",index_ltp="-")
