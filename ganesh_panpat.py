@@ -1,5 +1,4 @@
 import streamlit as st
-st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded",)
 st.markdown("""
         <style>
                .css-18e3th9 {
@@ -16,6 +15,7 @@ st.markdown("""
                 }
         </style>
         """, unsafe_allow_html=True)
+st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded",)
 if 'user_name' not in st.session_state:
    st.session_state['user_name']="Guest"
    st.session_state['user_name']="Guest"
