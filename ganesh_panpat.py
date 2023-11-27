@@ -961,7 +961,7 @@ def print_ltp():
     print_sting=print_sting.replace("Nifty Bank","BankNifty")
     st.write(print_sting)
   except Exception as e:
-    pass
+    st.write(e)
 
 def send_active_order():
   active_order="Active Orders:"
