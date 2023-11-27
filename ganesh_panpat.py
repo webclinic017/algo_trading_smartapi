@@ -4,7 +4,7 @@ import time
 st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded", )
 st.header("Welcome Ganesh Panpat")
 current_time=st.empty()
-c1,c2=st.columns[1,9]
+c1,c2=st.columns([1,9])
 with c1:
    col1, col2 = st.columns(2)
    with col1:
