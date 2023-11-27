@@ -4,18 +4,6 @@ import time
 import pandas as pd
 import numpy as np
 st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded", )
-current_time=st.empty()
-c1,c2=st.columns([2,8])
-with c1:
-   col1, col2 = st.columns(2)
-   with col1:
-      nf_ce=st.button(label="NF CE")
-      bnf_ce=st.button(label="BNF CE")
-   with col2:
-      nf_pe=st.button(label="NF PE")
-      bnf_pe=st.button(label="BNF PE")
-with c2:
-   st.table(pd.DataFrame(np.random.randn(10, 20), columns=("col %d" % i for i in range(20))))
 if 'user_name' not in st.session_state:
    st.session_state['user_name']="Guest"
    st.session_state['user_name']="Guest"
@@ -52,10 +40,22 @@ def angel_login():
       aa= userProfile.get('data')
       st.session_state['user_name']=aa.get('name').title()
       st.session_state['login_time']=datetime.datetime.now()
-      st.write('Welcome',aa.get('name').title(),'...')
       user=aa.get('name').title().split(' ')[0]
    except Exception as e:
       st.write("Unable to login")
       st.write(e)
 angel_login()
 st.header(f"Welcome {st.session_state['user_name']}!!!")
+st.write(st.session_state['login_time'])
+current_time=st.empty()
+c1,c2=st.columns([2,8])
+with c1:
+   col1, col2 = st.columns(2)
+   with col1:
+      nf_ce=st.button(label="NF CE")
+      bnf_ce=st.button(label="BNF CE")
+   with col2:
+      nf_pe=st.button(label="NF PE")
+      bnf_pe=st.button(label="BNF PE")
+with c2:
+   st.table(pd.DataFrame(np.random.randn(10, 20), columns=("col %d" % i for i in range(20))))
