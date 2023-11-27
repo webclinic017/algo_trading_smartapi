@@ -13,7 +13,7 @@ import datetime
 from dateutil.tz import gettz
 import time
 import math
-import numpy
+import numpy as np
 import warnings
 import yfinance as yf
 import sys
