@@ -25,7 +25,7 @@ def get_user_pwd(user):
   elif user=='Kalyani': username = 'K205244'; pwd = '4789'; apikey = 'lzC7yJmt'; token='YDV6CJI6BEU3GWON7GZTZNU3RM'
   elif user=="Akshay": username='A325394'; pwd='1443'; apikey='OeSllszj'; token='G4OKBQKHXPS67EN2WMVP3TZ7X4'
   return username,pwd,apikey,token,user
-username,pwd,apikey,token,user=get_user_pwd("Ganesh")
+username,pwd,apikey,token,user=get_user_pwd("Kalyani")
 obj=SmartConnect(api_key=apikey)
 @st.cache_resource
 def angel_login():
@@ -44,22 +44,6 @@ def angel_login():
       st.write("Unable to login")
       st.write(e)
 angel_login()
-st.header(f"Welcome {st.session_state['user_name']}!!!")
-st.write(st.session_state['login_time'])
-current_time=st.empty()
-c1,c2=st.columns([2,8])
-with c1:
-   col1, col2 = st.columns(2)
-   with col1:
-      nf_ce=st.button(label="NF CE")
-      bnf_ce=st.button(label="BNF CE")
-   with col2:
-      nf_pe=st.button(label="NF PE")
-      bnf_pe=st.button(label="BNF PE")
-with c2:
-   st.table(pd.DataFrame(numpy.random.randn(10, 20), columns=("col %d" % i for i in range(20))))
-
-#Get Token Data
 @st.cache_resource
 def get_token_df():
   global symbolDf,token_df
@@ -2227,6 +2211,20 @@ def loop_code():
   print ('Bye... Intraday Market Closed')
   closing_trade()
 
+st.header(f"Welcome {st.session_state['user_name']}!!!")
+st.write(st.session_state['login_time'])
+current_time=st.empty()
+c1,c2=st.columns([2,8])
+with c1:
+   col1, col2 = st.columns(2)
+   with col1:
+      nf_ce=st.button(label="NF CE")
+      bnf_ce=st.button(label="BNF CE")
+   with col2:
+      nf_pe=st.button(label="NF PE")
+      bnf_pe=st.button(label="BNF PE")
+with c2:
+   st.table(pd.DataFrame(numpy.random.randn(10, 20), columns=("col %d" % i for i in range(20))))
 if nf_ce:manual_buy("NIFTY",ce_pe="CE",index_ltp="-")
 if nf_pe:manual_buy("NIFTY",ce_pe="PE",index_ltp="-")
 if bnf_ce:manual_buy("BANKNIFTY",ce_pe="CE",index_ltp="-")
