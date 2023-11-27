@@ -1,21 +1,15 @@
 import streamlit as st
+st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded",)
 st.markdown("""
         <style>
-               .css-18e3th9 {
-                    padding-top: 0rem;
-                    padding-bottom: 10rem;
+               .block-container {
+                    padding-top: 1rem;
+                    padding-bottom: 0rem;
                     padding-left: 5rem;
                     padding-right: 5rem;
                 }
-               .css-1d391kg {
-                    padding-top: 3.5rem;
-                    padding-right: 1rem;
-                    padding-bottom: 3.5rem;
-                    padding-left: 1rem;
-                }
         </style>
         """, unsafe_allow_html=True)
-st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded",)
 if 'user_name' not in st.session_state:
    st.session_state['user_name']="Guest"
    st.session_state['user_name']="Guest"
