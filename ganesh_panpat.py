@@ -29,6 +29,7 @@ def get_user_pwd(user):
   return username,pwd,apikey,token,user
 username,pwd,apikey,token,user=get_user_pwd("Ganesh")
 obj=SmartConnect(api_key=apikey)
+@st.cache_resource
 def angel_login():
    try:
       FEED_TOKEN = None;TOKEN_MAP = None;SMART_API_OBJ = None
