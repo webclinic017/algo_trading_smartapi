@@ -51,9 +51,9 @@ def angel_login():
       aa= userProfile.get('data')
       st.session_state['user_name']=aa.get('name').title()
       st.session_state['login_time']=datetime.datetime.now()
-      print('Welcome',aa.get('name').title(),'...')
+      st.write('Welcome',aa.get('name').title(),'...')
       user=aa.get('name').title().split(' ')[0]
    except Exception as e:
-       print("Unable to login",e)
+       st.write("Unable to login")
 angel_login()
 st.header(f"Welcome {st.session_state['user_name']}!!!")
