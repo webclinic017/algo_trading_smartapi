@@ -58,8 +58,10 @@ with c1:
       bnf_pe=st.button(label="BNF PE")
 with c2:
    st.table(pd.DataFrame(np.random.randn(10, 20), columns=("col %d" % i for i in range(20))))
-
-
+if nf_ce:manual_buy("NIFTY,ce_pe="CE",index_ltp="-")
+if nf_pe:manual_buy("NIFTY,ce_pe="PE",index_ltp="-")
+if bnf_ce:manual_buy("BANKNIFTY,ce_pe="CE",index_ltp="-")
+if bnf_pe:manual_buy("BANKNIFTY,ce_pe="PE",index_ltp="-")
 global lots_to_trade,banknifty_target,banknifty_sl,nifty_target
 global nifty_sl,trailing_stop_loss,percent_target,percent_loss,percent_trail
 global trade_exit,stop_loss_type,trailing_stop_loss_type,target_order_type
