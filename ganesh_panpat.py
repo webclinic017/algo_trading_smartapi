@@ -282,6 +282,8 @@ def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NO
         "ordertype": ordertype,"producttype": producttype,"duration": "DAY","price": int(float(price)),"squareoff":int(float(squareoff)),
         "stoploss": int(float(stoploss)),"quantity": str(qty),"triggerprice":int(float(triggerprice)),"ordertag":ordertag,"trailingStopLoss":5}
       orderId=obj.placeOrder(orderparams)
+      st.write(orderparams)
+       st.write(orderId)
       LTP_Price=round(float(get_ltp_price(symbol=symbol,token=token,exch_seg=exch_seg)),2)
       print(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
       return orderId,LTP_Price
