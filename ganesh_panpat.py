@@ -16,7 +16,6 @@ with c1:
       nf_pe=st.button(label="NF PE")
       bnf_pe=st.button(label="BNF PE")
 with c2:
-   st.write("How Are you111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
    st.table(pd.DataFrame(np.random.randn(10, 20), columns=("col %d" % i for i in range(20))))
 for i in range(60):
   current_time.text(datetime.datetime.now().replace(microsecond=0))
