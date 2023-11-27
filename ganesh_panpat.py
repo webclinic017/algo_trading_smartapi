@@ -791,6 +791,7 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
       option_token=symbol['token']
       option_symbol=symbol['symbol']
       lotsize=int(symbol['lotsize'])*lots_to_trade
+      st.write(f'{option_token},{option_symbol} {lotsize}')
       orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
                           variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',ordertag=indicator_strategy)
       #LTP_Price=str(round(float(get_ltp_price(symbol=option_symbol,token=option_token,exch_seg='NFO')),2))
