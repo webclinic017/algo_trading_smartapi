@@ -1,0 +1,7 @@
+smartapi-python
+websocket-client
+pandas_ta
+talib
+requests
+yfinance
+pyotp
