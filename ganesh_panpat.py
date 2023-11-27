@@ -54,6 +54,7 @@ def angel_login():
       st.write('Welcome',aa.get('name').title(),'...')
       user=aa.get('name').title().split(' ')[0]
    except Exception as e:
-       st.write("Unable to login")
+      st.write("Unable to login")
+      st.write(e)
 angel_login()
 st.header(f"Welcome {st.session_state['user_name']}!!!")
