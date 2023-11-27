@@ -953,7 +953,7 @@ def closing_trade():
 
 def print_ltp():
   try:
-    data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={ "NSE": ["99926000","99926009"], "NFO": []})['data']['fetched'])
+    data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={ "NSE": [99926000,99926009], "NFO": []})['data']['fetched'])
     data['change']=data['ltp']-data['close']
     print_sting=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
     for i in range(0,len(data)):print_sting=f"{print_sting} {data.iloc[i]['tradingSymbol']} {int(data.iloc[i]['ltp'])}({int(data.iloc[i]['change'])})"
