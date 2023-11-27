@@ -8,7 +8,7 @@ st.header("Welcome Ganesh Panpat")
 current_time=st.empty()
 c1,c2=st.columns([2,8])
 with c1:
-   col1, col2 = st.columns(2)
+   col1, col2 = st.columns(2,"small")
    with col1:
       nf_ce=st.button(label="NF CE")
       bnf_ce=st.button(label="BNF CE")
