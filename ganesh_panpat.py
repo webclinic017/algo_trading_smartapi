@@ -2232,6 +2232,10 @@ if bnf_ce:manual_buy("BANKNIFTY",ce_pe="CE",index_ltp="-")
 if bnf_pe:manual_buy("BANKNIFTY",ce_pe="PE",index_ltp="-")
 get_ltp=st.button("Get LTP")
 if get_ltp:
-   orderbook=obj.orderBook()['data']
-   orderbook= pd.DataFrame.from_dict(orderbook)
+   input_dict=obj.orderBook()['data']
+   data = input_dict.get('data')
+   index = input_dict.get('index')
+   columns = input_dict.get('columns')
+   dtype = input_dict.get('dtype')
+   orderbook= pd.DataFrame.from_dict(data=data,index=index,columns=columns,dtype=dtype)
    st.write(orderbook)
