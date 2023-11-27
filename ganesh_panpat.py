@@ -18,7 +18,7 @@ with c2:
    st.table(pd.DataFrame(np.random.randn(10, 20), columns=("col %d" % i for i in range(20))))
 if 'user_name' not in st.session_state:
    st.session_state['user_name']="Guest"
-   st.session_state['user_name']="Guest
+   st.session_state['user_name']="Guest"
 from SmartApi import SmartConnect
 from SmartApi import SmartWebSocket
 import threading; import pandas as pd
