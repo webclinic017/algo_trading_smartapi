@@ -959,7 +959,7 @@ def print_ltp():
     for i in range(0,len(data)):print_sting=f"{print_sting} {data.iloc[i]['tradingSymbol']} {int(data.iloc[i]['ltp'])}({int(data.iloc[i]['change'])})"
     print_sting=print_sting.replace("Nifty 50","Nifty")
     print_sting=print_sting.replace("Nifty Bank","BankNifty")
-    print(print_sting)
+    st.write(print_sting)
   except Exception as e:
     pass
 
@@ -2230,3 +2230,6 @@ if nf_ce:manual_buy("NIFTY",ce_pe="CE",index_ltp="-")
 if nf_pe:manual_buy("NIFTY",ce_pe="PE",index_ltp="-")
 if bnf_ce:manual_buy("BANKNIFTY",ce_pe="CE",index_ltp="-")
 if bnf_pe:manual_buy("BANKNIFTY",ce_pe="PE",index_ltp="-")
+get_ltp=st.button("Get LTP")
+if get_ltp:
+   print_ltp()
