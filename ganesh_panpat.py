@@ -42,19 +42,19 @@ username,pwd,apikey,token,user=get_user_pwd("Ganesh")
 obj=SmartConnect(api_key=apikey)
 st.cache_resource
 def angel_login():
-  try:
-    FEED_TOKEN = None;TOKEN_MAP = None;SMART_API_OBJ = None
-    global user_name
-    data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
-    refreshToken= data['data']['refreshToken']
-    feedToken=obj.getfeedToken()
-    userProfile= obj.getProfile(refreshToken)
-    aa= userProfile.get('data')
-     st.session_state['user_name']=aa.get('name').title()
-     st.session_state['login_time]=datetime.datetime.now()
-    print('Welcome',aa.get('name').title(),'...')
-    user=aa.get('name').title().split(' ')[0]
+   try:
+      FEED_TOKEN = None;TOKEN_MAP = None;SMART_API_OBJ = None
+      global user_name
+      data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
+      refreshToken= data['data']['refreshToken']
+      feedToken=obj.getfeedToken()
+      userProfile= obj.getProfile(refreshToken)
+      aa= userProfile.get('data')
+      st.session_state['user_name']=aa.get('name').title()
+      st.session_state['login_time]=datetime.datetime.now()
+      print('Welcome',aa.get('name').title(),'...')
+      user=aa.get('name').title().split(' ')[0]
   except Exception as e:
-    print("Unable to login",e)
+       print("Unable to login",e)
 angel_login()
 st.header(f"Welcome {st.session_state['user_name']}!!!")
