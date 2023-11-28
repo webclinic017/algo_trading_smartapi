@@ -71,6 +71,7 @@ nf_ce_btn=st.button(label="NIFTY CE")
 if nf_ce_btn:
   st.write('Order Book')
   st.write(dir(obj))
+  st.write(obj.orderBook())
   try:
     odr=obj.orderBook()['data']
     st.write(odr)
