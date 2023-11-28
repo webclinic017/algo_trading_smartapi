@@ -15,7 +15,8 @@ if 'user_name' not in st.session_state:
    st.session_state['user_name']="Guest"
 from SmartApi import SmartConnect
 from SmartApi import SmartWebSocket
-import threading; import pandas as pd
+import threading
+import pandas as pd
 import pandas_ta as pdta
 import json
 import requests
@@ -68,9 +69,9 @@ st.header(f"Welcome {st.session_state['user_name']}")
 st.write(f"Last Login {st.session_state['login_time']}")
 nf_ce_btn=st.button(label="NIFTY CE")
 if nf_ce_btn:
-        st.write('Order Book')
-        try:
-                odr=obj.orderBook()['data']
-                st.write(odr)
-        except Exception as e:
-                st.write(e)
+  st.write('Order Book')
+  try:
+    odr=obj.orderBook()['data']
+    st.write(odr)
+  except Exception as e:
+    st.write(e)
