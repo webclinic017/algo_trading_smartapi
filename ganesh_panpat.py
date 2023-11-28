@@ -52,7 +52,8 @@ def angel_login():
       st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0,tzinfo=None)
       user=aa.get('name').title().split(' ')[0]
       odr=obj.orderBook()['data']
-      st.write(odr)
+      odr=pd.DataFrame(odr)
+      st.table(odr)
    except Exception as e:
       st.write("Unable to login")
       st.write(e)
