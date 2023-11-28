@@ -35,7 +35,7 @@ def get_user_pwd(user):
   elif user=='Kalyani': username = 'K205244'; pwd = '4789'; apikey = 'lzC7yJmt'; token='YDV6CJI6BEU3GWON7GZTZNU3RM'
   elif user=="Akshay": username='A325394'; pwd='1443'; apikey='OeSllszj'; token='G4OKBQKHXPS67EN2WMVP3TZ7X4'
   return username,pwd,apikey,token,user
-username,pwd,apikey,token,user=get_user_pwd("Kalyani")
+username,pwd,apikey,token,user=get_user_pwd("Ganesh")
 obj=SmartConnect(api_key=apikey)
 @st.cache_resource
 def angel_login():
@@ -66,3 +66,7 @@ def get_token_df():
 token_df=get_token_df()
 st.header(f"Welcome {st.session_state['user_name']}")
 st.write(f"Last Login {st.session_state['login_time']}")
+nf_ce_btn=st.button(label="NIFTY CE")
+if nf_ce_btn:
+        odr=obj.orderBook()['Data']
+        st.write(odr)
