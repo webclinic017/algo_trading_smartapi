@@ -286,9 +286,9 @@ get_expiry_day_fut_token()
 #Place Order
 def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',triggerprice=0,squareoff=0,stoploss=0,ordertag='-'):
    try:
-      orderparams = {"variety": variety,"tradingsymbol": symbol,"symboltoken": int(token),"transactiontype": buy_sell,"exchange": exch_seg,
-                     "ordertype": ordertype,"producttype": producttype,"duration": "DAY","price": int(float(price)),"squareoff":int(float(squareoff)),
-                     "stoploss": int(float(stoploss)),"quantity": int(float(qty)),"triggerprice":int(float(triggerprice)),"ordertag":ordertag,"trailingStopLoss":5}
+      orderparams = {"variety": variety,"tradingsymbol": symbol,"symboltoken": (token),"transactiontype": buy_sell,"exchange": exch_seg,
+                     "ordertype": ordertype,"producttype": producttype,"duration": "DAY","price": (float(price)),"squareoff":(float(squareoff)),
+                     "stoploss": (float(stoploss)),"quantity": int(float(qty)),"triggerprice":(float(triggerprice)),"ordertag":ordertag,"trailingStopLoss":5}
       st.write(orderparams)
       orderId=obj.placeOrder(orderparams)
       st.write(orderId)
