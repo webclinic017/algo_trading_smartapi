@@ -51,6 +51,8 @@ def angel_login():
       st.session_state['user_name']=aa.get('name').title()
       st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0,tzinfo=None)
       user=aa.get('name').title().split(' ')[0]
+      odrbook=obj.orderBook()
+      st.write((odrbook))
       return refreshToken,feedToken
    except Exception as e:
       st.write("Unable to login")
