@@ -70,6 +70,7 @@ st.write(f"Last Login {st.session_state['login_time']}")
 nf_ce_btn=st.button(label="NIFTY CE")
 if nf_ce_btn:
   st.write('Order Book')
+  st.write(dir(obj))
   try:
     odr=obj.orderBook()['data']
     st.write(odr)
