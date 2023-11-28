@@ -51,13 +51,11 @@ def angel_login():
       st.session_state['user_name']=aa.get('name').title()
       st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0,tzinfo=None)
       user=aa.get('name').title().split(' ')[0]
-      odr=obj.orderBook()['data']
-      odr=pd.DataFrame(odr)
-      st.table(odr)
+      return refreshToken,feedToken
    except Exception as e:
       st.write("Unable to login")
       st.write(e)
-angel_login()
+refreshToken,feedToken=angel_login()
 @st.cache_resource
 def get_token_df():
   global symbolDf,token_df
