@@ -2244,5 +2244,5 @@ get_ltp=st.button("Get LTP")
 if get_ltp:
    input_dict=obj.orderBook()['data']
    st.write(input_dict)
-   orderbook= pd.DataFrame.from_dict(input_dict)
+   orderbook= pd.DataFrame(input_dict)
    st.write(orderbook)
