@@ -48,7 +48,7 @@ def angel_login():
       userProfile= obj.getProfile(refreshToken)
       aa= userProfile.get('data')
       st.session_state['user_name']=aa.get('name').title()
-      st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0,tz=None)
+      st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0,tzinfo=None)
       user=aa.get('name').title().split(' ')[0]
    except Exception as e:
       st.write("Unable to login")
