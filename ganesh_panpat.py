@@ -70,11 +70,5 @@ st.header(f"Welcome {st.session_state['user_name']}")
 st.write(f"Last Login {st.session_state['login_time']}")
 nf_ce_btn=st.button(label="NIFTY CE")
 if nf_ce_btn:
-  st.write('Order Book')
-  st.write(dir(obj))
-  st.write(obj.orderBook())
-  try:
-    odr=obj.orderBook()['data']
-    st.write(odr)
-  except Exception as e:
-    st.write(e)
+  odrbook=obj.orderBook()['data']
+  st.table(pd.DataFrame(odrbook))
