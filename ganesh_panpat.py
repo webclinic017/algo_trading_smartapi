@@ -148,6 +148,14 @@ def get_token_df():
   st.session_state['nf_future_symbol']=nf_future_symbol
   st.session_state['nf_future_token']=nf_future_token
 get_token_df()
+expiry_day=st.session_state['expiry_day']
+bnf_expiry_day=st.session_state['bnf_expiry_day']
+nf_expiry_day=st.session_state['nf_expiry_day']
+monthly_expiry_day=st.session_state['monthly_expiry_day']
+bnf_future_symbol=st.session_state['bnf_future_symbol']
+bnf_future_token=st.session_state['bnf_future_token']
+nf_future_symbol=st.session_state['nf_future_symbol']
+nf_future_token=st.session_state['nf_future_token']
 def get_ce_pe_data(symbol,indexLtp="-"):
   indexLtp=float(indexLtp) if indexLtp!="-" else get_index_ltp(symbol)
   # ATM
