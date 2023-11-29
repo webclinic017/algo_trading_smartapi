@@ -48,6 +48,7 @@ if st.session_state['user_name']=="Guest":
       feedToken=obj.getfeedToken()
       userProfile= obj.getProfile(refreshToken)
       aa= userProfile.get('data')
+      st.write(aa)
       st.session_state['user_name']=aa.get('name').title()
       st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0,tzinfo=None)
       user=aa.get('name').title().split(' ')[0]
