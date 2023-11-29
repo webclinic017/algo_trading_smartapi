@@ -48,6 +48,7 @@ obj=SmartConnect(api_key=st.session_state['api_key'],
 c1,c2,c3=st.columns([1,1,8])
 with c1:get_orderbook=st.button("OrderBook")
 with c2:get_position=st.button("Position")
+with c3:algo_trade=st.button("Algo Trade")
 if get_orderbook:
    orderbook=obj.orderBook()['data']
    orderbook=pd.DataFrame(orderbook)
