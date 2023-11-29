@@ -57,10 +57,7 @@ with col1:
 with col2:
   nf_pe=st.button("NF PE")
   bnf_pe=st.button("BNF PE")
-if nf_ce:manual_buy("NIFTY",ce_pe="CE",index_ltp="-")
-if nf_pe:manual_buy("NIFTY",ce_pe="PE",index_ltp="-")
-if bnf_ce:manual_buy("BANKNIFTY",ce_pe="CE",index_ltp="-")
-if bnf_pe:manual_buy("BANKNIFTY",ce_pe="PE",index_ltp="-")
+
 if get_orderbook:
    orderbook=obj.orderBook()['data']
    orderbook=pd.DataFrame(orderbook)
@@ -210,4 +207,8 @@ def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
   if ce_pe=="CE":symbol=ce_strike_symbol
   if ce_pe=="PE":symbol=pe_strike_symbol
   buy_option(symbol,"Manual Buy","5m")
-    
+
+if nf_ce:manual_buy("NIFTY",ce_pe="CE",index_ltp="-")
+if nf_pe:manual_buy("NIFTY",ce_pe="PE",index_ltp="-")
+if bnf_ce:manual_buy("BANKNIFTY",ce_pe="CE",index_ltp="-")
+if bnf_pe:manual_buy("BANKNIFTY",ce_pe="PE",index_ltp="-")
