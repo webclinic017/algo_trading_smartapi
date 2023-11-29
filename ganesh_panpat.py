@@ -60,6 +60,7 @@ if st.session_state['user_name']=="Guest":
       st.write(e)
 refreshToken=st.session_state['refreshToken']
 feedToken=st.session_state['feedToken']
+st.write(feedToken)
 @st.cache_resource
 def get_token_df():
   global symbolDf,token_df
