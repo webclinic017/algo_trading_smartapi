@@ -4,6 +4,7 @@ from dateutil.tz import gettz
 import time
 import pandas as pd
 import yfinance as yf
+import math
 st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded",)
 st.markdown("""
         <style>
