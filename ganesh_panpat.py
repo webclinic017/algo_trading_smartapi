@@ -52,7 +52,7 @@ if st.session_state['user_name']=="Guest":
       st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0,tzinfo=None)
       user=aa.get('name').title().split(' ')[0]
       st.session_state['refreshToken']=refreshToken
-      st session_state['feedToken']=feedToken
+      st.session_state['feedToken']=feedToken
    except Exception as e:
       st.write("Unable to login")
       st.write(e)
