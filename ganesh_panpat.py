@@ -45,7 +45,7 @@ obj=SmartConnect(api_key=st.session_state['api_key'],
                   refresh_token=st.session_state['refresh_token'],
                   feed_token=st.session_state['feed_token'],
                   userId=st.session_state['userId'])
-c1,c2=st.columns(2)
+c1,c2,c3=st.columns([1,1,8])
 with c1:get_orderbook=st.button("Get Order Book")
 with c2:get_position=st.button("Get Position")
 if get_orderbook:
