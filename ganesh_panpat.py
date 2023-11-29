@@ -71,7 +71,7 @@ def print_ltp():
   except Exception as e:
     return "Unable to get LTP"
 with c1:
-  col1,col2=st.columns(2)
+  col1,col2=st.columns([1,1])
   with col1:
     nf_ce=st.button("NF CE")
     bnf_ce=st.button("BNF CE")
