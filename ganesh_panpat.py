@@ -50,6 +50,13 @@ c1,c2,c3=st.columns([1,1,8])
 with c1:get_orderbook=st.button("OrderBook")
 with c2:get_position=st.button("Position")
 with c3:algo_trade=st.button("Algo Trade")
+col1,col2,col3=st.columns([1,1,8])
+with col1:
+  nf_ce=st.button("NF CE")
+  bnf_ce=st.button("BNF CE")
+with col2:
+  nf_pe=st.button("NF PE")
+  bnf_pe=st.button("BNF PE")
 if get_orderbook:
    orderbook=obj.orderBook()['data']
    orderbook=pd.DataFrame(orderbook)
@@ -71,11 +78,4 @@ def print_ltp():
     return print_sting
   except Exception as e:
     return "Unable to get LTP"
-col1,col2,col3=st.columns([1,1,8])
-with col1:
-  nf_ce=st.button("NF CE")
-  bnf_ce=st.button("BNF CE")
-with col2:
-  nf_pe=st.button("NF PE")
-  bnf_pe=st.button("BNF PE")
 placeholder.text(print_ltp())
