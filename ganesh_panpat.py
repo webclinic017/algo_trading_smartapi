@@ -48,7 +48,6 @@ if st.session_state['user_name']=="Guest":
       feedToken=obj.getfeedToken()
       userProfile= obj.getProfile(refreshToken)
       aa= userProfile.get('data')
-      st.write(aa)
       st.session_state['user_name']=aa.get('name').title()
       st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0,tzinfo=None)
       user=aa.get('name').title().split(' ')[0]
@@ -57,8 +56,7 @@ if st.session_state['user_name']=="Guest":
    except Exception as e:
       st.write("Unable to login")
       st.write(e)
-refreshToken=st.session_state['refreshToken']
-feedToken=st.session_state['feedToken']
+st.write(obj.getProfile(refreshToken).get('data')) 
 st.write(feedToken)
 @st.cache_resource
 def get_token_df():
