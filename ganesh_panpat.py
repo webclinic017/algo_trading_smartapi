@@ -39,6 +39,7 @@ if 'user_name' not in st.session_state:
     st.session_state['api_key']=apikey
 st.header(f"Welcome {st.session_state['user_name']}")
 st.write(f"Last Login {st.session_state['login_time']}")
+placeholder = st.empty()
 obj=SmartConnect(api_key=st.session_state['api_key'],
                   access_token=st.session_state['access_token'],
                   refresh_token=st.session_state['refresh_token'],
@@ -49,3 +50,15 @@ if get_orderbook:
    orderbook=obj.orderBook()['data']
    orderbook=pd.DataFrame(orderbook)
    st.table(orderbook)
+def print_ltp():
+  try:
+    data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={ "NSE": ["99926000","99926009"], "NFO": []})['data']['fetched'])
+    data['change']=data['ltp']-data['close']
+    print_sting=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
+    for i in range(0,len(data)):print_sting=f"{print_sting} {data.iloc[i]['tradingSymbol']} {int(data.iloc[i]['ltp'])}({int(data.iloc[i]['change'])})"
+    print_sting=print_sting.replace("Nifty 50","Nifty")
+    print_sting=print_sting.replace("Nifty Bank","BankNifty")
+    return print_sting
+  except Exception as e:
+    return "Unable to get LTP"
+placeholder.text(print_ltp())
