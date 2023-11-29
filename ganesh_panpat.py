@@ -56,7 +56,7 @@ if st.session_state['user_name']=="Guest":
    except Exception as e:
       st.write("Unable to login")
       st.write(e)
-st.write(obj.getProfile(refreshToken).get('data')) 
+st.write(obj.getProfile(st.session_state['refreshToken']).get('data')) 
 st.write(feedToken)
 @st.cache_resource
 def get_token_df():
