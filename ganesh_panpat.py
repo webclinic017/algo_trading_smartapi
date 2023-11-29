@@ -98,23 +98,6 @@ def print_ltp():
     return "Unable to get LTP"
 placeholder.text(print_ltp())
 
-def getTokenInfo (symbol, exch_seg ='NSE',instrumenttype='OPTIDX',strike_price = 0,pe_ce = 'CE',expiry_day = None):
-  if symbol=="BANKNIFTY" or symbol=="^NSEBANK":
-    expiry_day=st.session_state['bnf_expiry_day']
-  elif symbol=="NIFTY" or symbol=="^NSEI":
-    expiry_day=st.session_state['nf_expiry_day']
-  df = st.session_state['token_df']
-  strike_price = strike_price*100
-  if exch_seg == 'NSE':
-      eq_df = df[(df['exch_seg'] == 'NSE') ]
-      return eq_df[eq_df['name'] == symbol]
-  elif exch_seg == 'NFO' and ((instrumenttype == 'FUTSTK') or (instrumenttype == 'FUTIDX')):
-      return df[(df['exch_seg'] == 'NFO') & (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol)].sort_values(by=['expiry'])
-  elif exch_seg == 'NFO' and (instrumenttype == 'OPTSTK' or instrumenttype == 'OPTIDX'):
-      return (df[(df['exch_seg'] == 'NFO') & (df['expiry']==expiry_day) &  (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol)
-      & (df['strike'] == strike_price) & (df['symbol'].str.endswith(pe_ce))].sort_values(by=['expiry']))
-
-
 @st.cache_resource
 def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
@@ -156,6 +139,23 @@ bnf_future_symbol=st.session_state['bnf_future_symbol']
 bnf_future_token=st.session_state['bnf_future_token']
 nf_future_symbol=st.session_state['nf_future_symbol']
 nf_future_token=st.session_state['nf_future_token']
+
+def getTokenInfo (symbol, exch_seg ='NSE',instrumenttype='OPTIDX',strike_price = 0,pe_ce = 'CE',expiry_day = None):
+  if symbol=="BANKNIFTY" or symbol=="^NSEBANK":
+    expiry_day=st.session_state['bnf_expiry_day']
+  elif symbol=="NIFTY" or symbol=="^NSEI":
+    expiry_day=st.session_state['nf_expiry_day']
+  df = st.session_state['token_df']
+  strike_price = strike_price*100
+  if exch_seg == 'NSE':
+      eq_df = df[(df['exch_seg'] == 'NSE') ]
+      return eq_df[eq_df['name'] == symbol]
+  elif exch_seg == 'NFO' and ((instrumenttype == 'FUTSTK') or (instrumenttype == 'FUTIDX')):
+      return df[(df['exch_seg'] == 'NFO') & (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol)].sort_values(by=['expiry'])
+  elif exch_seg == 'NFO' and (instrumenttype == 'OPTSTK' or instrumenttype == 'OPTIDX'):
+      return (df[(df['exch_seg'] == 'NFO') & (df['expiry']==expiry_day) &  (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol)
+      & (df['strike'] == strike_price) & (df['symbol'].str.endswith(pe_ce))].sort_values(by=['expiry']))
+
 def get_ce_pe_data(symbol,indexLtp="-"):
   indexLtp=float(indexLtp) if indexLtp!="-" else get_index_ltp(symbol)
   # ATM
