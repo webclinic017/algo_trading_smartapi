@@ -72,5 +72,5 @@ st.header(f"Welcome {st.session_state['user_name']}")
 st.write(f"Last Login {st.session_state['login_time']}")
 nf_ce_btn=st.button(label="NIFTY CE")
 if nf_ce_btn:
-  odrbook=obj.orderBook()
+  odrbook=obj.orderBook()['data']
   st.write((odrbook))
