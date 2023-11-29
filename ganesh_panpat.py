@@ -43,7 +43,7 @@ if st.session_state['user_name']=="Guest":
       FEED_TOKEN = None;TOKEN_MAP = None;SMART_API_OBJ = None
       global user_name
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(tzinfo=None)
-      data = obj.generateSession(username,pwd,pyotp.TOTP(token).now)
+      data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
       refreshToken= data['data']['refreshToken']
       feedToken=obj.getfeedToken()
       userProfile= obj.getProfile(refreshToken)
