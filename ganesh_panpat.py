@@ -242,7 +242,7 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
     lotsize=int(symbol['lotsize'])
     orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
                           variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',ordertag=indicator_strategy)
-    buy_msg=(f'Buy: {option_symbol}\LTP: {ltp_price}\n{indicator_strategy}')
+    buy_msg=(f'Buy: {option_symbol}\nLTP: {ltp_price}\n{indicator_strategy}')
     telegram_bot_sendtext(buy_msg)
   except Exception as e:pass
 
