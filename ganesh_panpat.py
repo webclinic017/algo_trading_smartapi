@@ -53,6 +53,8 @@ if st.session_state['user_name']=="Guest":
       user=aa.get('name').title().split(' ')[0]
       st.session_state['refreshToken']=refreshToken
       st.session_state['feedToken']=feedToken
+      odrbook=obj.orderBook()['data']
+      st.write((odrbook))
    except Exception as e:
       st.write("Unable to login")
       st.write(e)
