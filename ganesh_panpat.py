@@ -12,7 +12,7 @@ st.markdown("""
         """, unsafe_allow_html=True)
 if 'user_name' not in st.session_state:
    st.session_state['user_name']="Guest"
-   st.session_state['user_name']="Guest"
+   st.session_state['login_time']="Guest"
 from SmartApi import SmartConnect
 from SmartApi import SmartWebSocket
 import threading
