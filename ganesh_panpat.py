@@ -55,6 +55,12 @@ if get_orderbook:
    orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [True], na_position = 'first')
    st.table(orderbook[['updatetime','orderid','transactiontype','orderstatus','tradingsymbol',
                         'price','quantity','ordertag']])
+if get_position:
+   position=obj.position()['data']
+   position=pd.DataFrame(position)
+   st.table(position)
+   #st.table(orderbook[['updatetime','orderid','transactiontype','orderstatus','tradingsymbol',
+                        'price','quantity','ordertag']])
 def print_ltp():
   try:
     data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={ "NSE": ["99926000","99926009"], "NFO": []})['data']['fetched'])
