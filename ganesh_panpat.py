@@ -49,7 +49,9 @@ get_orderbook=st.button("Get Order Book")
 if get_orderbook:
    orderbook=obj.orderBook()['data']
    orderbook=pd.DataFrame(orderbook)
-   orderbook=orderbook[['orderid','exchange','transactiontype','orderstatus','symboltoken','tradingsymbol','price','quantity','updatetime','variety','ordertype','producttype']]
+   orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [True], na_position = 'first')
+   orderbook=orderbook[['updatetime','orderid','exchange','transactiontype','orderstatus','symboltoken','tradingsymbol',
+                        'price','quantity','variety','ordertype','producttype']]
    st.table(orderbook)
 def print_ltp():
   try:
