@@ -36,7 +36,7 @@ def get_user_pwd(user):
   elif user=='Kalyani': username = 'K205244'; pwd = '4789'; apikey = 'lzC7yJmt'; token='YDV6CJI6BEU3GWON7GZTZNU3RM'
   elif user=="Akshay": username='A325394'; pwd='1443'; apikey='OeSllszj'; token='G4OKBQKHXPS67EN2WMVP3TZ7X4'
   return username,pwd,apikey,token,user
-username,pwd,apikey,token,user=get_user_pwd("Ganesh")
+username,pwd,apikey,token,user=get_user_pwd("Kalyani")
 obj=SmartConnect(api_key=apikey)
 if st.session_state['user_name']=="Guest":
    try:
