@@ -116,29 +116,17 @@ def get_token_df():
   nf_expiry_day = nf_expiry_df['expiry'].min()
   monthly_expiry_df = token_df[(token_df['name'] == 'BANKNIFTY') & (token_df['instrumenttype'] == 'FUTIDX')  & (token_df['expiry']>=now_dt)]
   monthly_expiry_day = monthly_expiry_df['expiry'].min()
-  bnf_future = getTokenInfo('BANKNIFTY','NFO','FUTIDX','','',monthly_expiry_day).iloc[0]
-  bnf_future_symbol=bnf_future['symbol']
-  bnf_future_token=bnf_future['token']
-  nf_future = getTokenInfo('NIFTY','NFO','FUTIDX','','',monthly_expiry_day).iloc[0]
-  nf_future_symbol=nf_future['symbol']
-  nf_future_token=nf_future['token']
   st.session_state['expiry_day']=expiry_day
   st.session_state['bnf_expiry_day']=bnf_expiry_day
   st.session_state['nf_expiry_day']=nf_expiry_day
   st.session_state['monthly_expiry_day']=monthly_expiry_day
-  st.session_state['bnf_future_symbol']=bnf_future_symbol
-  st.session_state['bnf_future_token']=bnf_future_token
-  st.session_state['nf_future_symbol']=nf_future_symbol
-  st.session_state['nf_future_token']=nf_future_token
+
 get_token_df()
 expiry_day=st.session_state['expiry_day']
 bnf_expiry_day=st.session_state['bnf_expiry_day']
 nf_expiry_day=st.session_state['nf_expiry_day']
 monthly_expiry_day=st.session_state['monthly_expiry_day']
-bnf_future_symbol=st.session_state['bnf_future_symbol']
-bnf_future_token=st.session_state['bnf_future_token']
-nf_future_symbol=st.session_state['nf_future_symbol']
-nf_future_token=st.session_state['nf_future_token']
+
 
 def getTokenInfo (symbol, exch_seg ='NSE',instrumenttype='OPTIDX',strike_price = 0,pe_ce = 'CE',expiry_day = None):
   if symbol=="BANKNIFTY" or symbol=="^NSEBANK":
