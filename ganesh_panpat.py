@@ -57,7 +57,7 @@ if st.session_state['user_name']=="Guest":
       st.write("Unable to login")
       st.write(e)
 st.write(st.session_state)
-st.write(obj.getProfile(st.session_state['refreshToken']).get('data'))
+st.write(obj.getProfile(st.session_state['refreshToken']))
 @st.cache_resource
 def get_token_df():
   global symbolDf,token_df
