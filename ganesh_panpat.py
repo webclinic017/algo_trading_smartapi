@@ -186,7 +186,37 @@ def get_index_ltp(symbol):
 def getTokenInfo_index(symbol):
   df = token_df
   return df[(df['exch_seg'] == 'NSE') & (df['symbol']== (symbol))]
-  
+
+def get_ltp_price(symbol="-",token="-",exch_seg='-'):
+  try:
+    data=obj.getMarketData("LTP",{exch_seg:[token]})['data']['fetched'][0]['ltp']
+    return data
+  except:
+    try:
+      #if symbol=="-" or token=="-" or exch_seg=="-":
+      df_b=token_df[((token_df['exch_seg']=="NSE") | (token_df['exch_seg']=="NFO"))]
+      df_b=df_b[(df_b['symbol'].str.startswith(symbol))]
+      if len(df_b)!=1: df_b=df_b[((df_b['symbol'].str.startswith(symbol)) | (df_b['name'].str.startswith(symbol)))]
+      if len(df_b)!=1: df_b=df_b[(df_b['name']==symbol) & (token_df['exch_seg']=="NSE")]
+      if len(df_b)!=1: df_b=df_b[df_b['symbol'].str.contains('-EQ')]
+      df_a=token_df[(token_df['token']==str(token)) & ((token_df['exch_seg']=="NSE") | (token_df['exch_seg']=="NFO"))]
+      df_a=df_a.append(df_b)
+      df_a=df_a.drop_duplicates()
+      symbol=df_a['symbol'].iloc[0]
+      token=df_a['token'].iloc[0]
+      name=df_a['name'].iloc[0]
+      exch_seg=df_a['exch_seg'].iloc[0]
+      try:
+        ltpInfo = obj.ltpData(exch_seg,symbol,token)
+        ltp_price = ltpInfo['data']['ltp']
+      except Exception as e:
+          ltp_price=0
+          print("Unable to get LTP")
+    except Exception as e:
+      ltp_price=0
+      print("Unable to get LTP")
+    return ltp_price
+          
 def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',
                 triggerprice=0,squareoff=0,stoploss=0,ordertag='-'):
   for i in range(0,3):
@@ -214,7 +244,6 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
                           variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',ordertag=indicator_strategy)
     buy_msg=(f'Buy: {option_symbol}\LTP: {ltp_price}\n{indicator_strategy}')
     telegram_bot_sendtext(buy_msg)
-    break
   except Exception as e:pass
 
 def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
