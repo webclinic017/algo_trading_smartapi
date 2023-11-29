@@ -39,7 +39,8 @@ if 'user_name' not in st.session_state:
     st.session_state['api_key']=apikey
 st.header(f"Welcome {st.session_state['user_name']}")
 st.write(f"Last Login {st.session_state['login_time']}")
-placeholder = st.write('LTP')
+placeholder = st.empty()
+placeholder.text('LTP')
 obj=SmartConnect(api_key=st.session_state['api_key'],
                   access_token=st.session_state['access_token'],
                   refresh_token=st.session_state['refresh_token'],
