@@ -61,4 +61,12 @@ def print_ltp():
     return print_sting
   except Exception as e:
     return "Unable to get LTP"
+with st.sidebar:
+  col1,col2=st.columns()
+  with col1:
+    nf_ce=st.button("NF CE")
+    bnf_ce=st.button("BNF CE")
+  with col1:
+    nf_pe=st.button("NF PE")
+    bnf_pe=st.button("BNF PE")
 placeholder.text(print_ltp())
