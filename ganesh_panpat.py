@@ -53,4 +53,4 @@ if get_orderbook:
    orderbook=obj.orderBook()['data']
    orderbook=pd.DataFrame(orderbook)
    orderbook=orderbook[['updatetime','tradingsymbol','ordertag','price','ordertag']]
-   tbl(data=orderbook)
+   st.table(orderbook)
