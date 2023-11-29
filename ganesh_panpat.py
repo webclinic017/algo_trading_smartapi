@@ -44,13 +44,8 @@ obj=SmartConnect(api_key=st.session_state['api_key'],
                   refresh_token=st.session_state['refresh_token'],
                   feed_token=st.session_state['feed_token'],
                   userId=st.session_state['userId'])
-col1,col2=st.columns([2,8])
-with col1:
-   get_orderbook=st.button("Get Order Book")
-with col2:
-   tbl=st.table()
+get_orderbook=st.button("Get Order Book")
 if get_orderbook:
    orderbook=obj.orderBook()['data']
    orderbook=pd.DataFrame(orderbook)
-   orderbook=orderbook[['updatetime','tradingsymbol','ordertag','price','ordertag']]
    st.table(orderbook)
