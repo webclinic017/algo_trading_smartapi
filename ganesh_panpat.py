@@ -3,6 +3,7 @@ import datetime
 from dateutil.tz import gettz
 import time
 import pandas as pd
+import yfinance as yf
 st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded",)
 st.markdown("""
         <style>
