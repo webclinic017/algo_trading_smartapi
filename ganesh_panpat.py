@@ -132,7 +132,7 @@ def get_token_df():
   st.session_state['bnf_future_token']=bnf_future_token
   st.session_state['nf_future_symbol']=nf_future_symbol
   st.session_state['nf_future_token']=nf_future_token
-
+get_token_df()
 def get_ce_pe_data(symbol,indexLtp="-"):
   indexLtp=float(indexLtp) if indexLtp!="-" else get_index_ltp(symbol)
   # ATM
