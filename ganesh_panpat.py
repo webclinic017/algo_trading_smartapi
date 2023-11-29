@@ -56,8 +56,8 @@ if st.session_state['user_name']=="Guest":
    except Exception as e:
       st.write("Unable to login")
       st.write(e)
-refreshToken=st.session_state['refreshToken']
-feedToken=st.session_state['feedToken']
+#refreshToken=st.session_state['refreshToken']
+#feedToken=st.session_state['feedToken']
 st.write(feedToken)
 @st.cache_resource
 def get_token_df():
@@ -73,5 +73,5 @@ st.header(f"Welcome {st.session_state['user_name']}")
 st.write(f"Last Login {st.session_state['login_time']}")
 nf_ce_btn=st.button(label="NIFTY CE")
 if nf_ce_btn:
-  odrbook=obj.orderBook()['data']
+  odrbook=obj.orderBook()
   st.write(odrbook)
