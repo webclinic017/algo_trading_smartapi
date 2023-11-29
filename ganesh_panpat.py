@@ -212,6 +212,9 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
     lotsize=int(symbol['lotsize'])
     orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
                           variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',ordertag=indicator_strategy)
+    buy_msg=(f'Buy: {option_symbol}\LTP: {ltp_price}\n{indicator_strategy}')
+    telegram_bot_sendtext(buy_msg)
+    break
   except Exception as e:pass
 
 def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
@@ -221,6 +224,24 @@ def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
   if ce_pe=="PE":symbol=pe_strike_symbol
   buy_option(symbol,"Manual Buy","5m")
 
+def telegram_bot_sendtext(bot_message):
+  BOT_TOKEN = '5051044776:AAHh6XjxhRT94iXkR4Eofp2PPHY3Omk2KtI'
+  BOT_CHAT_ID = '-1001542241163'
+  BOT_CHAT_ONE_MINUTE = '-1001542241163'
+  #BOT_CHAT_ONE_MINUTE='-882387563'
+  import requests
+  bot_message=st.session_state['user_name']+':\n'+bot_message
+  matches = ["Candle"]
+  if any(x in bot_message for x in matches): check_msg=True
+  else: check_msg=False
+  if check_msg==True:
+    send_text = 'https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage?chat_id=' + BOT_CHAT_ONE_MINUTE + \
+              '&parse_mode=HTML&text=' + bot_message
+  else:
+    send_text = 'https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage?chat_id=' + BOT_CHAT_ID + \
+                '&parse_mode=HTML&text=' + bot_message
+  response = requests.get(send_text)
+        
 if nf_ce:manual_buy("NIFTY",ce_pe="CE",index_ltp="-")
 if nf_pe:manual_buy("NIFTY",ce_pe="PE",index_ltp="-")
 if bnf_ce:manual_buy("BANKNIFTY",ce_pe="CE",index_ltp="-")
