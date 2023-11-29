@@ -38,8 +38,7 @@ def get_user_pwd(user):
   return username,pwd,apikey,token,user
 username,pwd,apikey,token,user=get_user_pwd("Ganesh")
 obj=SmartConnect(api_key=apikey)
-@st.cache_resource
-def angel_login():
+if st.session_state['user_name']=="Guest":
    try:
       FEED_TOKEN = None;TOKEN_MAP = None;SMART_API_OBJ = None
       global user_name
@@ -52,13 +51,14 @@ def angel_login():
       st.session_state['user_name']=aa.get('name').title()
       st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0,tzinfo=None)
       user=aa.get('name').title().split(' ')[0]
-      odrbook=obj.orderBook()
-      st.write((odrbook))
-      return refreshToken,feedToken
+      st.session_state['refreshToken']=refreshToken
+      st session_state['feedToken']=feedToken
    except Exception as e:
       st.write("Unable to login")
       st.write(e)
-refreshToken,feedToken=angel_login()
+refreshToken=st.session_state['refreshToken']
+feedToken=st.session_state['feedToken']
+feedToken
 @st.cache_resource
 def get_token_df():
   global symbolDf,token_df
