@@ -66,7 +66,7 @@ with st.sidebar:
   with col1:
     nf_ce=st.button("NF CE")
     bnf_ce=st.button("BNF CE")
-  with col1:
+  with col2:
     nf_pe=st.button("NF PE")
     bnf_pe=st.button("BNF PE")
 placeholder.text(print_ltp())
