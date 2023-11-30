@@ -84,7 +84,6 @@ if get_orderbook:
    orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
    orderbook['price']=orderbook['price'].astype(float).round(2)
    orderbook = orderbook.rename(columns={'transactiontype':'trans','quantity':'qty'})
-   orderbook.set_index('updatetime', inplace=True)
    orderbook = orderbook.sort_index()
    datatable.table(orderbook[['orderid','trans','status','tradingsymbol','price','qty','ordertag']])
 if get_position:
