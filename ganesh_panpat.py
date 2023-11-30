@@ -76,7 +76,7 @@ with col2:
   close_all=st.button("Close All")
 with col2:
   datatable=st.empty()
-
+        
 if get_orderbook:
    orderbook=obj.orderBook()['data']
    orderbook=pd.DataFrame(orderbook)
