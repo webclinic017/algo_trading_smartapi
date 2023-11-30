@@ -54,17 +54,18 @@ if 'user_name' not in st.session_state:
     st.session_state['feed_token']=obj.feed_token
     st.session_state['userId']=obj.userId
     st.session_state['api_key']=apikey
-    obj=SmartConnect(api_key=st.session_state['api_key'],
-                  access_token=st.session_state['access_token'],
-                  refresh_token=st.session_state['refresh_token'],
-                  feed_token=st.session_state['feed_token'],
-                  userId=st.session_state['userId'])
+    
 st.header(f"Welcome {st.session_state['user_name']}")
 st.write(f"Last Login {st.session_state['login_time']}")
 placeholder = st.empty()
 placeholder.text('LTP')
-
-with st.sidebar:
+obj=SmartConnect(api_key=st.session_state['api_key'],
+                  access_token=st.session_state['access_token'],
+                  refresh_token=st.session_state['refresh_token'],
+                  feed_token=st.session_state['feed_token'],
+                  userId=st.session_state['userId'])
+col1,col2,col3=st.columns([1,1,8])
+with col1:
   get_orderbook=st.button("OrderBook")
   get_position=st.button("Position")
   algo_trade=st.button("Algo Trade")
@@ -73,7 +74,8 @@ with st.sidebar:
   nf_pe=st.button("NF PE")
   bnf_pe=st.button("BNF PE")
   close_all=st.button("Close All")
-datatable=st.empty()
+with col3:
+  datatable=st.empty()
 
 if get_orderbook:
    orderbook=obj.orderBook()['data']
