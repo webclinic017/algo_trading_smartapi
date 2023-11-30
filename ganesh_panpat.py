@@ -31,7 +31,7 @@ st.markdown("""
                 }
         </style>
         """, unsafe_allow_html=True)
-user="Kalyani"
+user="Ganesh"
 def get_user_pwd(user):
   if user=='Ganesh': username = 'G93179'; pwd = '4789'; apikey = 'CjOKjC5g'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
   elif user=='Kalyani': username = 'K205244'; pwd = '4789'; apikey = 'lzC7yJmt'; token='YDV6CJI6BEU3GWON7GZTZNU3RM'
@@ -63,28 +63,28 @@ obj=SmartConnect(api_key=st.session_state['api_key'],
                   refresh_token=st.session_state['refresh_token'],
                   feed_token=st.session_state['feed_token'],
                   userId=st.session_state['userId'])
-c1,c2,c3=st.columns([1,1,8])
-with c1:get_orderbook=st.button("OrderBook")
-with c2:get_position=st.button("Position")
-with c3:algo_trade=st.button("Algo Trade")
-col1,col2,col3=st.columns([1,1,8])
-with col1:
+c1,c2=st.columns([1,9])
+with c1:
+  get_orderbook=st.button("OrderBook")
+  get_position=st.button("Position")
+  algo_trade=st.button("Algo Trade")
   nf_ce=st.button("NF CE")
   bnf_ce=st.button("BNF CE")
-with col2:
   nf_pe=st.button("NF PE")
   bnf_pe=st.button("BNF PE")
+with c2:
+  datatable=st.empty()
 
 if get_orderbook:
    orderbook=obj.orderBook()['data']
    orderbook=pd.DataFrame(orderbook)
    orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
-   st.table(orderbook[['updatetime','orderid','transactiontype','orderstatus','tradingsymbol',
+   datatable.table(orderbook[['updatetime','orderid','transactiontype','orderstatus','tradingsymbol',
                         'price','quantity','ordertag']])
 if get_position:
    position=obj.position()['data']
    position=pd.DataFrame(position)
-   st.table(position[['tradingsymbol','netqty','buyavgprice','sellavgprice','realised','unrealised','ltp']])
+   datatable.table(position[['tradingsymbol','netqty','buyavgprice','sellavgprice','realised','unrealised','ltp']])
 def print_ltp():
   try:
     data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={ "NSE": ["99926000","99926009"], "NFO": []})['data']['fetched'])
