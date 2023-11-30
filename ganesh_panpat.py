@@ -83,6 +83,7 @@ if get_orderbook:
    orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
    orderbook['price']=orderbook['price'].astype(float).round(2)
    orderbook = orderbook.rename(columns={'transactiontype':'trans','quantity':'qty'})
+   orderbook['price'] = orderbook['price'].astype(float)
    orderbook['price'] = orderbook['price'].round(2)
    datatable.table(orderbook[['updatetime','orderid','trans','status','tradingsymbol','price','qty','ordertag']])
 if get_position:
