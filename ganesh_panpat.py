@@ -31,7 +31,7 @@ st.markdown("""
                 }
                .sidebar .css-1syf8re {
                     padding: 20px;
-                    width: 300px;
+                    width: 100px;
                 }     
         </style>
         """, unsafe_allow_html=True)
