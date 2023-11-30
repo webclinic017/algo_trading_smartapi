@@ -81,6 +81,7 @@ datatable=st.empty()
 if get_orderbook:
    orderbook=obj.orderBook()['data']
    orderbook=pd.DataFrame(orderbook)
+   orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime'])
    orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
    orderbook.set_index('updatetime', inplace=True)
    datatable.table(orderbook[['orderid','transactiontype','orderstatus','tradingsymbol','price','quantity','ordertag']])
