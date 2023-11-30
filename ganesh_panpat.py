@@ -64,8 +64,8 @@ obj=SmartConnect(api_key=st.session_state['api_key'],
                   refresh_token=st.session_state['refresh_token'],
                   feed_token=st.session_state['feed_token'],
                   userId=st.session_state['userId'])
-col1,col2,col3=st.columns([1,1,8])
-with col1:
+col1,col2=st.columns([1,9])
+with col2:
   get_orderbook=st.button("OrderBook")
   get_position=st.button("Position")
   algo_trade=st.button("Algo Trade")
@@ -74,7 +74,7 @@ with col1:
   nf_pe=st.button("NF PE")
   bnf_pe=st.button("BNF PE")
   close_all=st.button("Close All")
-with col3:
+with col2:
   datatable=st.empty()
 
 if get_orderbook:
