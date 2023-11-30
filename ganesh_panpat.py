@@ -63,7 +63,7 @@ obj=SmartConnect(api_key=st.session_state['api_key'],
                   refresh_token=st.session_state['refresh_token'],
                   feed_token=st.session_state['feed_token'],
                   userId=st.session_state['userId'])
-with st.sidebar():
+with st.sidebar:
   get_orderbook=st.button("OrderBook")
   get_position=st.button("Position")
   algo_trade=st.button("Algo Trade")
