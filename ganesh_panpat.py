@@ -31,7 +31,7 @@ st.markdown("""
                 }
         </style>
         """, unsafe_allow_html=True)
-user="Ganesh"
+user="Kalyani"
 def get_user_pwd(user):
   if user=='Ganesh': username = 'G93179'; pwd = '4789'; apikey = 'CjOKjC5g'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
   elif user=='Kalyani': username = 'K205244'; pwd = '4789'; apikey = 'lzC7yJmt'; token='YDV6CJI6BEU3GWON7GZTZNU3RM'
