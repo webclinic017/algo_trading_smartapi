@@ -28,24 +28,9 @@ st.markdown("""
                     padding-bottom: 0rem;
                     padding-left: 2rem;
                     padding-right: 5rem;
-                }
-               .sidebar .css-1syf8re {
-                    padding: 20px;
-                    width: 100px;
-                }     
+                }  
         </style>
         """, unsafe_allow_html=True)
-st.markdown(
-    """
-    <style>
-        .sidebar .css-1syf8re {
-            padding: 2px;
-            width: 300px;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 user="Ganesh"
 def get_user_pwd(user):
   if user=='Ganesh': username = 'G93179'; pwd = '4789'; apikey = 'CjOKjC5g'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
@@ -69,15 +54,16 @@ if 'user_name' not in st.session_state:
     st.session_state['feed_token']=obj.feed_token
     st.session_state['userId']=obj.userId
     st.session_state['api_key']=apikey
-st.header(f"Welcome {st.session_state['user_name']}")
-st.write(f"Last Login {st.session_state['login_time']}")
-placeholder = st.empty()
-placeholder.text('LTP')
-obj=SmartConnect(api_key=st.session_state['api_key'],
+    obj=SmartConnect(api_key=st.session_state['api_key'],
                   access_token=st.session_state['access_token'],
                   refresh_token=st.session_state['refresh_token'],
                   feed_token=st.session_state['feed_token'],
                   userId=st.session_state['userId'])
+st.header(f"Welcome {st.session_state['user_name']}")
+st.write(f"Last Login {st.session_state['login_time']}")
+placeholder = st.empty()
+placeholder.text('LTP')
+
 with st.sidebar:
   get_orderbook=st.button("OrderBook")
   get_position=st.button("Position")
