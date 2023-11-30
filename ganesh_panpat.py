@@ -39,7 +39,7 @@ st.markdown(
     """
     <style>
         .sidebar .css-1syf8re {
-            padding: 20px;
+            padding: 2px;
             width: 300px;
         }
     </style>
