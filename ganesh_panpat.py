@@ -29,13 +29,10 @@ st.markdown("""
                     padding-left: 2rem;
                     padding-right: 5rem;
                 }
-                .block-sidebar {
-                    padding-top: 0.5rem;
-                    padding-bottom: 0rem;
-                    padding-left: 2rem;
-                    padding-right: 5rem;
-                }
-                
+               .sidebar .css-1syf8re {
+                    padding: 20px;
+                    width: 300px;
+                }     
         </style>
         """, unsafe_allow_html=True)
 user="Ganesh"
