@@ -78,6 +78,7 @@ if get_orderbook:
    orderbook=obj.orderBook()['data']
    orderbook=pd.DataFrame(orderbook)
    orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
+   orderbook.set_index('updatetime', inplace=True)
    datatable.table(orderbook[['updatetime','orderid','transactiontype','orderstatus','tradingsymbol',
                         'price','quantity','ordertag']])
 if get_position:
