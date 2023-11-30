@@ -35,6 +35,17 @@ st.markdown("""
                 }     
         </style>
         """, unsafe_allow_html=True)
+st.markdown(
+    """
+    <style>
+        .sidebar .css-1syf8re {
+            padding: 20px;
+            width: 300px;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 user="Ganesh"
 def get_user_pwd(user):
   if user=='Ganesh': username = 'G93179'; pwd = '4789'; apikey = 'CjOKjC5g'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
