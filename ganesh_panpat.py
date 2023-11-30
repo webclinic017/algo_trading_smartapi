@@ -119,17 +119,8 @@ def get_token_df():
   nf_expiry_day = nf_expiry_df['expiry'].min()
   monthly_expiry_df = token_df[(token_df['name'] == 'BANKNIFTY') & (token_df['instrumenttype'] == 'FUTIDX')  & (token_df['expiry']>=now_dt)]
   monthly_expiry_day = monthly_expiry_df['expiry'].min()
-  st.session_state['expiry_day']=expiry_day
-  st.session_state['bnf_expiry_day']=bnf_expiry_day
-  st.session_state['nf_expiry_day']=nf_expiry_day
-  st.session_state['monthly_expiry_day']=monthly_expiry_day
 
 get_token_df()
-expiry_day=st.session_state['expiry_day']
-bnf_expiry_day=st.session_state['bnf_expiry_day']
-nf_expiry_day=st.session_state['nf_expiry_day']
-monthly_expiry_day=st.session_state['monthly_expiry_day']
-
 
 def getTokenInfo (symbol, exch_seg ='NSE',instrumenttype='OPTIDX',strike_price = 0,pe_ce = 'CE',expiry_day = None):
   if symbol=="BANKNIFTY" or symbol=="^NSEBANK":
