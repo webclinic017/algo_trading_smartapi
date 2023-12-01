@@ -275,7 +275,7 @@ def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NO
         "stoploss": int(float(stoploss)),"quantity": str(qty),"triggerprice":int(float(triggerprice)),"ordertag":ordertag,"trailingStopLoss":5}
       orderId=obj.placeOrder(orderparams)
       LTP_Price=round(float(get_ltp_price(symbol=symbol,token=token,exch_seg=exch_seg)),2)
-      print(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
+      st.write(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
       return orderId,LTP_Price
       break
     except Exception as e:
@@ -745,29 +745,6 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
     option_token=symbol['token']
     option_symbol=symbol['symbol']
     lotsize=int(symbol['lotsize'])
-    #LTP_Price=str(round(float(get_ltp_price(symbol=option_symbol,token=option_token,exch_seg='NFO')),2))
-    #indicator_strategy=indicator_strategy + " LTP: "+ LTP_Price
-    if 'Candle' in indicator_strategy:
-      index_symbol="BANKNIFTY" if option_symbol[:4]=='BANK' else 'NIFTY'
-      fut_data=get_historical_data(symbol=index_symbol,interval='3m',token="-",exch_seg="-",candle_type="NORMAL")
-      fut_data=fut_data.tail(2)
-      ce_sl=fut_data['Low'].min()
-      pe_sl=fut_data['High'].max()
-      index_sl = ce_sl if option_symbol[-2:]=="CE" else pe_sl
-      indicator_strategy=indicator_strategy+" Index SL: "+ str(int(float(index_sl)))
-    if "(" in indicator_strategy and ")" in indicator_strategy:
-      stop_loss=(indicator_strategy.split('('))[1].split(':')[0]
-      target_price=(indicator_strategy.split(stop_loss+':'))[1].split(')')[0]
-      stop_loss=int(float(stop_loss))
-      target_price=int(float(target_price))
-    else:
-      old_data=get_historical_data(symbol=option_symbol,interval='5m',token=option_token,exch_seg="NFO",candle_type="NORMAL")
-      ltp_price=float(old_data['Close'].iloc[-1])
-      st_price=float(old_data['Supertrend'].iloc[-1]) if float(old_data['Supertrend'].iloc[-1])<ltp_price else 0
-      st_10_price=float(old_data['Supertrend_10_2'].iloc[-1]) if float(old_data['Supertrend_10_2'].iloc[-1])<ltp_price else 0
-      stop_loss=int(max(st_price,st_10_price,ltp_price*0.7))
-      target_price=int(float(ltp_price)+(float(ltp_price)-float(stop_loss))*2)
-      indicator_strategy=indicator_strategy+ " (" +str(stop_loss)+":"+str(target_price)+') '
     st.write(f'Buying {option_symbol} {lotsize} {indicator_strategy}')
     orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
                           variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',ordertag=indicator_strategy)
