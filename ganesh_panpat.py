@@ -704,7 +704,6 @@ def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(index_symbol,indexLtp=indexLtp)
   if ce_pe=="CE":symbol=ce_strike_symbol
   if ce_pe=="PE":symbol=pe_strike_symbol
-  st.write(symbol)
   buy_option(symbol,"Manual Buy","5m")
 
 #Index Trade Details
@@ -745,7 +744,7 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
   try:
     option_token=symbol['token']
     option_symbol=symbol['symbol']
-    lotsize=int(symbol['lotsize'])*int(st.session['lots_to_trade'])
+    lotsize=int(symbol['lotsize'])
     st.write(f'Buying {option_symbol} {lotsize} {indicator_strategy}')
     #LTP_Price=str(round(float(get_ltp_price(symbol=option_symbol,token=option_token,exch_seg='NFO')),2))
     #indicator_strategy=indicator_strategy + " LTP: "+ LTP_Price
