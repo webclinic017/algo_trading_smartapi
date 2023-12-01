@@ -140,6 +140,7 @@ if algo_state_stop:
   st.session_state['algo_state']='Not Running'
   st.rerun()
 if st.session_state['algo_state']=='Running':
+  st.rerun()
   while True:
     placeholder.text(print_ltp())
     time.sleep(1)
