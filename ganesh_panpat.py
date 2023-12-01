@@ -77,7 +77,7 @@ with col1:
   close_all=st.button("Close All")
 with col2:
   datatable=st.empty()
-        
+   
 if get_orderbook:
    orderbook=obj.orderBook()['data']
    if orderbook==None:
@@ -86,6 +86,7 @@ if get_orderbook:
      orderbook=pd.DataFrame(orderbook)
      orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
      orderbook['price']=orderbook['price'].astype(float).round(2)
+     orderbook=update_price_orderbook(orderbook)
      orderbook = orderbook.rename(columns={'transactiontype':'trans','quantity':'qty'})
      orderbook['price'] = orderbook['price'].astype(float)
      orderbook['price'] = orderbook['price'].round(2)
@@ -109,7 +110,27 @@ def print_ltp():
   except Exception as e:
     return "Unable to get LTP"
 placeholder.text(print_ltp())
-
+def update_price_orderbook(df):
+  for j in range(0,len(df)):
+    try:
+      if df['averageprice'].iloc[j]!=0:df['price'].iloc[j]=df['averageprice'].iloc[j]
+      elif df['price'].iloc[j]==0:
+        text=df['text'].iloc[j]
+        ordertag=df['ordertag'].iloc[j]+" "
+        if 'You require Rs. ' in text and ' funds to execute this order.' in text and type(text)==str :
+          abc='-'
+          abc=(text.split('You require Rs. '))[1].split(' funds to execute this order.')[0]
+          if abc!='-' and int(float(abc)) <= 50000:
+            df['price'].iloc[j]=(round(float(abc)/float(df['quantity'].iloc[j]),2))
+        if df['price'].iloc[j]==0 and "LTP: " in ordertag:
+          abc='-'
+          abc=(ordertag.split('LTP: '))[1].split(' ')[0]
+          df['price'].iloc[j]=float(abc)
+          #df['price'].iloc[j]=float(ordertag.split("LTP: ",1)[1])
+        if df['price'].iloc[j]==0:df['price'].iloc[j]='-'
+     except Exception as e:
+       pass
+  return df
 @st.cache_resource
 def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
