@@ -21,6 +21,7 @@ import pandas as pd
 import yfinance as yf
 import math
 NoneType = type(None)
+pd.set_option('mode.chained_assignment', None)
 st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded",)
 st.markdown("""
   <style>
