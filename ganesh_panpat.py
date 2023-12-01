@@ -84,7 +84,7 @@ with col2:
     options = st.multiselect('What are your favorite colors',
                              ['Green', 'Yellow', 'Red', 'Blue'],
                              ['Yellow', 'Red'])
-    col1_tab4,col2_tab4=st.columns(2)
+    col1_tab4,col2_tab4,col3_tab4,col4_tab4=st.columns(4)
     with col1_tab4:
       banknifty_target=st.number_input(label="Bank Nifty Target",min_value=10, max_value=100, value=10, step=None)
       nifty_target=st.number_input(label="Nifty Target",min_value=10, max_value=100, value=10, step=None)
