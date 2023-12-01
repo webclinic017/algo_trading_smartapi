@@ -79,17 +79,23 @@ with col2:
         
 if get_orderbook:
    orderbook=obj.orderBook()['data']
-   orderbook=pd.DataFrame(orderbook)
-   orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
-   orderbook['price']=orderbook['price'].astype(float).round(2)
-   orderbook = orderbook.rename(columns={'transactiontype':'trans','quantity':'qty'})
-   orderbook['price'] = orderbook['price'].astype(float)
-   orderbook['price'] = orderbook['price'].round(2)
-   datatable.table(orderbook[['updatetime','orderid','trans','status','tradingsymbol','price','qty','ordertag']])
+   if orderbook==None:
+     datatable.write("No Order Placed")
+   else:
+     orderbook=pd.DataFrame(orderbook)
+     orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
+     orderbook['price']=orderbook['price'].astype(float).round(2)
+     orderbook = orderbook.rename(columns={'transactiontype':'trans','quantity':'qty'})
+     orderbook['price'] = orderbook['price'].astype(float)
+     orderbook['price'] = orderbook['price'].round(2)
+     datatable.table(orderbook[['updatetime','orderid','trans','status','tradingsymbol','price','qty','ordertag']])
 if get_position:
    position=obj.position()['data']
-   position=pd.DataFrame(position)
-   datatable.table(position[['tradingsymbol','netqty','buyavgprice','sellavgprice','realised','unrealised','ltp']])
+   if position== None:
+     datatable.write("No Position")
+   else:
+     position=pd.DataFrame(position)
+     datatable.table(position[['tradingsymbol','netqty','buyavgprice','sellavgprice','realised','unrealised','ltp']])
 def print_ltp():
   try:
     data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={ "NSE": ["99926000","99926009"], "NFO": []})['data']['fetched'])
