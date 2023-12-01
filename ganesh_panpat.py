@@ -2015,24 +2015,21 @@ def ganesh_sl_trail():
         print(e)
 def sub_loop_code(now_time):
   global signal_dict,orb_dict,orderbook,open_position
-  if (now_time.minute%5==0 and five_m_timeframe=='Yes'):
+  if (now_time.minute%5==0):
     signal_dict = {"NIFTY_1m": "-", "NIFTY_3m": "-","NIFTY_5m":"-","NIFTY_15m":"-","BANKNIFTY_1m": "-","BANKNIFTY_3m":"-", "BANKNIFTY_5m":"-",
                       "BANKNIFTY_15m":"-","NIFTY_1m_indicator": "-", "NIFTY_3m_indicator": "-","NIFTY_5m_indicator":"-","NIFTY_15m_indicator":"-",
                       "BANKNIFTY_1m_indicator": "-","BANKNIFTY_3m_indicator":"-", "BANKNIFTY_5m_indicator":"-","BANKNIFTY_15m_indicator":"-"}
-    bnf_trade=index_trade('BANKNIFTY','5m')
-    st.write(bnf_trade.tail(2))
-    nf_trade=index_trade('NIFTY','5m')
-    st.write(nf_trade.tail(2))
-    trade_near_options(5)
-  if (now_time.minute%3==0 and three_m_timeframe=='Yes'):
+  bnf_trade=index_trade('BANKNIFTY','5m')
+  st.write(bnf_trade.tail(2))
+  nf_trade=index_trade('NIFTY','5m')
+  st.write(nf_trade.tail(2))
+  trade_near_options(5)
+  if (now_time.minute%3==0):
     nf_trade_3_min=index_trade(symbol=nf_future['symbol'],interval="3m",candle_type="NORMAL",token=nf_future['token'],exch_seg=nf_future['exch_seg'])
     bnf_trade_3_min=index_trade(symbol=bnf_future['symbol'],interval="3m",candle_type="NORMAL",token=bnf_future['token'],exch_seg=bnf_future['exch_seg'])
-  if (now_time.minute%15==0 and fifteen_m_timeframe=='Yes'):
+  if (now_time.minute%15==0):
     bnf_trade_15_min=index_trade('BANKNIFTY','15m')
     nf_trade_15_min=index_trade('NIFTY','15m')
-  if one_m_timeframe=="Yes":
-    bnf_trade_1_min=index_trade('BANKNIFTY','1m')
-    nf_trade_1_min=index_trade('NIFTY','1m')
   get_open_position()
   get_todays_trade()
   #closing_index_trade()
