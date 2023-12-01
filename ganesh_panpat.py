@@ -159,7 +159,7 @@ def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
   d = requests.get(url).json()
   token_df = pd.DataFrame.from_dict(d)
-  token_df['expiry'] = pd.to_datetime(token_df['expiry'])
+  token_df['expiry'] = pd.to_datetime(token_df['expiry']).apply(lambda x: x.date())
   token_df = token_df.astype({'strike': float})
   st.session_state['token_df']=token_df
 get_token_df()
@@ -236,7 +236,7 @@ def getTokenInfo (symbol, exch_seg ='NSE',instrumenttype='OPTIDX',strike_price =
   df = st.session_state['token_df']
   strike_price = strike_price
   st.write(f'{symbol} {exch_seg} {strike_price} {expiry_day}')
-  b=df[(df['name'] == symbol) & (df['expiry'].str.contains(expiry_day)) &  (df['symbol'].str.endswith(pe_ce))]
+  b=df[(df['name'] == symbol) & (df['symbol'].str.endswith(pe_ce))]
   st.write(b)
   if exch_seg == 'NSE':
       eq_df = df[(df['exch_seg'] == 'NSE') ]
