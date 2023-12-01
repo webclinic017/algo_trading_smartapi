@@ -69,15 +69,14 @@ with col2:
   tab1, tab2, tab3, tab4= st.tabs(["Order_Book", "Position","Algo Trade", "Settings"])
   with tab1:
     get_orderbook=st.button("OrderBook")
-    st.image("https://static.streamlit.io/examples/cat.jpg", width=200)
+    order_datatable=st.empty()
   with tab2:
     get_position=st.button("Position")
-    st.image("https://static.streamlit.io/examples/dog.jpg", width=200)
+    position_datatable=st.empty()
   with tab3:
     algo_trade=st.button("Algo Trade")
-    st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
   with tab4:
-    st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
+    lot_size=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
     #datatable=st.empty()
 def update_price_orderbook(df):
   for j in range(0,len(df)):
@@ -103,21 +102,21 @@ def update_price_orderbook(df):
 if get_orderbook:
    orderbook=obj.orderBook()['data']
    if orderbook==None:
-     datatable.write("No Order Placed")
+     order_datatable.write("No Order Placed")
    else:
      orderbook=pd.DataFrame(orderbook)
      orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
      orderbook=update_price_orderbook(orderbook)
      orderbook['price']=round(orderbook['price'].astype(int),2)
      orderbook = orderbook.rename(columns={'transactiontype':'trans','quantity':'qty'})
-     datatable.table(orderbook[['updatetime','orderid','trans','status','tradingsymbol','price','qty','ordertag']])
+     order_datatable.table(orderbook[['updatetime','orderid','trans','status','tradingsymbol','price','qty','ordertag']])
 if get_position:
    position=obj.position()['data']
    if position== None:
-     datatable.write("No Position")
+     position_datatable.write("No Position")
    else:
      position=pd.DataFrame(position)
-     datatable.table(position[['tradingsymbol','netqty','buyavgprice','sellavgprice','realised','unrealised','ltp']])
+     position_datatable.table(position[['tradingsymbol','netqty','buyavgprice','sellavgprice','realised','unrealised','ltp']])
 def print_ltp():
   try:
     data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={ "NSE": ["99926000","99926009"], "NFO": []})['data']['fetched'])
