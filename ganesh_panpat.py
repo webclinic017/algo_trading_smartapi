@@ -92,7 +92,7 @@ def update_price_orderbook(df):
         if df['price'].iloc[j]==0 and "LTP: " in ordertag:
           abc='-'
           abc=(ordertag.split('LTP: '))[1].split(' ')[0]
-          df['price'].iloc[j]=float(abc)
+          df['price'].iloc[j]=round(float(abc),2)
           #df['price'].iloc[j]=float(ordertag.split("LTP: ",1)[1])
         if df['price'].iloc[j]==0:df['price'].iloc[j]='-'
     except Exception as e:
@@ -108,7 +108,6 @@ if get_orderbook:
      orderbook['price']=orderbook['price'].astype(float).round(2)
      orderbook=update_price_orderbook(orderbook)
      orderbook = orderbook.rename(columns={'transactiontype':'trans','quantity':'qty'})
-     orderbook['price'] = orderbook['price'].astype(float).round(2)
      datatable.table(orderbook[['updatetime','orderid','trans','status','tradingsymbol','price','qty','ordertag']])
 if get_position:
    position=obj.position()['data']
