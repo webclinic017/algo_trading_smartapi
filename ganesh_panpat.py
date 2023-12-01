@@ -53,7 +53,7 @@ st.header(f"Welcome {st.session_state['user_name']}")
 last_login=st.empty()
 last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
 placeholder = st.empty()
-placeholder.text(print_ltp())
+placeholder.text('LTP'))
 obj=SmartConnect(api_key=st.session_state['api_key'],
                   access_token=st.session_state['access_token'],
                   refresh_token=st.session_state['refresh_token'],
