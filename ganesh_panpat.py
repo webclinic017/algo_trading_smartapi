@@ -81,6 +81,9 @@ with col2:
     algo_trade=st.button("Algo Trade")
   with tab4:
     lot_size=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
+    options = st.multiselect('What are your favorite colors',
+                             ['Green', 'Yellow', 'Red', 'Blue'],
+                             ['Yellow', 'Red'])
     #datatable=st.empty()
 def update_price_orderbook(df):
   for j in range(0,len(df)):
