@@ -91,6 +91,7 @@ with col2:
       banknifty_sl=st.number_input(label="Bank Nifty SL",min_value=10, max_value=100, value=10, step=None)
       nifty_sl=st.number_input(label="Nifty SL",min_value=10, max_value=100, value=10, step=None)
     with col3_tab4:
+      target_order_type = st.selectbox('Target Order',('Target', 'Stop_Loss', 'NA'),1)
       lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
     #datatable=st.empty()
 def update_price_orderbook(df):
