@@ -121,19 +121,6 @@ def print_ltp():
   except Exception as e:
     return "Unable to get LTP"
 placeholder.text(print_ltp())
-tab1, tab2, tab3 = st.tabs(["Order_Book", "Position", "Settings"])
-with tab1:
-   st.header("Order Book")
-   st.image("https://static.streamlit.io/examples/cat.jpg", width=200)
-
-with tab2:
-   st.header("Position")
-   st.image("https://static.streamlit.io/examples/dog.jpg", width=200)
-
-with tab3:
-   st.header("Settings")
-   st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
-
 @st.cache_resource
 def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
