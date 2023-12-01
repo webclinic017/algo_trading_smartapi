@@ -174,6 +174,98 @@ def get_expiry_day_fut_token():
   nf_expiry_df = token_df[(token_df['name'] == 'NIFTY') & (token_df['instrumenttype'] == 'OPTIDX') & (token_df['expiry']>=now_dt)]
   st.session_state['nf_expiry_day'] = nf_expiry_df['expiry'].min()
 get_expiry_day_fut_token()
+
+def get_near_options(bnf_ltp,nf_ltp):
+  symbol_list=['BANKNIFTY','NIFTY']
+  df = pd.DataFrame()
+  for symbol in symbol_list:
+    indexLtp=bnf_ltp if symbol=="BANKNIFTY" else nf_ltp
+    ltp=indexLtp*100
+    expiry_day=bnf_expiry_day if symbol=="BANKNIFTY" else nf_expiry_day
+    a = (token_df[(token_df['name'] == symbol) & (token_df['expiry']==expiry_day) & (token_df['strike']>=ltp) &
+                    (token_df['symbol'].str.endswith('CE'))].sort_values(by=['strike']).head(4)).sort_values(by=['strike'], ascending=True)
+    a.reset_index(inplace=True)
+    a['Serial'] = a['index'] + 1
+    a.drop(columns=['index'], inplace=True)
+    b=(token_df[(token_df['name'] == symbol) & (token_df['expiry']==expiry_day) & (token_df['strike']<=ltp) &
+                    (token_df['symbol'].str.endswith('PE'))].sort_values(by=['strike']).tail(4)).sort_values(by=['strike'], ascending=False)
+    b.reset_index(inplace=True)
+    b['Serial'] = b['index'] + 1
+    b.drop(columns=['index'], inplace=True)
+    df=pd.concat([df, a,b])
+  df.sort_index(inplace=True)
+  return df
+
+def trade_near_options(time_frame):
+  time_frame=str(time_frame)+"m"
+  bnf_ltp=get_index_ltp("^NSEBANK")
+  nf_ltp=get_index_ltp("^NSEI")
+  near_option_list=get_near_options(bnf_ltp,nf_ltp)
+  b_trade="-";n_trade="-"
+  for i in range(0,len(near_option_list)):
+    try:
+      #print('Near Options :',near_option_list['symbol'].iloc[i])
+      if (near_option_list['name'].iloc[i]=="BANKNIFTY" and b_trade=="-") or (near_option_list['name'].iloc[i]=="NIFTY" and n_trade=="-"):
+        df=get_historical_data(symbol=near_option_list['symbol'].iloc[i],interval=time_frame,token=near_option_list['token'].iloc[i],exch_seg="NFO")
+        if (df['St Trade'].values[-1]=="Buy" or df['ST_10_2 Trade'].values[-1]=="Buy" or
+            df['EMA_High_Low Trade'].values[-1]=="Buy" or df["RSI MA Trade"].values[-1]=="Buy" or df["RSI_60 Trade"].values[-1]=="Buy"):
+          strike_symbol=near_option_list.iloc[i]
+          if df['St Trade'].values[-1]=="Buy": sl= int(df['Supertrend'].values[-1])
+          elif df['ST_10_2 Trade'].values[-1]=="Buy": sl= int(df['Supertrend_10_2'].values[-1])
+          else: sl=int(df['Close'].values[-1]*0.8)
+          target=int(int(df['Close'].values[-1])+((int(df['Close'].values[-1])-sl)*2))
+          indicator ="OPT "+str(time_frame)+":"
+          if df['St Trade'].values[-1]=="Buy": indicator=indicator + " ST"
+          elif df['ST_10_2 Trade'].values[-1]=="Buy": indicator=indicator +" ST_10_2"
+          elif df['EMA_High_Low Trade'].values[-1]=="Buy": indicator=indicator +" EMA_High_Low"
+          elif df['RSI MA Trade'].values[-1]=="Buy": indicator=indicator +" RSI_MA_14"
+          strategy=indicator + " (" +str(sl)+":"+str(target)+') '+" RSI:"+str(int(df['RSI'].values[-1]))
+          buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval=time_frame)
+          if near_option_list['name'].iloc[i]=="BANKNIFTY": b_trade="Buy"
+          if near_option_list['name'].iloc[i]=="NIFTY": n_trade="Buy"
+          print(df.tail(1)[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','RSI','Indicator']].to_string(index=False))
+        time.sleep(1)
+    except Exception as e:
+      print(e)
+
+#Get Token Info
+def getTokenInfo (symbol, exch_seg ='NSE',instrumenttype='OPTIDX',strike_price = 0,pe_ce = 'CE',expiry_day = None):
+  if symbol=="BANKNIFTY" or symbol=="^NSEBANK":
+    expiry_day=bnf_expiry_day
+  elif symbol=="NIFTY" or symbol=="^NSEI":
+    expiry_day=nf_expiry_day
+  df = token_df
+  strike_price = strike_price*100
+  if exch_seg == 'NSE':
+      eq_df = df[(df['exch_seg'] == 'NSE') ]
+      return eq_df[eq_df['name'] == symbol]
+  elif exch_seg == 'NFO' and ((instrumenttype == 'FUTSTK') or (instrumenttype == 'FUTIDX')):
+      return df[(df['exch_seg'] == 'NFO') & (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol)].sort_values(by=['expiry'])
+  elif exch_seg == 'NFO' and (instrumenttype == 'OPTSTK' or instrumenttype == 'OPTIDX'):
+      return (df[(df['exch_seg'] == 'NFO') & (df['expiry']==expiry_day) &  (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol)
+      & (df['strike'] == strike_price) & (df['symbol'].str.endswith(pe_ce))].sort_values(by=['expiry']))
+
+# get current bank nifty data
+def get_ce_pe_data(symbol,indexLtp="-"):
+  indexLtp=float(indexLtp) if indexLtp!="-" else get_index_ltp(symbol)
+  # ATM
+  if symbol=='BANKNIFTY' or symbol=='^NSEBANK':
+    symbol='BANKNIFTY'
+    ATMStrike = math.floor(indexLtp/100)*100
+    expiry_day=bnf_expiry_day
+  elif symbol=='NIFTY' or symbol=='^NSEI':
+    symbol='NIFTY'
+    val2 = math.fmod(indexLtp, 50)
+    val3 = 50 if val2 >= 25 else 0
+    ATMStrike = indexLtp - val2 + val3
+    expiry_day=nf_expiry_day
+  #CE,#PE
+  ce_strike_symbol = getTokenInfo(symbol,'NFO','OPTIDX',ATMStrike,'CE',expiry_day).iloc[0]
+  pe_strike_symbol = getTokenInfo(symbol,'NFO','OPTIDX',ATMStrike,'PE',expiry_day).iloc[0]
+  print(f"{symbol} LTP:{indexLtp} {ce_strike_symbol['symbol']} & {pe_strike_symbol['symbol']}")
+  #print(symbol+' LTP:',indexLtp,ce_strike_symbol['symbol'],'&',pe_strike_symbol['symbol'])
+  return indexLtp, ce_strike_symbol,pe_strike_symbol
+  
 #Place Order
 def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',
                 triggerprice=0,squareoff=0,stoploss=0,ordertag='-'):
