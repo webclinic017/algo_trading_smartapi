@@ -28,7 +28,7 @@ st.markdown("""
     .block-container {padding-top: 0.5rem;padding-bottom: 0rem;padding-left: 2rem;padding-right: 5rem;}  
   </style>
   """, unsafe_allow_html=True)
-user="Ganesh"
+user="Kalyani"
 if 'algo_state' not in st.session_state:st.session_state['algo_state']="Not Running"
 def get_user_pwd(user):
   if user=='Ganesh': username = 'G93179'; pwd = '4789'; apikey = 'CjOKjC5g'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
