@@ -708,6 +708,7 @@ def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
   buy_option(symbol,"Manual Buy","5m")
   sp_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time()
   st.write(f'{st_time} {sp_time}')
+  get_orderbook=True
 
 #Index Trade Details
 def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg="-"):
