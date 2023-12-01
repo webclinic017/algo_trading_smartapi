@@ -230,11 +230,9 @@ def trade_near_options(time_frame):
 
 #Get Token Info
 def getTokenInfo (symbol, exch_seg ='NSE',instrumenttype='OPTIDX',strike_price = 0,pe_ce = 'CE',expiry_day = None):
-  if symbol=="BANKNIFTY" or symbol=="^NSEBANK":
-    expiry_day=bnf_expiry_day
-  elif symbol=="NIFTY" or symbol=="^NSEI":
-    expiry_day=nf_expiry_day
-  df = token_df
+  if symbol=="BANKNIFTY" or symbol=="^NSEBANK":expiry_day=st.session_state['bnf_expiry_day']
+  elif symbol=="NIFTY" or symbol=="^NSEI":expiry_day=st.session_state['nf_expiry_day']
+  df = st.session_state['token_df']
   strike_price = strike_price*100
   if exch_seg == 'NSE':
       eq_df = df[(df['exch_seg'] == 'NSE') ]
