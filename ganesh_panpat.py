@@ -261,7 +261,7 @@ def get_ce_pe_data(symbol,indexLtp="-"):
   #CE,#PE
   ce_strike_symbol = getTokenInfo(symbol,'NFO','OPTIDX',ATMStrike,'CE',expiry_day).iloc[0]
   pe_strike_symbol = getTokenInfo(symbol,'NFO','OPTIDX',ATMStrike,'PE',expiry_day).iloc[0]
-  print(f"{symbol} LTP:{indexLtp} {ce_strike_symbol['symbol']} & {pe_strike_symbol['symbol']}")
+  st.write(f"{symbol} LTP:{indexLtp} {ce_strike_symbol['symbol']} & {pe_strike_symbol['symbol']}")
   #print(symbol+' LTP:',indexLtp,ce_strike_symbol['symbol'],'&',pe_strike_symbol['symbol'])
   return indexLtp, ce_strike_symbol,pe_strike_symbol
   
@@ -2077,4 +2077,3 @@ if st.session_state['algo_state']=='Running':
     ltp_string=print_ltp()
     if ltp_string!="Unable to get LTP":placeholder.text(ltp_string)
     time.sleep(1)
-st.write(st.session_state)
