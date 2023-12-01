@@ -53,7 +53,7 @@ st.header(f"Welcome {st.session_state['user_name']}")
 last_login=st.empty()
 last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
 placeholder = st.empty()
-placeholder.text('LTP')
+placeholder.text("LTP")
 obj=SmartConnect(api_key=st.session_state['api_key'],
                   access_token=st.session_state['access_token'],
                   refresh_token=st.session_state['refresh_token'],
@@ -132,6 +132,7 @@ def print_ltp():
     return print_sting
   except Exception as e:
     return "Unable to get LTP"
+placeholder.text(print_ltp())
 if nf_ce:manual_buy("NIFTY",ce_pe="CE",index_ltp="-")
 if nf_pe:manual_buy("NIFTY",ce_pe="PE",index_ltp="-")
 if bnf_ce:manual_buy("BANKNIFTY",ce_pe="CE",index_ltp="-")
@@ -141,8 +142,6 @@ if algo_state_stop:
   st.session_state['algo_state']='Not Running'
   last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
   st.rerun()
-  ltp_string=print_ltp()
-  if ltp_string!="Unable to get LTP":placeholder.text(ltp_string)
 if st.session_state['algo_state']=='Running':
   last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
   while True:
