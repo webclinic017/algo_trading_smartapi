@@ -123,7 +123,7 @@ if get_orderbook:
    else:
      orderbook=pd.DataFrame(orderbook)
      orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
-     orderbook=update_price_orderbook(orderbook)
+     #orderbook=update_price_orderbook(orderbook)
      orderbook['price']=round(orderbook['price'].astype(int),2)
      orderbook = orderbook.rename(columns={'transactiontype':'trans','quantity':'qty'})
      order_datatable.table(orderbook[['updatetime','orderid','trans','status','tradingsymbol','price','qty','ordertag']])
