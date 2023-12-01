@@ -250,13 +250,13 @@ def get_ce_pe_data(symbol,indexLtp="-"):
   if symbol=='BANKNIFTY' or symbol=='^NSEBANK':
     symbol='BANKNIFTY'
     ATMStrike = math.floor(indexLtp/100)*100
-    expiry_day=bnf_expiry_day
+    expiry_day=st.session_state['bnf_expiry_day']
   elif symbol=='NIFTY' or symbol=='^NSEI':
     symbol='NIFTY'
     val2 = math.fmod(indexLtp, 50)
     val3 = 50 if val2 >= 25 else 0
     ATMStrike = indexLtp - val2 + val3
-    expiry_day=nf_expiry_day
+    expiry_day=st.session_state['nf_expiry_day']
   #CE,#PE
   ce_strike_symbol = getTokenInfo(symbol,'NFO','OPTIDX',ATMStrike,'CE',expiry_day).iloc[0]
   pe_strike_symbol = getTokenInfo(symbol,'NFO','OPTIDX',ATMStrike,'PE',expiry_day).iloc[0]
