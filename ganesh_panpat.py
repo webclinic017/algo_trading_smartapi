@@ -236,7 +236,7 @@ def getTokenInfo (symbol, exch_seg ='NSE',instrumenttype='OPTIDX',strike_price =
   df = st.session_state['token_df']
   strike_price = strike_price
   st.write(f'{symbol} {exch_seg} {strike_price} {expiry_day}')
-  b=df[(df['name'] == symbol) & (df['expiry']==expiry_day) & (df['strike']==strike_price) & (df['symbol'].str.endswith(pe_ce))]
+  b=df[(df['name'] == symbol) & (df['expiry']==expiry_day) & (df['symbol'].str.endswith(pe_ce))]
   st.write(b)
   if exch_seg == 'NSE':
       eq_df = df[(df['exch_seg'] == 'NSE') ]
