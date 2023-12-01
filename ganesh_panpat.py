@@ -2020,7 +2020,7 @@ def sub_loop_code(now_time):
                       "BANKNIFTY_15m":"-","NIFTY_1m_indicator": "-", "NIFTY_3m_indicator": "-","NIFTY_5m_indicator":"-","NIFTY_15m_indicator":"-",
                       "BANKNIFTY_1m_indicator": "-","BANKNIFTY_3m_indicator":"-", "BANKNIFTY_5m_indicator":"-","BANKNIFTY_15m_indicator":"-"}
     bnf_trade=index_trade('BANKNIFTY','5m')
-    st.write(bnf_trade.tail(2)
+    st.write(bnf_trade.tail(2))
     nf_trade=index_trade('NIFTY','5m')
     st.write(nf_trade.tail(2))
     trade_near_options(5)
