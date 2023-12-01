@@ -700,11 +700,14 @@ def first_trade_new():
   print('Lets Begin...')
 
 def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
+  st_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time()
   if index_ltp=="-":indexLtp=get_index_ltp(index_symbol)
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(index_symbol,indexLtp=indexLtp)
   if ce_pe=="CE":symbol=ce_strike_symbol
   if ce_pe=="PE":symbol=pe_strike_symbol
   buy_option(symbol,"Manual Buy","5m")
+  sp_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time()
+  st.write(f'{st_time} {sp_time}')
 
 #Index Trade Details
 def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg="-"):
