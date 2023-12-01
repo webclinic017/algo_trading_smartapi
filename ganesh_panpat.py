@@ -2077,3 +2077,4 @@ if st.session_state['algo_state']=='Running':
     ltp_string=print_ltp()
     if ltp_string!="Unable to get LTP":placeholder.text(ltp_string)
     time.sleep(1)
+st.write(st.session_state)
