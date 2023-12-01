@@ -50,7 +50,8 @@ if 'user_name' not in st.session_state:
     st.session_state['userId']=obj.userId
     st.session_state['api_key']=apikey
 st.header(f"Welcome {st.session_state['user_name']}")
-st.write(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
+last_login=st.empty()
+last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
 placeholder = st.empty()
 placeholder.text('LTP')
 obj=SmartConnect(api_key=st.session_state['api_key'],
@@ -138,9 +139,10 @@ if bnf_pe:manual_buy("BANKNIFTY",ce_pe="PE",index_ltp="-")
 if algo_state:st.session_state['algo_state']='Running'
 if algo_state_stop:
   st.session_state['algo_state']='Not Running'
+  last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
   st.rerun()
 if st.session_state['algo_state']=='Running':
-  st.rerun()
+  last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
   while True:
     placeholder.text(print_ltp())
     time.sleep(1)
