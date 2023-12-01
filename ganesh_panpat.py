@@ -138,5 +138,5 @@ if bnf_pe:manual_buy("BANKNIFTY",ce_pe="PE",index_ltp="-")
 if algo_state:st.session_state['algo_state']='Running'
 if st.session_state['algo_state']=='Running':
   while True:
-    st.rerun
+    st.rerun()
     time.sleep(1)
