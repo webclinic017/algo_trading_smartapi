@@ -77,6 +77,7 @@ with col2:
     algo_trade=st.button("Algo Trade")
     st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
   with tab4:
+    st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
     #datatable=st.empty()
 def update_price_orderbook(df):
   for j in range(0,len(df)):
