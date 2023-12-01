@@ -238,12 +238,14 @@ def getTokenInfo (symbol, exch_seg ='NSE',instrumenttype='OPTIDX',strike_price =
   st.write(f'{symbol} {exch_seg} {strike_price} {expiry_day}')
   if exch_seg == 'NSE':
       eq_df = df[(df['exch_seg'] == 'NSE') ]
-      return eq_df[eq_df['name'] == symbol]
+      df=eq_df[eq_df['name'] == symbol]
   elif exch_seg == 'NFO' and ((instrumenttype == 'FUTSTK') or (instrumenttype == 'FUTIDX')):
-      return df[(df['exch_seg'] == 'NFO') & (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol)].sort_values(by=['expiry'])
+      df=df[(df['exch_seg'] == 'NFO') & (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol)].sort_values(by=['expiry'])
   elif exch_seg == 'NFO' and (instrumenttype == 'OPTSTK' or instrumenttype == 'OPTIDX'):
-      return (df[(df['exch_seg'] == 'NFO') & (df['expiry']==expiry_day) &  (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol)
+      df=(df[(df['exch_seg'] == 'NFO') & (df['expiry']==expiry_day) &  (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol)
       & (df['strike'] == strike_price) & (df['symbol'].str.endswith(pe_ce))].sort_values(by=['expiry']))
+  st.write(df)
+  return df
 
 # get current bank nifty data
 def get_ce_pe_data(symbol,indexLtp="-"):
@@ -262,7 +264,6 @@ def get_ce_pe_data(symbol,indexLtp="-"):
   #CE,#PE
   ce_strike_symbol = getTokenInfo(symbol,'NFO','OPTIDX',ATMStrike,'CE',expiry_day).iloc[0]
   pe_strike_symbol = getTokenInfo(symbol,'NFO','OPTIDX',ATMStrike,'PE',expiry_day).iloc[0]
-  st.write(f"{symbol} LTP:{indexLtp} {ce_strike_symbol['symbol']} & {pe_strike_symbol['symbol']}")
   #print(symbol+' LTP:',indexLtp,ce_strike_symbol['symbol'],'&',pe_strike_symbol['symbol'])
   return indexLtp, ce_strike_symbol,pe_strike_symbol
   
