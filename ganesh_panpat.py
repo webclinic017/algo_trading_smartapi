@@ -235,6 +235,7 @@ def getTokenInfo (symbol, exch_seg ='NSE',instrumenttype='OPTIDX',strike_price =
   elif symbol=="NIFTY" or symbol=="^NSEI":expiry_day=st.session_state['nf_expiry_day']
   df = st.session_state['token_df']
   strike_price = strike_price*100
+  st.write(f'{symbol} {exch_seg} {strike_price} {expiry_day}')
   if exch_seg == 'NSE':
       eq_df = df[(df['exch_seg'] == 'NSE') ]
       return eq_df[eq_df['name'] == symbol]
