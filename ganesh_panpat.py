@@ -66,6 +66,7 @@ with col1:
   nf_pe=st.button("NF PE")
   bnf_pe=st.button("BNF PE")
   close_all=st.button("Close All")
+  algo_state=st.button("Run Algo")
 with col2:
   tab1, tab2, tab3, tab4= st.tabs(["Order_Book", "Position","Algo Trade", "Settings"])
   with tab1:
@@ -134,4 +135,8 @@ if nf_ce:manual_buy("NIFTY",ce_pe="CE",index_ltp="-")
 if nf_pe:manual_buy("NIFTY",ce_pe="PE",index_ltp="-")
 if bnf_ce:manual_buy("BANKNIFTY",ce_pe="CE",index_ltp="-")
 if bnf_pe:manual_buy("BANKNIFTY",ce_pe="PE",index_ltp="-")
-
+if algo_state:st.settion_state['algo_state']='Running'
+if st.settion_state['algo_state']=='Running':
+  while True:
+    st.rerun
+    time.sleep(1)
