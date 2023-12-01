@@ -60,16 +60,28 @@ obj=SmartConnect(api_key=st.session_state['api_key'],
                   userId=st.session_state['userId'])
 col1,col2=st.columns([1,9])
 with col1:
-  get_orderbook=st.button("OrderBook")
-  get_position=st.button("Position")
-  algo_trade=st.button("Algo Trade")
   nf_ce=st.button("NF CE")
   bnf_ce=st.button("BNF CE")
   nf_pe=st.button("NF PE")
   bnf_pe=st.button("BNF PE")
   close_all=st.button("Close All")
 with col2:
-  datatable=st.empty()
+  tab1, tab2, tab3, tab4= st.tabs(["Order_Book", "Position","Algo Trade", "Settings"])
+  with tab1:
+    st.header("Order Book")
+    get_orderbook=st.button("OrderBook")
+    st.image("https://static.streamlit.io/examples/cat.jpg", width=200)
+  with tab2:
+    st.header("Position")
+    get_position=st.button("Position")
+    st.image("https://static.streamlit.io/examples/dog.jpg", width=200)
+  with tab3:
+    st.header("Algo Trade")
+    algo_trade=st.button("Algo Trade")
+    st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
+  with tab4:
+    st.header("Settings")
+    #datatable=st.empty()
 def update_price_orderbook(df):
   for j in range(0,len(df)):
     try:
@@ -121,6 +133,7 @@ def print_ltp():
   except Exception as e:
     return "Unable to get LTP"
 placeholder.text(print_ltp())
+
 @st.cache_resource
 def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
