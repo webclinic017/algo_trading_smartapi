@@ -2014,14 +2014,15 @@ def ganesh_sl_trail():
       except Exception as e:
         print(e)
 def sub_loop_code(now_time):
-  output.clear()
   global signal_dict,orb_dict,orderbook,open_position
   if (now_time.minute%5==0 and five_m_timeframe=='Yes'):
     signal_dict = {"NIFTY_1m": "-", "NIFTY_3m": "-","NIFTY_5m":"-","NIFTY_15m":"-","BANKNIFTY_1m": "-","BANKNIFTY_3m":"-", "BANKNIFTY_5m":"-",
                       "BANKNIFTY_15m":"-","NIFTY_1m_indicator": "-", "NIFTY_3m_indicator": "-","NIFTY_5m_indicator":"-","NIFTY_15m_indicator":"-",
                       "BANKNIFTY_1m_indicator": "-","BANKNIFTY_3m_indicator":"-", "BANKNIFTY_5m_indicator":"-","BANKNIFTY_15m_indicator":"-"}
     bnf_trade=index_trade('BANKNIFTY','5m')
+    st.write(bnf_trade.tail(2)
     nf_trade=index_trade('NIFTY','5m')
+    st.write(nf_trade.tail(2))
     trade_near_options(5)
   if (now_time.minute%3==0 and three_m_timeframe=='Yes'):
     nf_trade_3_min=index_trade(symbol=nf_future['symbol'],interval="3m",candle_type="NORMAL",token=nf_future['token'],exch_seg=nf_future['exch_seg'])
@@ -2048,14 +2049,15 @@ if nf_ce:manual_buy("NIFTY",ce_pe="CE",index_ltp="-")
 if nf_pe:manual_buy("NIFTY",ce_pe="PE",index_ltp="-")
 if bnf_ce:manual_buy("BANKNIFTY",ce_pe="CE",index_ltp=43895)
 if bnf_pe:manual_buy("BANKNIFTY",ce_pe="PE",index_ltp=43895)
-if algo_state:st.session_state['algo_state']='Running'
+if algo_state:
+  st.session_state['algo_state']='Running'
+  sub_loop_code(datetime.datetime.now(tz=gettz('Asia/Kolkata')))
 if algo_state_stop:
   st.session_state['algo_state']='Not Running'
   last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
   st.rerun()
 if st.session_state['algo_state']=='Running':
   last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
-  while True:
-    ltp_string=print_ltp()
-    if ltp_string!="Unable to get LTP":placeholder.text(ltp_string)
-    time.sleep(1)
+  ltp_string=print_ltp()
+  if ltp_string!="Unable to get LTP":placeholder.text(ltp_string)
+  time.sleep(1)
