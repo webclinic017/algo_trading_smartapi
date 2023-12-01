@@ -235,10 +235,6 @@ def getTokenInfo (symbol, exch_seg ='NSE',instrumenttype='OPTIDX',strike_price =
   elif symbol=="NIFTY" or symbol=="^NSEI":expiry_day=st.session_state['nf_expiry_day']
   df = st.session_state['token_df']
   strike_price = strike_price*100
-  st.write(f'{symbol} {exch_seg} {strike_price} {expiry_day}')
-  b=df[(df['name'] == symbol) & (df['strike'] == strike_price) & (df['expiry']==expiry_day) & (df['symbol'].str.endswith(pe_ce))]
-  st.write(f" Expiry Day : {b['expiry'].iloc[0]} {type(b['expiry'].iloc[0])} {expiry_day}")
-  st.write(b)
   if exch_seg == 'NSE':
       eq_df = df[(df['exch_seg'] == 'NSE') ]
       df=eq_df[eq_df['name'] == symbol]
