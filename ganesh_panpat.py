@@ -144,6 +144,6 @@ if algo_state_stop:
 if st.session_state['algo_state']=='Running':
   last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
   while True:
-    placeholder.text(print_ltp())
+    if print_ltp()!="Unable to get LTP":placeholder.text(print_ltp())
     time.sleep(1)
     
