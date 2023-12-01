@@ -20,6 +20,7 @@ import time
 import pandas as pd
 import yfinance as yf
 import math
+NoneType = type(None)
 st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded",)
 st.markdown("""
         <style>
