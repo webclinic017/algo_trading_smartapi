@@ -704,6 +704,7 @@ def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(index_symbol,indexLtp=indexLtp)
   if ce_pe=="CE":symbol=ce_strike_symbol
   if ce_pe=="PE":symbol=pe_strike_symbol
+  st.write(symbol)
   buy_option(symbol,"Manual Buy","5m")
 
 #Index Trade Details
