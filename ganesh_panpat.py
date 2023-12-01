@@ -23,15 +23,10 @@ import math
 NoneType = type(None)
 st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded",)
 st.markdown("""
-        <style>
-               .block-container {
-                    padding-top: 0.5rem;
-                    padding-bottom: 0rem;
-                    padding-left: 2rem;
-                    padding-right: 5rem;
-                }  
-        </style>
-        """, unsafe_allow_html=True)
+  <style>
+    .block-container {padding-top: 0.5rem;padding-bottom: 0rem;padding-left: 2rem;padding-right: 5rem;}  
+  </style>
+  """, unsafe_allow_html=True)
 user="Ganesh"
 def get_user_pwd(user):
   if user=='Ganesh': username = 'G93179'; pwd = '4789'; apikey = 'CjOKjC5g'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
@@ -39,8 +34,6 @@ def get_user_pwd(user):
   elif user=="Akshay": username='A325394'; pwd='1443'; apikey='OeSllszj'; token='G4OKBQKHXPS67EN2WMVP3TZ7X4'
   return username,pwd,apikey,token
 username,pwd,apikey,token=get_user_pwd(user)
-from SmartApi import SmartConnect
-import pyotp
 if 'user_name' not in st.session_state:
     obj=SmartConnect(api_key=apikey)
     obj.generateSession(username,pwd,pyotp.TOTP(token).now())
@@ -128,6 +121,18 @@ def print_ltp():
   except Exception as e:
     return "Unable to get LTP"
 placeholder.text(print_ltp())
+tab1, tab2, tab3 = st.tabs(["Order_Book", "Position", "Settings"])
+with tab1:
+   st.header("Order Book")
+   st.image("https://static.streamlit.io/examples/cat.jpg", width=200)
+
+with tab2:
+   st.header("Position")
+   st.image("https://static.streamlit.io/examples/dog.jpg", width=200)
+
+with tab3:
+   st.header("Settings")
+   st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
 
 @st.cache_resource
 def get_token_df():
