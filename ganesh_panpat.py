@@ -60,6 +60,7 @@ obj=SmartConnect(api_key=st.session_state['api_key'],
                   userId=st.session_state['userId'])
 col1,col2=st.columns([1,9])
 with col1:
+  st.write("Manu:")
   nf_ce=st.button("NF CE")
   bnf_ce=st.button("BNF CE")
   nf_pe=st.button("NF PE")
