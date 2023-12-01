@@ -108,9 +108,7 @@ if get_orderbook:
      orderbook['price']=orderbook['price'].astype(float).round(2)
      orderbook=update_price_orderbook(orderbook)
      orderbook = orderbook.rename(columns={'transactiontype':'trans','quantity':'qty'})
-     orderbook['price'] = orderbook['price'].astype(float)
-     orderbook['price'] = orderbook['price'].round(2)
-     st.write(type(orderbook['price'].iloc[0]))
+     orderbook['price'] = orderbook['price'].astype(float).round(2)
      datatable.table(orderbook[['updatetime','orderid','trans','status','tradingsymbol','price','qty','ordertag']])
 if get_position:
    position=obj.position()['data']
