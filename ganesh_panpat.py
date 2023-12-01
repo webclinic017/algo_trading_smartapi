@@ -135,7 +135,7 @@ if nf_ce:manual_buy("NIFTY",ce_pe="CE",index_ltp="-")
 if nf_pe:manual_buy("NIFTY",ce_pe="PE",index_ltp="-")
 if bnf_ce:manual_buy("BANKNIFTY",ce_pe="CE",index_ltp="-")
 if bnf_pe:manual_buy("BANKNIFTY",ce_pe="PE",index_ltp="-")
-if algo_state:st.settion_state['algo_state']='Running'
+if algo_state:st.session_state['algo_state']='Running'
 if st.session_state['algo_state']=='Running':
   while True:
     st.rerun
