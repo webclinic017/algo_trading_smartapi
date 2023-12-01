@@ -68,19 +68,15 @@ with col1:
 with col2:
   tab1, tab2, tab3, tab4= st.tabs(["Order_Book", "Position","Algo Trade", "Settings"])
   with tab1:
-    st.header("Order Book")
     get_orderbook=st.button("OrderBook")
     st.image("https://static.streamlit.io/examples/cat.jpg", width=200)
   with tab2:
-    st.header("Position")
     get_position=st.button("Position")
     st.image("https://static.streamlit.io/examples/dog.jpg", width=200)
   with tab3:
-    st.header("Algo Trade")
     algo_trade=st.button("Algo Trade")
     st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
   with tab4:
-    st.header("Settings")
     #datatable=st.empty()
 def update_price_orderbook(df):
   for j in range(0,len(df)):
