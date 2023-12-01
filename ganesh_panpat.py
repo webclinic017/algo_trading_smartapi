@@ -1816,12 +1816,16 @@ if bnf_pe:manual_buy("BANKNIFTY",ce_pe="PE",index_ltp=43895)
 if algo_state:
   st.session_state['algo_state']='Running'
   sub_loop_code(datetime.datetime.now(tz=gettz('Asia/Kolkata')))
+  last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']} Last Run {datetime.datetime.now(tz=gettz('Asia/Kolkata'))}")
+  ltp_string=print_ltp()
+  if ltp_string!="Unable to get LTP":placeholder.text(ltp_string)
+  time.sleep(1)
 if algo_state_stop:
   st.session_state['algo_state']='Not Running'
   last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
   st.rerun()
 if st.session_state['algo_state']=='Running':
-  last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
+  last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']} Last Run {datetime.datetime.now(tz=gettz('Asia/Kolkata'))}")
   ltp_string=print_ltp()
   if ltp_string!="Unable to get LTP":placeholder.text(ltp_string)
   time.sleep(1)
