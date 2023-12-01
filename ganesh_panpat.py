@@ -159,7 +159,7 @@ def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
   d = requests.get(url).json()
   token_df = pd.DataFrame.from_dict(d)
-  token_df['expiry'] = pd.to_datetime(token_df['expiry']).apply(lambda x: x.date())
+  token_df['expiry'] = pd.to_datetime(token_df['expiry']).dt.date
   token_df = token_df.astype({'strike': float})
   st.session_state['token_df']=token_df
 get_token_df()
