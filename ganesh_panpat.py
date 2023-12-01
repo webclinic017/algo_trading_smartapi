@@ -745,7 +745,6 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
     option_token=symbol['token']
     option_symbol=symbol['symbol']
     lotsize=int(symbol['lotsize'])
-    st.write(f'Buying {option_symbol} {lotsize} {indicator_strategy}')
     #LTP_Price=str(round(float(get_ltp_price(symbol=option_symbol,token=option_token,exch_seg='NFO')),2))
     #indicator_strategy=indicator_strategy + " LTP: "+ LTP_Price
     if 'Candle' in indicator_strategy:
@@ -769,6 +768,7 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
       stop_loss=int(max(st_price,st_10_price,ltp_price*0.7))
       target_price=int(float(ltp_price)+(float(ltp_price)-float(stop_loss))*2)
       indicator_strategy=indicator_strategy+ " (" +str(stop_loss)+":"+str(target_price)+') '
+    st.write(f'Buying {option_symbol} {lotsize} {indicator_strategy}')
     orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
                           variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',ordertag=indicator_strategy)
     if str(orderId)=='Order placement failed': return
