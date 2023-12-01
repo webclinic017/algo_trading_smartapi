@@ -80,10 +80,18 @@ with col2:
   with tab3:
     algo_trade=st.button("Algo Trade")
   with tab4:
-    lot_size=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
+    lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
     options = st.multiselect('What are your favorite colors',
                              ['Green', 'Yellow', 'Red', 'Blue'],
                              ['Yellow', 'Red'])
+    col1_tab4,col2_tab4=st.columns(2)
+    with col1_tab4:
+      banknifty_target=st.number_input(label="Bank Nifty Target",min_value=10, max_value=100, value=10, step=None)
+      nifty_target=st.number_input(label="Nifty Target",min_value=10, max_value=100, value=10, step=None)
+    with col2_tab4:
+      banknifty_sl=st.number_input(label="Bank Nifty SL",min_value=10, max_value=100, value=10, step=None)
+      nifty_sl=st.number_input(label="Nifty SL",min_value=10, max_value=100, value=10, step=None)
+    
     #datatable=st.empty()
 def update_price_orderbook(df):
   for j in range(0,len(df)):
@@ -135,20 +143,7 @@ def print_ltp():
     return print_sting
   except Exception as e:
     return "Unable to get LTP"
-placeholder.text(print_ltp())
-if nf_ce:manual_buy("NIFTY",ce_pe="CE",index_ltp="-")
-if nf_pe:manual_buy("NIFTY",ce_pe="PE",index_ltp="-")
-if bnf_ce:manual_buy("BANKNIFTY",ce_pe="CE",index_ltp="-")
-if bnf_pe:manual_buy("BANKNIFTY",ce_pe="PE",index_ltp="-")
-if algo_state:st.session_state['algo_state']='Running'
-if algo_state_stop:
-  st.session_state['algo_state']='Not Running'
-  last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
-  st.rerun()
-if st.session_state['algo_state']=='Running':
-  last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_state']}")
-  while True:
-    ltp_string=print_ltp()
-    if ltp_string!="Unable to get LTP":placeholder.text(ltp_string)
-    time.sleep(1)
+
+#Main Code Start Here
+
     
