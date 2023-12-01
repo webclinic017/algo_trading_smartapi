@@ -80,18 +80,18 @@ with col2:
   with tab3:
     algo_trade=st.button("Algo Trade")
   with tab4:
-    lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
     options = st.multiselect('What are your favorite colors',
                              ['Green', 'Yellow', 'Red', 'Blue'],
                              ['Yellow', 'Red'])
-    col1_tab4,col2_tab4,col3_tab4,col4_tab4=st.columns(4)
+    col1_tab4,col2_tab4,col3_tab4,col4_tab4,col5_tab4=st.columns(5)
     with col1_tab4:
       banknifty_target=st.number_input(label="Bank Nifty Target",min_value=10, max_value=100, value=10, step=None)
       nifty_target=st.number_input(label="Nifty Target",min_value=10, max_value=100, value=10, step=None)
     with col2_tab4:
       banknifty_sl=st.number_input(label="Bank Nifty SL",min_value=10, max_value=100, value=10, step=None)
       nifty_sl=st.number_input(label="Nifty SL",min_value=10, max_value=100, value=10, step=None)
-    
+    with col3_tab4:
+      lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
     #datatable=st.empty()
 def update_price_orderbook(df):
   for j in range(0,len(df)):
