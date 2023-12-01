@@ -128,8 +128,8 @@ def update_price_orderbook(df):
           df['price'].iloc[j]=float(abc)
           #df['price'].iloc[j]=float(ordertag.split("LTP: ",1)[1])
         if df['price'].iloc[j]==0:df['price'].iloc[j]='-'
-     except Exception as e:
-       pass
+    except Exception as e:
+      pass
   return df
 @st.cache_resource
 def get_token_df():
