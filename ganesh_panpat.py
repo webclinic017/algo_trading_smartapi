@@ -1,6 +1,7 @@
 from SmartApi import SmartConnect
 from SmartApi import SmartWebSocket
-import threading; import pandas as pd
+import threading
+import pandas as pd
 import pandas_ta as pdta
 import json
 import requests
