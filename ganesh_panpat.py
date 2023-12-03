@@ -1,1 +1,1 @@
-from SmartApi
+import streamlit as st
