@@ -1,2 +1,3 @@
 import streamlit as st
-from SmartApi import SmartConnect
+import datetime
+st.write(datetime.datetime.now())
