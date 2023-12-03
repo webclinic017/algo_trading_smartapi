@@ -1,1 +1,1 @@
-from SmartApi import SmartConnect
+from SmartApi
