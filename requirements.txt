@@ -4,3 +4,4 @@ pandas_ta
 requests
 yfinance
 pyotp
+streamlit_autorefresh
