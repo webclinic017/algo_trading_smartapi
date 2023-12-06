@@ -5,3 +5,4 @@ requests
 yfinance
 pyotp
 streamlit_autorefresh
+logzero
