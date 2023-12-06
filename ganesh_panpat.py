@@ -194,6 +194,8 @@ def get_token_df():
   st.session_state['token_df']=token_df
   return token_df
 token_df=get_token_df()
+if 'token_df' not in st.session_state:
+  token_df=get_token_df()
 @st.cache_resource
 def get_expiry_day_fut_token():
   now_dt=datetime.datetime.now(tz=gettz('Asia/Kolkata')).date()-datetime.timedelta(days=0)
@@ -210,7 +212,8 @@ def get_expiry_day_fut_token():
   st.session_state['bnf_expiry_day'] = bnf_expiry_day
   return expiry_day,nf_expiry_day,bnf_expiry_day
 expiry_day,nf_expiry_day,bnf_expiry_day=get_expiry_day_fut_token()
-
+if 'expiry_day' not in st.session_state:
+  expiry_day,nf_expiry_day,bnf_expiry_day=get_expiry_day_fut_token()
 def getTokenInfo (symbol, exch_seg ='NSE',instrumenttype='OPTIDX',strike_price = 0,pe_ce = 'CE',expiry_day = None):
   if symbol=="BANKNIFTY" or symbol=="^NSEBANK":expiry_day=st.session_state['bnf_expiry_day']
   elif symbol=="NIFTY" or symbol=="^NSEI":expiry_day=st.session_state['nf_expiry_day']
