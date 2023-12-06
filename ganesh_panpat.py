@@ -90,9 +90,6 @@ with col2:
       lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
     with col4_tab4:
       target_type = st.selectbox('Target Type',('Points', 'Per Cent'),0)
-    st.write(st.session_state['nf_expiry_day'])
-    st.write(st.session_state['expiry_day'])
-    st.write(st.session_state['bnf_expiry_day'])
 
 @st.cache_resource
 def get_token_df():
@@ -119,6 +116,9 @@ def get_expiry_day_fut_token():
   st.session_state['nf_expiry_day'] = nf_expiry_day
   st.session_state['expiry_day'] = expiry_day
   st.session_state['bnf_expiry_day'] = bnf_expiry_day
+  st.write(st.session_state['nf_expiry_day'])
+  st.write(st.session_state['expiry_day'])
+  st.write(st.session_state['bnf_expiry_day'])
   return expiry_day,nf_expiry_day,bnf_expiry_day
 expiry_day,nf_expiry_day,bnf_expiry_day=get_expiry_day_fut_token()
 
