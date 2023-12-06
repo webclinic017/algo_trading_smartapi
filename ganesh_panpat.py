@@ -840,11 +840,6 @@ def trade_near_options(time_frame):
 
 
 #end main algo code
-update_order_book()
-update_position()
-print_ltp()
-sl_trail()
-
 if algo_state==False:
   st.session_state['algo_running']="Not Running"
   last_login.text(f"Last Login {st.session_state['login_time']} Algo : {st.session_state['algo_running']}")
@@ -852,6 +847,11 @@ if nf_ce:manual_buy("NIFTY",ce_pe="CE",index_ltp=st.session_state['Nifty']);st.w
 if nf_pe:manual_buy("NIFTY",ce_pe="PE",index_ltp=st.session_state['Nifty']);st.write(f"Buy Nifty PE {st.session_state['Nifty']}")
 if bnf_ce:manual_buy("BANKNIFTY",ce_pe="CE",index_ltp=st.session_state['BankNifty']);st.write(f"Buy BankNifty CE {st.session_state['BankNifty']}")
 if bnf_pe:manual_buy("BANKNIFTY",ce_pe="PE",index_ltp=st.session_state['BankNifty']);st.write(f"Buy BankNifty PE {st.session_state['BankNifty']}")
+
+update_order_book()
+update_position()
+print_ltp()
+sl_trail()
 
 if algo_state:
   while True:
