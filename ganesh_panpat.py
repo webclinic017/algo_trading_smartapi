@@ -116,10 +116,6 @@ def get_expiry_day_fut_token():
   st.session_state['nf_expiry_day'] = nf_expiry_day
   st.session_state['expiry_day'] = expiry_day
   st.session_state['bnf_expiry_day'] = bnf_expiry_day
-  with tab4:
-    st.write(st.session_state['nf_expiry_day'])
-    st.write(st.session_state['expiry_day'])
-    st.write(st.session_state['bnf_expiry_day'])
   return expiry_day,nf_expiry_day,bnf_expiry_day
 expiry_day,nf_expiry_day,bnf_expiry_day=get_expiry_day_fut_token()
 
