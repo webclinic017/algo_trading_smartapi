@@ -70,7 +70,8 @@ def get_token_df():
   token_df = token_df.astype({'strike': float})
   st.session_state['token_df']=token_df
   return token_df
-token_df=get_token_df()
+if 'token_df' not in st.session_state:
+  token_df=get_token_df()
 
 def get_expiry_day_fut_token():
   now_dt=datetime.datetime.now(tz=gettz('Asia/Kolkata')).date()-datetime.timedelta(days=0)
@@ -86,10 +87,10 @@ def get_expiry_day_fut_token():
   st.session_state['expiry_day'] = expiry_day
   st.session_state['bnf_expiry_day'] = bnf_expiry_day
   return expiry_day,nf_expiry_day,bnf_expiry_day
-expiry_day,nf_expiry_day,bnf_expiry_day=get_expiry_day_fut_token()
 
 if 'nf_expiry_day' not in st.session_state:
   expiry_day,nf_expiry_day,bnf_expiry_day=get_expiry_day_fut_token()
+
 col1,col2=st.columns([1,9])
 with col1:
   nf_ce=st.button(label="NF CE")
