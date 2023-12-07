@@ -792,6 +792,7 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
     print('Error in index trade:',symbol,e)
 
 def get_near_options(bnf_ltp,nf_ltp):
+  token_df=st.session_state['token_df']
   symbol_list=['BANKNIFTY','NIFTY']
   df = pd.DataFrame()
   for symbol in symbol_list:
