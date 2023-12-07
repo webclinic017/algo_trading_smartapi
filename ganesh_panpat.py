@@ -69,7 +69,7 @@ with col1:
   close_all=st.button("Close All")
   algo_state=st.checkbox("Run Algo")
 with col2:
-  tab1, tab2, tab3, tab4= st.tabs(["Order_Book", "Position","Algo Trade", "Settings"])
+  tab1, tab2, tab3, tab4,tab5= st.tabs(["Order_Book", "Position","Algo Trade", "Settings","Log"])
   with tab1:order_datatable=st.empty()
   with tab2:position_datatable=st.empty()
   with tab3:algo_datatable=st.empty()
@@ -853,10 +853,12 @@ update_position()
 print_ltp()
 sl_trail()
 
+with tab5:
+    log_holder=st.empty()
 if algo_state:
   while True:
     now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-    print(f"{now_time.replace(microsecond=0,tzinfo=None)}")
+    st.session_state['algo_last_run']=now_time
     marketclose = now_time.replace(hour=14, minute=50, second=0, microsecond=0)
     marketopen = now_time.replace(hour=9, minute=19, second=0, microsecond=0)
     if now_time>marketopen and now_time < marketclose:
@@ -868,6 +870,14 @@ if algo_state:
         bnf_trade=index_trade('BANKNIFTY','5m')
         nf_trade=index_trade('NIFTY','5m')
         trade_near_options(5)
+        log_holder.empty()
+        with log_holder.container():
+          st.write(f'{now_time}')
+          st.write("NIFTY:5M")
+          st.table(nf_trade.tail(2)[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','RSI','Indicator']])
+          st.write("BANKNIFTY:5M")
+          st.table(bnf_trade.tail(2)[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','RSI','Indicator']])
+      
       if (now_time.minute%15==0 and fifteen_m_timeframe=='Yes'):
         bnf_trade_15_min=index_trade('BANKNIFTY','15m')
         nf_trade_15_min=index_trade('NIFTY','15m')
@@ -877,11 +887,10 @@ if algo_state:
     else:
       st.session_state['algo_running']="Market Closed"
     st.session_state['algo_running']="Running"
-    st.session_state['algo_last_run']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0,tzinfo=None)
     last_login.text(f"Login: {st.session_state['login_time']} Algo: {st.session_state['algo_running']} Last run : {st.session_state['algo_last_run']}")
     update_order_book()
     update_position()
     print_ltp()
     sl_trail()
-    time.sleep(60-datetime.datetime.now().second)
+    time.sleep(61-datetime.datetime.now().second)
 
