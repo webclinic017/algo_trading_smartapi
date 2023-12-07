@@ -61,7 +61,7 @@ st.header(f"Welcome {st.session_state['user_name']}")
 last_login=st.empty()
 placeholder = st.empty()
 
-@st.cache_resource
+
 def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
   d = requests.get(url).json()
@@ -72,7 +72,6 @@ def get_token_df():
   return token_df
 token_df=get_token_df()
 
-@st.cache_resource
 def get_expiry_day_fut_token():
   now_dt=datetime.datetime.now(tz=gettz('Asia/Kolkata')).date()-datetime.timedelta(days=0)
   token_df=st.session_state['token_df']
