@@ -794,8 +794,7 @@ def get_near_options(bnf_ltp,nf_ltp):
     indexLtp=bnf_ltp if symbol=="BANKNIFTY" else nf_ltp
     ltp=indexLtp*100
     expiry_day=st.session_state['bnf_expiry_day'] if symbol=="BANKNIFTY" else st.session_state['nf_expiry_day']
-    a = (token_df[(token_df['name'] == symbol) & (token_df['expiry']==expiry_day) & (token_df['strike']>=ltp) &
-                    (token_df['symbol'].str.endswith('CE'))].sort_values(by=['strike']).head(2)).sort_values(by=['strike'], ascending=True)
+    a = (token_df[(token_df['name'] == symbol) & (token_df['expiry']==expiry_day) & (token_df['strike']>=ltp) & (token_df['symbol'].str.endswith('CE'))].sort_values(by=['strike']).head(2)).sort_values(by=['strike'], ascending=True)
     a.reset_index(inplace=True)
     a['Serial'] = a['index'] + 1
     a.drop(columns=['index'], inplace=True)
