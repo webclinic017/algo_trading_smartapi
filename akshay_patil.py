@@ -219,7 +219,7 @@ def print_ltp():
       placeholder.text(print_sting)
   except Exception as e: pass
 
-if 'Nifty' not in st.session_state:print_ltp()
+print_ltp()
 #main algo code
 def telegram_bot_sendtext(bot_message):
   BOT_TOKEN = '5051044776:AAHh6XjxhRT94iXkR4Eofp2PPHY3Omk2KtI'
