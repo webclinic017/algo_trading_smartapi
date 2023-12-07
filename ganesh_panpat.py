@@ -60,6 +60,35 @@ obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_sta
 st.header(f"Welcome {st.session_state['user_name']}")
 last_login=st.empty()
 placeholder = st.empty()
+
+@st.cache_resource
+def get_token_df():
+  url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
+  d = requests.get(url).json()
+  token_df = pd.DataFrame.from_dict(d)
+  token_df['expiry'] = pd.to_datetime(token_df['expiry']).dt.date
+  token_df = token_df.astype({'strike': float})
+  st.session_state['token_df']=token_df
+  return token_df
+token_df=get_token_df()
+
+@st.cache_resource
+def get_expiry_day_fut_token():
+  now_dt=datetime.datetime.now(tz=gettz('Asia/Kolkata')).date()-datetime.timedelta(days=0)
+  token_df=st.session_state['token_df']
+  expiry_df=token_df
+  expiry_df = token_df[(token_df['name'] == 'BANKNIFTY') & (token_df['instrumenttype'] == 'OPTIDX') & (token_df['expiry']>=now_dt)]
+  expiry_day=expiry_df['expiry'].min()
+  bnf_expiry_df = token_df[(token_df['name'] == 'BANKNIFTY') & (token_df['instrumenttype'] == 'OPTIDX') & (token_df['expiry']>=now_dt)]
+  bnf_expiry_day=bnf_expiry_df['expiry'].min()
+  nf_expiry_df = token_df[(token_df['name'] == 'NIFTY') & (token_df['instrumenttype'] == 'OPTIDX') & (token_df['expiry']>=now_dt)]
+  nf_expiry_day=nf_expiry_df['expiry'].min()
+  st.session_state['nf_expiry_day'] = nf_expiry_day
+  st.session_state['expiry_day'] = expiry_day
+  st.session_state['bnf_expiry_day'] = bnf_expiry_day
+  return expiry_day,nf_expiry_day,bnf_expiry_day
+expiry_day,nf_expiry_day,bnf_expiry_day=get_expiry_day_fut_token()
+
 col1,col2=st.columns([1,9])
 with col1:
   nf_ce=st.button(label="NF CE")
@@ -90,35 +119,10 @@ with col2:
       lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
     with col4_tab4:
       target_type = st.selectbox('Target Type',('Points', 'Per Cent'),0)
-
-@st.cache_resource
-def get_token_df():
-  url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
-  d = requests.get(url).json()
-  token_df = pd.DataFrame.from_dict(d)
-  token_df['expiry'] = pd.to_datetime(token_df['expiry']).dt.date
-  token_df = token_df.astype({'strike': float})
-  st.session_state['token_df']=token_df
-  return token_df
-token_df=get_token_df()
-
-@st.cache_resource
-def get_expiry_day_fut_token():
-  now_dt=datetime.datetime.now(tz=gettz('Asia/Kolkata')).date()-datetime.timedelta(days=0)
-  token_df=st.session_state['token_df']
-  expiry_df=token_df
-  expiry_df = token_df[(token_df['name'] == 'BANKNIFTY') & (token_df['instrumenttype'] == 'OPTIDX') & (token_df['expiry']>=now_dt)]
-  expiry_day=expiry_df['expiry'].min()
-  bnf_expiry_df = token_df[(token_df['name'] == 'BANKNIFTY') & (token_df['instrumenttype'] == 'OPTIDX') & (token_df['expiry']>=now_dt)]
-  bnf_expiry_day=bnf_expiry_df['expiry'].min()
-  nf_expiry_df = token_df[(token_df['name'] == 'NIFTY') & (token_df['instrumenttype'] == 'OPTIDX') & (token_df['expiry']>=now_dt)]
-  nf_expiry_day=nf_expiry_df['expiry'].min()
-  st.session_state['nf_expiry_day'] = nf_expiry_day
-  st.session_state['expiry_day'] = expiry_day
-  st.session_state['bnf_expiry_day'] = bnf_expiry_day
-  return expiry_day,nf_expiry_day,bnf_expiry_day
-expiry_day,nf_expiry_day,bnf_expiry_day=get_expiry_day_fut_token()
-
+    with col5_tab4:
+      st.write(st.session_state['nf_expiry_day'])
+      st.write(st.session_state['bnf_expiry_day'])
+      
 def getTokenInfo (symbol, exch_seg ='NSE',instrumenttype='OPTIDX',strike_price = 0,pe_ce = 'CE',expiry_day = None):
   if symbol=="BANKNIFTY" or symbol=="^NSEBANK":expiry_day=st.session_state['bnf_expiry_day']
   elif symbol=="NIFTY" or symbol=="^NSEI":expiry_day=st.session_state['nf_expiry_day']
