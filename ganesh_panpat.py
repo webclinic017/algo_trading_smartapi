@@ -224,7 +224,8 @@ def print_ltp():
       placeholder.text(print_sting)
   except Exception as e: pass
 
-if 'Nifty' not in st.session_state:print_ltp()
+if 'Nifty' not in st.session_state:
+  print_ltp()
 #main algo code
 def telegram_bot_sendtext(bot_message):
   BOT_TOKEN = '5051044776:AAHh6XjxhRT94iXkR4Eofp2PPHY3Omk2KtI'
@@ -233,7 +234,6 @@ def telegram_bot_sendtext(bot_message):
   send_text = 'https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage?chat_id=' + BOT_CHAT_ID + \
                 '&parse_mode=HTML&text=' + bot_message
   response = requests.get(send_text)
-
 
 def get_token_info(symbol='-',token='-',exch_seg='-'):
   if symbol=='-' and token=='-': symbol,token,exch_seg='-','-','-'
@@ -256,13 +256,13 @@ def get_ce_pe_data(symbol,indexLtp="-"):
   if symbol=='BANKNIFTY' or symbol=='^NSEBANK':
     symbol='BANKNIFTY'
     ATMStrike = math.floor(indexLtp/100)*100
-    expiry_day=bnf_expiry_day
+    expiry_day=st.session_state['bnf_expiry_day']
   elif symbol=='NIFTY' or symbol=='^NSEI':
     symbol='NIFTY'
     val2 = math.fmod(indexLtp, 50)
     val3 = 50 if val2 >= 25 else 0
     ATMStrike = indexLtp - val2 + val3
-    expiry_day=nf_expiry_day
+    expiry_day=st.session_state['nf_expiry_day']
   #CE,#PE
   ce_strike_symbol = getTokenInfo(symbol,'NFO','OPTIDX',ATMStrike,'CE',expiry_day).iloc[0]
   pe_strike_symbol = getTokenInfo(symbol,'NFO','OPTIDX',ATMStrike,'PE',expiry_day).iloc[0]
@@ -373,7 +373,7 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
         place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='STOPLOSS_LIMIT',price=stop_loss,
                     variety='STOPLOSS',exch_seg='NFO',producttype='CARRYFORWARD',triggerprice=stop_loss,squareoff=stop_loss,
                     stoploss=stop_loss, ordertag=str(orderId)+" Stop Loss order Placed")
-    buy_msg=(f'Buy: {option_symbol}\nPrice: {trade_price} LTP: {ltp_price}\n{indicator_strategy}\nTarget: {target_price} Stop Loss: {stop_loss}')
+    buy_msg=(f'Buy: {option_symbol}\nPrice: {trade_price} LTP: {ltp_price}\n{indicator_strategy}\nTarget: {int(target_price)} Stop Loss: {int(stop_loss)}')
     print(buy_msg)
     telegram_bot_sendtext(buy_msg)
   except Exception as e:
@@ -793,7 +793,7 @@ def get_near_options(bnf_ltp,nf_ltp):
   for symbol in symbol_list:
     indexLtp=bnf_ltp if symbol=="BANKNIFTY" else nf_ltp
     ltp=indexLtp*100
-    expiry_day=bnf_expiry_day if symbol=="BANKNIFTY" else nf_expiry_day
+    expiry_day=st.session_state['bnf_expiry_day'] if symbol=="BANKNIFTY" else st.session_state['nf_expiry_day']
     a = (token_df[(token_df['name'] == symbol) & (token_df['expiry']==expiry_day) & (token_df['strike']>=ltp) &
                     (token_df['symbol'].str.endswith('CE'))].sort_values(by=['strike']).head(2)).sort_values(by=['strike'], ascending=True)
     a.reset_index(inplace=True)
