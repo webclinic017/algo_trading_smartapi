@@ -117,8 +117,9 @@ def get_expiry_day_fut_token():
   st.session_state['expiry_day'] = expiry_day
   st.session_state['bnf_expiry_day'] = bnf_expiry_day
   return expiry_day,nf_expiry_day,bnf_expiry_day
-expiry_day,nf_expiry_day,bnf_expiry_day=get_expiry_day_fut_token()
 
+get_expiry_day_fut_token()
+if 'nf_expiry_day' not in st.session_state:get_expiry_day_fut_token()
 def getTokenInfo (symbol, exch_seg ='NSE',instrumenttype='OPTIDX',strike_price = 0,pe_ce = 'CE',expiry_day = None):
   if symbol=="BANKNIFTY" or symbol=="^NSEBANK":expiry_day=st.session_state['bnf_expiry_day']
   elif symbol=="NIFTY" or symbol=="^NSEI":expiry_day=st.session_state['nf_expiry_day']
