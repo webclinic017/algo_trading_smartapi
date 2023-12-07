@@ -874,9 +874,7 @@ if algo_state:
         with log_holder.container():
           st.write(f'{now_time}')
           st.write("NIFTY:5M")
-          st.table(nf_trade.iloc[-3:][['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','RSI','Indicator']])
           st.write("BANKNIFTY:5M")
-          st.table(bnf_trade.iloc[-3:][['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','RSI','Indicator']])
       
       if (now_time.minute%15==0 and fifteen_m_timeframe=='Yes'):
         bnf_trade_15_min=index_trade('BANKNIFTY','15m')
