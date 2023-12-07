@@ -240,6 +240,7 @@ def telegram_bot_sendtext(bot_message):
   response = requests.get(send_text)
 
 def get_token_info(symbol='-',token='-',exch_seg='-'):
+  token_df=st.session_state['token_df']
   if symbol=='-' and token=='-': symbol,token,exch_seg='-','-','-'
   if token=='-':
     df=token_df[token_df['symbol'].str.contains(symbol)]
