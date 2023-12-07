@@ -817,7 +817,7 @@ def trade_near_options(time_frame):
   nf_ltp=st.session_state['Nifty']
   #bnf_ltp=get_index_ltp("^NSEBANK")
   #nf_ltp=get_index_ltp("^NSEI")
-  near_option_list=get_near_options(bnf_ltp,nf_ltp)
+  near_option_list=get_near_options(st.session_state['BankNifty'],st.session_state['Nifty'])
   b_trade="-";n_trade="-"
   for i in range(0,len(near_option_list)):
     try:
