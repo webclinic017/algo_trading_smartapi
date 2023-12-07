@@ -88,8 +88,7 @@ def get_expiry_day_fut_token():
   st.session_state['bnf_expiry_day'] = bnf_expiry_day
   return expiry_day,nf_expiry_day,bnf_expiry_day
 
-if 'nf_expiry_day' not in st.session_state:
-  expiry_day,nf_expiry_day,bnf_expiry_day=get_expiry_day_fut_token()
+expiry_day,nf_expiry_day,bnf_expiry_day=get_expiry_day_fut_token()
 
 col1,col2=st.columns([1,9])
 with col1:
@@ -216,16 +215,21 @@ def print_ltp():
     data['change']=data['ltp']-data['close']
     print_sting=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
     for i in range(0,len(data)):
-      if data.iloc[i]['tradingSymbol']=="Nifty 50" and int(data.iloc[i]['ltp'])>1:st.session_state['Nifty']=int(data.iloc[i]['ltp'])
-      if data.iloc[i]['tradingSymbol']=="Nifty Bank" and int(data.iloc[i]['ltp'])>1:st.session_state['BankNifty']=int(data.iloc[i]['ltp'])
+      if data.iloc[i]['tradingSymbol']=="Nifty 50" and int(data.iloc[i]['ltp'])>1:
+        nifty_ltp=int(data.iloc[i]['ltp'])
+        st.session_state['Nifty']=int(data.iloc[i]['ltp'])
+      if data.iloc[i]['tradingSymbol']=="Nifty Bank" and int(data.iloc[i]['ltp'])>1:
+        bank_nifty_ltp=int(data.iloc[i]['ltp'])
+        st.session_state['BankNifty']=int(data.iloc[i]['ltp'])
       print_sting=f"{print_sting} {data.iloc[i]['tradingSymbol']} {int(data.iloc[i]['ltp'])}({int(data.iloc[i]['change'])})"
       print_sting=print_sting.replace("Nifty 50","Nifty")
       print_sting=print_sting.replace("Nifty Bank","BankNifty")
       placeholder.text(print_sting)
+    return nifty_ltp,bank_nifty_ltp
   except Exception as e: pass
 
 if 'Nifty' not in st.session_state:
-  print_ltp()
+  nifty_ltp,bank_nifty_ltp=print_ltp()
 #main algo code
 def telegram_bot_sendtext(bot_message):
   BOT_TOKEN = '5051044776:AAHh6XjxhRT94iXkR4Eofp2PPHY3Omk2KtI'
