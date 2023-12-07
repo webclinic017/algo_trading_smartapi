@@ -89,6 +89,8 @@ def get_expiry_day_fut_token():
   return expiry_day,nf_expiry_day,bnf_expiry_day
 expiry_day,nf_expiry_day,bnf_expiry_day=get_expiry_day_fut_token()
 
+if 'nf_expiry_day' not in st.session_state:
+  expiry_day,nf_expiry_day,bnf_expiry_day=get_expiry_day_fut_token()
 col1,col2=st.columns([1,9])
 with col1:
   nf_ce=st.button(label="NF CE")
