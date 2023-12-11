@@ -793,7 +793,7 @@ def update_app():
     print_ltp()
     orderbook=update_order_book()
     update_position()
-    get_todays_trade(orderbook)
+    #get_todays_trade(orderbook)
     
 
 if nf_ce: manual_buy("NIFTY",'CE',st.session_state['Nifty'])
