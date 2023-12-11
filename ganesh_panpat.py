@@ -778,14 +778,16 @@ if bnf_pe: manual_buy("BANKNIFTY",'PE',st.session_state['BankNifty'])
 
 if algo_state:
   st.session_state['algo_running']="Running"
+  now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
+  intradayclose = now_time.replace(hour=14, minute=50, second=0, microsecond=0)
+  marketopen = now_time.replace(hour=9, minute=19, second=0, microsecond=0)
+  marketclose = now_time.replace(hour=15, minute=30, second=0, microsecond=0)
   while True:
     try:
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       last_login.text(f"Login: {st.session_state['login_time']} Algo: {st.session_state['algo_running']} Last run : {now_time.time()}")
       print(f"{now_time.replace(microsecond=0,tzinfo=None)}")
-      marketclose = now_time.replace(hour=14, minute=50, second=0, microsecond=0)
-      marketopen = now_time.replace(hour=9, minute=19, second=0, microsecond=0)
-      if now_time>marketopen and now_time < marketclose:
+      if now_time>marketopen and now_time < intradayclose:
         if now_time.minute%5==0:
           if "IDX:5M" in time_frame:
             bnf_trade=index_trade('BANKNIFTY','5m')
@@ -795,7 +797,9 @@ if algo_state:
           if "IDX:15M" in time_frame:
             bnf_trade=index_trade('BANKNIFTY','15m')
             nf_trade=index_trade('NIFTY','15m')
-      else:st.session_state['algo_running']="Intraday Merket Closed"
+      elif now_time>marketopen and now_time < marketclose:
+        st.session_state['algo_running']="Intraday Market Closed"
+      else:st.session_state['algo_running']="Market Closed"
       update_app()
       time.sleep(60-datetime.datetime.now().second)
     except Exception as e:
