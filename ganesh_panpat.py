@@ -74,11 +74,14 @@ with col2:
   with tab2:position_datatable=st.empty()
   with tab3:algo_datatable=st.empty()
   with tab4:
-    five_buy_indicator = st.multiselect('Five Minute Indicator',['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade'],
+    ind_col1,ind_col2=st.columns(2)
+    with ind_col1:
+      five_buy_indicator = st.multiselect('Five Minute Indicator',['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade'],
                                    ['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade'])
-    three_buy_indicator = st.multiselect('Three Minute Indicator',['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade'],[])
-    one_buy_indicator = st.multiselect('One Minute Indicator',['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade'],[])
-    option_buy_indicator = st.multiselect('Option Indicator',['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade'],
+      three_buy_indicator = st.multiselect('Three Minute Indicator',['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade'],[])
+    with ind_col2:
+      one_buy_indicator = st.multiselect('One Minute Indicator',['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade'],[])
+      option_buy_indicator = st.multiselect('Option Indicator',['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade'],
                                           ['St Trade', 'ST_10_2 Trade'])
     time_frame = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M', 'IDX:15M', 'OPT:5M'])
     col1_tab4,col2_tab4,col3_tab4,col4_tab4,col5_tab4=st.columns(5)
