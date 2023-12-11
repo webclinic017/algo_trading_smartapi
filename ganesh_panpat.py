@@ -627,6 +627,28 @@ def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
   strike_symbol=get_ce_pe_data(index_symbol,index_ltp,ce_pe)
   buy_option(strike_symbol,"Manual Buy","5m")
 
+def near_option_trade(interval):
+  for index_symbol in ['BANKNIFTY','NIFTY']:
+    if index_symbol=="BANKNIFTY" or index_symbol=="^NSEBANK":
+        index_ltp=st.session_state['BankNifty']
+        expiry_day=st.session_state['bnf_expiry_day']
+        gap=100
+    if index_symbol=="NIFTY" or index_symbol=="^NSEI":
+        index_ltp=st.session_state['Nifty']
+        expiry_day=st.session_state['nf_expiry_day']
+        gap=50
+    for ce_pe in ['CE','PE']:
+        for i in range(-2,2):
+            opt_symbol=index_symbol+expiry_day+str(int(index_ltp+(i*gap)))+ce_pe
+            print(opt_symbol)
+            strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
+            token=strike_symbol['symboltoken']
+            symbol=strike_symbol['tradingsymbol']
+            fut_data=get_historical_data(symbol,interval=interval,token=token,exch_seg='NFO')
+            indicator_strategy=fut_data['Indicator'].values[-1]
+            if (fut_data['St Trade'].values[-1]=="Buy" or fut_data['ST_10_2 Trade'].values[-1]=="Buy"):
+              buy_option(strike_symbol,indicator_strategy,"5m")
+
 if nf_ce: manual_buy("NIFTY",'CE',st.session_state['Nifty'])
 if bnf_ce: manual_buy("BANKNIFTY",'CE',st.session_state['BankNifty'])
 if nf_pe: manual_buy("NIFTY",'PE',st.session_state['Nifty'])
@@ -644,6 +666,7 @@ if algo_state:
       if now_time.minute%5==0:
         bnf_trade=index_trade('BANKNIFTY','5m')
         nf_trade=index_trade('NIFTY','5m')
+        near_option_trade("5m")
       if now_time.minute%15==0:
         bnf_trade=index_trade('BANKNIFTY','15m')
         nf_trade=index_trade('NIFTY','15m')
