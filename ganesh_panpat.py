@@ -182,7 +182,7 @@ def update_order_book():
     else:
       orderbook=pd.DataFrame(orderbook)
       orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
-      orderbook=update_price_orderbook(orderbook)
+      #orderbook=update_price_orderbook(orderbook)
       orderbook['price']=round(orderbook['price'].astype(int),2)
       order_datatable.table(orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag']])
       return orderbook
