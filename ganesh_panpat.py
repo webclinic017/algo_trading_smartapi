@@ -256,8 +256,6 @@ def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NO
         "stoploss": int(float(stoploss)),"quantity": str(qty),"triggerprice":int(float(triggerprice)),"ordertag":ordertag,"trailingStopLoss":5}
       orderId=obj.placeOrder(orderparams)
       LTP_Price=round(float(get_ltp_price(symbol=symbol,token=token,exch_seg=exch_seg)),2)
-      with logholder:
-        st.write(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
       return orderId,LTP_Price
     except Exception as e:
       print("Order placement failed: ",e)
@@ -818,18 +816,20 @@ if algo_state:
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       last_login.text(f"Login: {st.session_state['login_time']} Algo: {st.session_state['algo_running']} Last run : {now_time.time()}")
       print(f"{now_time.replace(microsecond=0,tzinfo=None)}")
-      with logholder:
-        st.write(f"{now_time.replace(microsecond=0,tzinfo=None)}")
       if now_time>marketopen and now_time < intradayclose:
         if now_time.minute%5==0:
           if "IDX:5M" in time_frame:
-            bnf_trade=index_trade('BANKNIFTY','5m')
-            nf_trade=index_trade('NIFTY','5m')
+            bnf_5m_trade=index_trade('BANKNIFTY','5m')
+            nf_5m_trade=index_trade('NIFTY','5m')
             if "OPT:5M" in time_frame: near_option_trade("5m")
+            with logholder:
+              st.write(f"{now_time.replace(microsecond=0,tzinfo=None)}")
+              st.write(f"Bank Nifty :{bnf_5m_trade['Close'].values[-1]} {bnf_5m_trade['Indicator'].values[-1]}")
+              st.write(f"Nifty :{nf_5m_trade['Close'].values[-1]} {nf_5m_trade['Indicator'].values[-1]}")
         if now_time.minute%15==0:
           if "IDX:15M" in time_frame:
-            bnf_trade=index_trade('BANKNIFTY','15m')
-            nf_trade=index_trade('NIFTY','15m')
+            bnf_15m_trade=index_trade('BANKNIFTY','15m')
+            nf_15m_trade=index_trade('NIFTY','15m')
       elif now_time>marketopen and now_time < marketclose:
         st.session_state['algo_running']="Intraday Market Closed"
       else:st.session_state['algo_running']="Market Closed"
