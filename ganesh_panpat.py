@@ -22,6 +22,7 @@ import pandas as pd
 import yfinance as yf
 import math
 import re
+from logzero import logger
 
 NoneType = type(None)
 pd.set_option('mode.chained_assignment', None)
@@ -836,6 +837,7 @@ if algo_state:
     try:
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       last_login.text(f"Login: {st.session_state['login_time']} Algo: {st.session_state['algo_running']} Last run : {now_time.time()}")
+      logger.info(now_time.time())
       if now_time>marketopen and now_time < intradayclose:
         if now_time.minute%5==0:
           if "IDX:5M" in time_frame:
