@@ -37,13 +37,10 @@ if 'algo_running' not in st.session_state:st.session_state['algo_running']="Not 
 if 'algo_last_run' not in st.session_state:st.session_state['algo_last_run']=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
 st.session_state['1m_bnf']="-"
 st.session_state['1m_nf']="-"
-
 st.session_state['5m_bnf']="-"
 st.session_state['5m_nf']="-"
-
 st.session_state['3m_bnf']="-"
 st.session_state['3m_nf']="-"
-
 st.session_state['15m_bnf']="-"
 st.session_state['15m_nf']="-"
 
