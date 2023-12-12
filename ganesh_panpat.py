@@ -405,7 +405,7 @@ def yfna_data(symbol,interval,period):
       print("Yahoo Data Not Found")
       return "No data found, symbol may be delisted"
     return df
-  except:
+  except Exception as e:
     print("Yahoo Data Not Found")
     logger.exception(f"Error in yfna_data: {e}")
     return "No data found, symbol may be delisted"
@@ -416,6 +416,7 @@ def angel_data(token,interval,exch_seg,fromdate,todate):
     res_json=obj.getCandleData(historicParam)
     df = pd.DataFrame(res_json['data'], columns=['timestamp','O','H','L','C','V'])
     df = df.rename(columns={'timestamp':'Datetime','O':'Open','H':'High','L':'Low','C':'Close','V':'Volume'})
+    df['Datetime'] = datetime.datetime.fromisoformat(df['Datetime'])
     df['Datetime'] = pd.to_datetime(df['Datetime'],format = '%Y-%m-%d %H:%M:%S')
     df['Datetime']=df['Datetime'].dt.tz_localize(None)
     df = df.set_index('Datetime')
@@ -427,7 +428,7 @@ def angel_data(token,interval,exch_seg,fromdate,todate):
       print("Angel Data Not Found")
       return "No data found, symbol may be delisted"
     return df
-  except:
+  except Exception as e:
     print("Angel Data Not Found")
     logger.exception(f"Error in Angel Data Not Found: {e}")
     return "No data found, symbol may be delisted"
