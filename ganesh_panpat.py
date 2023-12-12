@@ -664,7 +664,6 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
 
 def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
   try:
-    logholder.empty()
     if index_ltp=="-":
       if index_symbol=="BANKNIFTY" or index_symbol=="^NSEBANK": index_ltp=st.session_state['BankNifty']
       if index_symbol=="NIFTY" or index_symbol=="^NSEI": index_ltp=st.session_state['Nifty']
