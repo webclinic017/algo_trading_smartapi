@@ -69,7 +69,8 @@ with col1:
   close_all=st.button("Close All")
   algo_state=st.checkbox("Run Algo")
 with col2:
-  tab1, tab2, tab3, tab4= st.tabs(["Order_Book", "Position","Algo Trade", "Settings"])
+  tab0, tab1, tab2, tab3, tab4= st.tabs(["Log","Order_Book", "Position","Algo Trade", "Settings"])
+  with tab0: logholder=st.empty()
   with tab1:order_datatable=st.empty()
   with tab2:position_datatable=st.empty()
   with tab3:algo_datatable=st.empty()
@@ -628,12 +629,15 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
       buy_option(strike_symbol,indicator_strategy,interval)
     print(symbol + "_" +fut_data['Time Frame'].values[-1]+" " +str(datetime.datetime.now())+
           "\n"+fut_data.tail(2)[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','RSI','Indicator']].to_string(index=False))
+    with logholder:
+      st.write(fut_data.tail(2)[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','RSI','Indicator']])
     return fut_data
   except Exception as e:
     print('Error in index trade:',symbol,e)
 
 def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
   try:
+    logholder.empty()
     if index_ltp=="-":
       if index_symbol=="BANKNIFTY" or index_symbol=="^NSEBANK": index_ltp=st.session_state['BankNifty']
       if index_symbol=="NIFTY" or index_symbol=="^NSEI": index_ltp=st.session_state['Nifty']
@@ -804,11 +808,12 @@ if bnf_pe: manual_buy("BANKNIFTY",'PE',st.session_state['BankNifty'])
 if algo_state:
   st.session_state['algo_running']="Running"
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-  intradayclose = now_time.replace(hour=14, minute=50, second=0, microsecond=0)
+  intradayclose = now_time.replace(hour=22, minute=50, second=0, microsecond=0)
   marketopen = now_time.replace(hour=9, minute=19, second=0, microsecond=0)
   marketclose = now_time.replace(hour=15, minute=30, second=0, microsecond=0)
   while True:
     try:
+      logholder.empty()
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       last_login.text(f"Login: {st.session_state['login_time']} Algo: {st.session_state['algo_running']} Last run : {now_time.time()}")
       print(f"{now_time.replace(microsecond=0,tzinfo=None)}")
