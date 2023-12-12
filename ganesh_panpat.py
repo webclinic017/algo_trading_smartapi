@@ -641,6 +641,7 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
     information_name=interval + "_" + n_symbol
     information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Datetime':fut_data['Datetime'],
                  'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],'Trade':fut_data['Trade'].values[-1]}
+    logger.info(information)
     st.session_state[information_name]=information
     return fut_data
   except Exception as e:
