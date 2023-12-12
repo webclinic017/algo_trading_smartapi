@@ -808,6 +808,7 @@ def update_app():
     #get_todays_trade(orderbook)
     log_holder.empty()
     with log_holder.container():
+      now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       st.write(f"{now_time.time()}")
       st.write(f"Bank Nifty 5M: {st.session_state['5m_bnf']}")
       st.write(f"Nifty 5M: {st.session_state['5m_nf']}")
@@ -848,18 +849,6 @@ if algo_state:
         st.session_state['algo_running']="Intraday Market Closed"
       else:st.session_state['algo_running']="Market Closed"
       update_app()
-      log_holder.empty()
-      with log_holder.container():
-        st.write(f"{now_time.time()}")
-        st.write(f"Bank Nifty 5M: {st.session_state['5m_bnf']}")
-        st.write(f"Nifty 5M: {st.session_state['5m_nf']}")
-        st.write(f"Bank Nifty 15M: {st.session_state['15m_bnf']}")
-        st.write(f"Nifty 15M: {st.session_state['15m_nf']}")
-        st.write(f"Bank Nifty 3M: {st.session_state['3m_bnf']}")
-        st.write(f"Nifty 3M: {st.session_state['3m_nf']}")
-        st.write(f"Bank Nifty 1M: {st.session_state['1m_bnf']}")
-        st.write(f"Nifty 1M: {st.session_state['1m_nf']}")
-        
       time.sleep(60-datetime.datetime.now().second)
     except Exception as e:
       print(e)
