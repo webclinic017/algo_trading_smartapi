@@ -815,24 +815,26 @@ if algo_state:
       logholder.empty()
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       last_login.text(f"Login: {st.session_state['login_time']} Algo: {st.session_state['algo_running']} Last run : {now_time.time()}")
-      print(f"{now_time.replace(microsecond=0,tzinfo=None)}")
+      log_string=(f"{now_time.replace(microsecond=0,tzinfo=None)}")
       if now_time>marketopen and now_time < intradayclose:
         if now_time.minute%5==0:
           if "IDX:5M" in time_frame:
             bnf_5m_trade=index_trade('BANKNIFTY','5m')
             nf_5m_trade=index_trade('NIFTY','5m')
             if "OPT:5M" in time_frame: near_option_trade("5m")
-            with logholder:
-              st.write(f"{now_time.replace(microsecond=0,tzinfo=None)}")
-              st.write(f"Bank Nifty :{bnf_5m_trade['Close'].values[-1]} {bnf_5m_trade['Indicator'].values[-1]}")
-              st.write(f"Nifty :{nf_5m_trade['Close'].values[-1]} {nf_5m_trade['Indicator'].values[-1]}")
+            log_string=(f"{log_string} Bank Nifty :{bnf_5m_trade['Close'].values[-1]} {bnf_5m_trade['Indicator'].values[-1]}")
+            log_string=(f"{log_string} Nifty :{nf_5m_trade['Close'].values[-1]} {nf_5m_trade['Indicator'].values[-1]}")
         if now_time.minute%15==0:
           if "IDX:15M" in time_frame:
             bnf_15m_trade=index_trade('BANKNIFTY','15m')
             nf_15m_trade=index_trade('NIFTY','15m')
+            log_string=(f"{log_string} Bank Nifty :{bnf_15m_trade['Close'].values[-1]} {bnf_15m_trade['Indicator'].values[-1]}")
+            log_string=(f"{log_string} Nifty :{nf_15m_trade['Close'].values[-1]} {nf_15m_trade['Indicator'].values[-1]}")
       elif now_time>marketopen and now_time < marketclose:
         st.session_state['algo_running']="Intraday Market Closed"
       else:st.session_state['algo_running']="Market Closed"
+      with logholder:
+        st.write(f"{log_string}")
       update_app()
       time.sleep(60-datetime.datetime.now().second)
     except Exception as e:
