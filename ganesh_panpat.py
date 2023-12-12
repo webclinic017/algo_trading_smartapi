@@ -341,7 +341,7 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
                     variety='STOPLOSS',exch_seg='NFO',producttype='CARRYFORWARD',triggerprice=stop_loss,squareoff=stop_loss,
                     stoploss=stop_loss, ordertag=str(orderId)+" Stop Loss order Placed")
     buy_msg=(f'Buy: {option_symbol}\nPrice: {trade_price} LTP: {ltp_price}\n{indicator_strategy}\nTarget: {target_price} Stop Loss: {stop_loss}')
-    print(buy_msg)
+    logger.info(buy_msg)
     telegram_bot_sendtext(buy_msg)
   except Exception as e:
     logger.exception(f"Error in buy_option: {e}")
