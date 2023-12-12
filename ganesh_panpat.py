@@ -629,6 +629,8 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
       buy_option(strike_symbol,indicator_strategy,interval)
     print(symbol + "_" +fut_data['Time Frame'].values[-1]+" " +str(datetime.datetime.now())+
           "\n"+fut_data.tail(2)[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','RSI','Indicator']].to_string(index=False))
+    with logholder:
+      st.table(fut_data.tail(2)[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','RSI','Indicator']])
     return fut_data
   except Exception as e:
     print('Error in index trade:',symbol,e)
