@@ -140,7 +140,8 @@ def get_expiry_day(symbol):
     expiry_day = token_list['expiry_day'].min()
     token_list=token_list[token_list['expiry_day']==expiry_day]
     return token_list['expiry'].iloc[0]
-  except:
+  except Exception as e:
+    logger.exception(f"Unable to find expiry date: {e}")
     return "Unable to find expiry date"
 
 if 'bnf_expiry_day' not in st.session_state or 'nf_expiry_day' not in st.session_state:
@@ -161,7 +162,9 @@ def print_ltp():
       print_sting=print_sting.replace("Nifty 50","Nifty")
       print_sting=print_sting.replace("Nifty Bank","BankNifty")
       placeholder.text(print_sting)
-  except Exception as e: pass
+  except Exception as e:
+    logger.exception(f"Unable to print_ltp: {e}")
+    pass
 print_ltp()
 expiry_days_bnf.write(f'BNF Exp: {st.session_state["bnf_expiry_day"]}')
 expiry_days_nf.write(f'NF Exp: {st.session_state["nf_expiry_day"]}')
@@ -183,6 +186,7 @@ def update_price_orderbook(df):
           abc=(ordertag.split('LTP: '))[1].split(' ')[0]
           df['price'].iloc[j]=float(abc)
     except Exception as e:
+      logger.exception(f"Unable to update_price_orderbook: {e}")
       pass
   return df
 
@@ -200,7 +204,9 @@ def update_order_book():
       orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
       order_datatable.table(orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag']])
       return orderbook
-  except Exception as e:pass
+  except Exception as e:
+    logger.exception(f"Unable to update_order_book: {e}")
+    pass
 
 def update_position():
   try:
@@ -209,7 +215,9 @@ def update_position():
     else:
      position=pd.DataFrame(position)
      position_datatable.table(position[['tradingsymbol','netqty','buyavgprice','sellavgprice','realised','unrealised','ltp']])
-  except Exception as e:pass
+  except Exception as e:
+    logger.exception(f"Unable to update_position: {e}")
+    pass
 
 def telegram_bot_sendtext(bot_message):
   BOT_TOKEN = '5051044776:AAHh6XjxhRT94iXkR4Eofp2PPHY3Omk2KtI'
@@ -227,6 +235,7 @@ def get_ltp_price(symbol="-",token="-",exch_seg='-'):
       ltpInfo = obj.ltpData(exch_seg,symbol,token)
       return ltpInfo['data']['ltp']
     except Exception as e:
+      logger.exception(f"Unable to get_ltp_price: {e}")
       return "Unable to get LTP"
 
 def get_index_ltp(symbol):
@@ -254,7 +263,7 @@ def get_index_ltp(symbol):
           ltpInfo = obj.ltpData('NSE',symbol,token)
           indexLtp = ltpInfo['data']['ltp']
        except Exception as e:
-          print('Error get_index_ltp :',e)
+         logger.exception(f"Unable to get_index_ltp: {e}")
   return indexLtp
 
 def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',
@@ -269,7 +278,7 @@ def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NO
       LTP_Price=round(float(get_ltp_price(symbol=symbol,token=token,exch_seg=exch_seg)),2)
       return orderId,LTP_Price
     except Exception as e:
-      print("Order placement failed: ",e)
+      logger.exception(f"Order placement failed: {e}")
       orderId='Order placement failed'
       LTP_Price='Order placement failed'
   return orderId,LTP_Price
@@ -335,6 +344,7 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
     print(buy_msg)
     telegram_bot_sendtext(buy_msg)
   except Exception as e:
+    logger.exception(f"Error in buy_option: {e}")
     print('Error in buy_option:',e)
 
 def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_type="NORMAL"):
@@ -379,7 +389,7 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     df=df.round(2)
     return df
   except Exception as e:
-    print("get_historical_data",e)
+    logger.exception(f"Error in get_historical_data: {e}")
 
 def yfna_data(symbol,interval,period):
   try:
@@ -397,6 +407,7 @@ def yfna_data(symbol,interval,period):
     return df
   except:
     print("Yahoo Data Not Found")
+    logger.exception(f"Error in yfna_data: {e}")
     return "No data found, symbol may be delisted"
   
 def angel_data(token,interval,exch_seg,fromdate,todate):
@@ -418,6 +429,7 @@ def angel_data(token,interval,exch_seg,fromdate,todate):
     return df
   except:
     print("Angel Data Not Found")
+    logger.exception(f"Error in Angel Data Not Found: {e}")
     return "No data found, symbol may be delisted"
 
 def get_trade_info(df):
@@ -518,6 +530,7 @@ def get_trade_info(df):
         elif df['Close'][i-1]> df['VWAP'][i-1] and df['Close'][i]< df['VWAP'][i]: df['VWAP Trade'][i]="Sell"
 
     except Exception as e:
+      logger.exception(f"Error in get_trade_info: {e}")
       pass
   df['ADX']=df['ADX'].round(decimals = 2)
   df['ADX']= df['ADX'].astype(str)
@@ -595,6 +608,7 @@ def calculate_indicator(df):
     df=get_trade_info(df)
     return df
   except Exception as e:
+    logger.exception(f"Error in calculate Indicator: {e}")
     print("Error in calculate Indicator",e)
     return df
 
@@ -647,6 +661,7 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
     st.session_state[information_name]=information
     return fut_data
   except Exception as e:
+    logger.exception(f"Error in index trade: {e}")
     print('Error in index trade:',symbol,e)
 
 def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
@@ -659,6 +674,7 @@ def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
     strike_symbol=get_ce_pe_data(index_symbol,index_ltp,ce_pe)
     buy_option(strike_symbol,"Manual Buy","5m")
   except Exception as e:
+    logger.exception(f"Error in manual_buy: {e}")
     print(e)
 
 def near_option_trade(interval):
@@ -686,7 +702,9 @@ def near_option_trade(interval):
           indicator_strategy=fut_data['Indicator'].values[-1]
           if (fut_data['St Trade'].values[-1]=="Buy" or fut_data['ST_10_2 Trade'].values[-1]=="Buy"):
             buy_option(strike_symbol,indicator_strategy,"5m")
-        except Exception as e:pass
+        except Exception as e:
+          logger.exception(f"Error in near_option_trade: {e}")
+          pass
 
 def update_todays_trade(todays_trade_log):
   #g_todays_trade_log=todays_trade_log[['updatetime','tradingsymbol','price','Stop Loss','Target','LTP','Status','Sell','Profit','Profit %','ordertag','Sell Indicator']]
@@ -717,6 +735,7 @@ def get_ltp_token(tokenlist):
     ltp_df=pd.DataFrame(obj.getMarketData(mode="LTP",exchangeTokens={ "NSE": ["99926000","99926009"], "NFO": list(tokenlist)})['data']['fetched'])
     return ltp_df
   except Exception as e:
+    logger.exception(f"Error in get_ltp_token: {e}")
     ltp_df=pd.DataFrame(columns = ['exchange','tradingSymbol','symbolToken','ltp'])
     return ltp_df
   
@@ -756,6 +775,7 @@ def ganesh_sl_trail():
         elif st_10_2 < close_price: todays_trade_log['Stop Loss'].iloc[i]=st_10_2
         else: todays_trade_log['Stop Loss'].iloc[i]=max(price,close_price)*0.7
       except Exception as e:
+        logger.exception(f"Error in sl_trail: {e}")
         print(e)
 
 def get_todays_trade(orderbook):
@@ -804,6 +824,7 @@ def get_todays_trade(orderbook):
     todays_trade_log = buy_df
     update_todays_trade(todays_trade_log)
   except Exception as e:
+    logger.exception(f"Error in todays_trade_log: {e}")
     pass
 def update_app():
     print_ltp()
@@ -856,6 +877,7 @@ if algo_state:
       update_app()
       time.sleep(60-datetime.datetime.now().second)
     except Exception as e:
+      logger.exception(f"Error in main loop: {e}")
       print(e)
 
 update_app()
