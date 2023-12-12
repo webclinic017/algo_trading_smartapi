@@ -256,7 +256,8 @@ def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NO
         "stoploss": int(float(stoploss)),"quantity": str(qty),"triggerprice":int(float(triggerprice)),"ordertag":ordertag,"trailingStopLoss":5}
       orderId=obj.placeOrder(orderparams)
       LTP_Price=round(float(get_ltp_price(symbol=symbol,token=token,exch_seg=exch_seg)),2)
-      print(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
+      with logholder:
+        st.write(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
       return orderId,LTP_Price
     except Exception as e:
       print("Order placement failed: ",e)
@@ -279,12 +280,11 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
   try:
     option_token=symbol['symboltoken']
     option_symbol=symbol['tradingsymbol']
-    with logholder:
-      st.write(option_symbol)
     if 'BANKNIFTY' in option_symbol: lotsize=15
     elif "NIFTY" in option_symbol: lotsize=50
     lotsize=int(lotsize*lots_to_trade)
-    print(f'Buying {option_symbol} {option_token} {lotsize}')
+    with logholder:
+      st.write(f'Buying {option_symbol} {option_token} {lotsize} {indicator_strategy}')
     orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
                           variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',ordertag=indicator_strategy)
     if "(" in indicator_strategy and ")" in indicator_strategy:
