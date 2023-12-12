@@ -283,8 +283,6 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
     if 'BANKNIFTY' in option_symbol: lotsize=15
     elif "NIFTY" in option_symbol: lotsize=50
     lotsize=int(lotsize*lots_to_trade)
-    with logholder:
-      st.write(f'Buying {option_symbol} {option_token} {lotsize} {indicator_strategy}')
     orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
                           variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',ordertag=indicator_strategy)
     if "(" in indicator_strategy and ")" in indicator_strategy:
@@ -325,7 +323,8 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
                     variety='STOPLOSS',exch_seg='NFO',producttype='CARRYFORWARD',triggerprice=stop_loss,squareoff=stop_loss,
                     stoploss=stop_loss, ordertag=str(orderId)+" Stop Loss order Placed")
     buy_msg=(f'Buy: {option_symbol}\nPrice: {trade_price} LTP: {ltp_price}\n{indicator_strategy}\nTarget: {target_price} Stop Loss: {stop_loss}')
-    print(buy_msg)
+    with logholder:
+      st.write(buy_msg)
     telegram_bot_sendtext(buy_msg)
   except Exception as e:
     print('Error in buy_option:',e)
