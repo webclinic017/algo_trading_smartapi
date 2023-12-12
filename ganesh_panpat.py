@@ -35,6 +35,18 @@ user="Ganesh"
 #cnt=st_autorefresh(interval=60*1000,debounce=False,key="Ganesh_refresh")
 if 'algo_running' not in st.session_state:st.session_state['algo_running']="Not Running"
 if 'algo_last_run' not in st.session_state:st.session_state['algo_last_run']=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
+st.session_state['1m_bnf']="-"
+st.session_state['1m_nf']="-"
+
+st.session_state['5m_bnf']="-"
+st.session_state['5m_nf']="-"
+
+st.session_state['3m_bnf']="-"
+st.session_state['3m_nf']="-"
+
+st.session_state['15m_bnf']="-"
+st.session_state['15m_nf']="-"
+
 def get_user_pwd(user):
   if user=='Ganesh': username = 'G93179'; pwd = '4789'; apikey = 'CjOKjC5g'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
   elif user=='Kalyani': username = 'K205244'; pwd = '4789'; apikey = 'lzC7yJmt'; token='YDV6CJI6BEU3GWON7GZTZNU3RM'
@@ -70,7 +82,7 @@ with col1:
   algo_state=st.checkbox("Run Algo")
 with col2:
   tab0, tab1, tab2, tab3, tab4= st.tabs(["Log","Order_Book", "Position","Algo Trade", "Settings"])
-  with tab0: logholder=st.empty()
+  with tab0:log_holder=st.empty()
   with tab1:order_datatable=st.empty()
   with tab2:position_datatable=st.empty()
   with tab3:algo_datatable=st.empty()
@@ -255,6 +267,7 @@ def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NO
         "ordertype": ordertype,"producttype": producttype,"duration": "DAY","price": int(float(price)),"squareoff":int(float(squareoff)),
         "stoploss": int(float(stoploss)),"quantity": str(qty),"triggerprice":int(float(triggerprice)),"ordertag":ordertag,"trailingStopLoss":5}
       orderId=obj.placeOrder(orderparams)
+      print(orderId,orderparams)
       LTP_Price=round(float(get_ltp_price(symbol=symbol,token=token,exch_seg=exch_seg)),2)
       return orderId,LTP_Price
     except Exception as e:
@@ -321,8 +334,7 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
                     variety='STOPLOSS',exch_seg='NFO',producttype='CARRYFORWARD',triggerprice=stop_loss,squareoff=stop_loss,
                     stoploss=stop_loss, ordertag=str(orderId)+" Stop Loss order Placed")
     buy_msg=(f'Buy: {option_symbol}\nPrice: {trade_price} LTP: {ltp_price}\n{indicator_strategy}\nTarget: {target_price} Stop Loss: {stop_loss}')
-    with logholder:
-      st.write(buy_msg)
+    print(buy_msg)
     telegram_bot_sendtext(buy_msg)
   except Exception as e:
     print('Error in buy_option:',e)
@@ -619,6 +631,7 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
     fut_data=get_historical_data(symbol,interval=interval,token=token,exch_seg=exch_seg,candle_type=candle_type)
     trade=str(fut_data['Trade'].values[-1])
     trade_end=str(fut_data['Trade End'].values[-1])
+    trade="Buy"
     if trade!="-":
       indicator_strategy=fut_data['Indicator'].values[-1]
       indexLtp=fut_data['Close'].values[-1]
@@ -626,10 +639,11 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
       if trade=="Buy" : strike_symbol=get_ce_pe_data(symbol,indexLtp=indexLtp,ce_pe="CE")
       elif trade=="Sell" : strike_symbol=get_ce_pe_data(symbol,indexLtp=indexLtp,ce_pe="PE")
       buy_option(strike_symbol,indicator_strategy,interval)
-    print(symbol + "_" +fut_data['Time Frame'].values[-1]+" " +str(datetime.datetime.now())+
-          "\n"+fut_data.tail(2)[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','RSI','Indicator']].to_string(index=False))
-    with logholder:
-      st.table(fut_data.tail(2)[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','RSI','Indicator']])
+    n_symbol="bnf" if symbol=="^NSEBANK" or symbol=="BANKNIFTY" else "nf"
+    information_name=interval + "_" + n_symbol
+    information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Datetime':fut_data['Datetime'],
+                 'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],'Trade':fut_data['Trade'].values[-1]}
+    st.session_state[information_name]=information
     return fut_data
   except Exception as e:
     print('Error in index trade:',symbol,e)
@@ -649,31 +663,29 @@ def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
 def near_option_trade(interval):
   for index_symbol in ['BANKNIFTY','NIFTY']:
     if index_symbol=="BANKNIFTY" or index_symbol=="^NSEBANK":
-        index_ltp=st.session_state['BankNifty']
-        expiry_day=st.session_state['bnf_expiry_day']
-        index_ltp = math.floor(index_ltp/100)*100
-        gap=100
+      index_ltp=st.session_state['BankNifty']
+      expiry_day=st.session_state['bnf_expiry_day']
+      index_ltp = math.floor(index_ltp/100)*100
+      gap=100
     if index_symbol=="NIFTY" or index_symbol=="^NSEI":
-        index_ltp=st.session_state['Nifty']
-        val2 = math.fmod(index_ltp, 50)
-        val3 = 50 if val2 >= 25 else 0
-        index_ltp = index_ltp - val2 + val3
-        expiry_day=st.session_state['nf_expiry_day']
-        gap=50
+      index_ltp=st.session_state['Nifty']
+      val2 = math.fmod(index_ltp, 50)
+      val3 = 50 if val2 >= 25 else 0
+      index_ltp = index_ltp - val2 + val3
+      expiry_day=st.session_state['nf_expiry_day']
+      gap=50
     for ce_pe in ['CE','PE']:
-        for i in range(-2,2):
-            try:
-                opt_symbol=index_symbol+expiry_day+str(int(index_ltp+(i*gap)))+ce_pe
-                print(opt_symbol)
-                strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
-                token=strike_symbol['symboltoken']
-                symbol=strike_symbol['tradingsymbol']
-                fut_data=get_historical_data(symbol,interval=interval,token=token,exch_seg='NFO')
-                indicator_strategy=fut_data['Indicator'].values[-1]
-                print(fut_data.tail(2)[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','RSI','Indicator']].to_string(index=False))
-                if (fut_data['St Trade'].values[-1]=="Buy" or fut_data['ST_10_2 Trade'].values[-1]=="Buy"):
-                    buy_option(strike_symbol,indicator_strategy,"5m")
-            except Exception as e:pass
+      for i in range(-2,2):
+        try:
+          opt_symbol=index_symbol+expiry_day+str(int(index_ltp+(i*gap)))+ce_pe
+          strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
+          token=strike_symbol['symboltoken']
+          symbol=strike_symbol['tradingsymbol']
+          fut_data=get_historical_data(symbol,interval=interval,token=token,exch_seg='NFO')
+          indicator_strategy=fut_data['Indicator'].values[-1]
+          if (fut_data['St Trade'].values[-1]=="Buy" or fut_data['ST_10_2 Trade'].values[-1]=="Buy"):
+            buy_option(strike_symbol,indicator_strategy,"5m")
+        except Exception as e:pass
 
 def update_todays_trade(todays_trade_log):
   #g_todays_trade_log=todays_trade_log[['updatetime','tradingsymbol','price','Stop Loss','Target','LTP','Status','Sell','Profit','Profit %','ordertag','Sell Indicator']]
@@ -807,35 +819,38 @@ if bnf_pe: manual_buy("BANKNIFTY",'PE',st.session_state['BankNifty'])
 if algo_state:
   st.session_state['algo_running']="Running"
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-  intradayclose = now_time.replace(hour=22, minute=50, second=0, microsecond=0)
+  intradayclose = now_time.replace(hour=23, minute=50, second=0, microsecond=0)
   marketopen = now_time.replace(hour=9, minute=19, second=0, microsecond=0)
-  marketclose = now_time.replace(hour=15, minute=30, second=0, microsecond=0)
+  marketclose = now_time.replace(hour=23, minute=50, second=0, microsecond=0)
   while True:
     try:
-      logholder.empty()
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       last_login.text(f"Login: {st.session_state['login_time']} Algo: {st.session_state['algo_running']} Last run : {now_time.time()}")
-      log_string=(f"{now_time.replace(microsecond=0,tzinfo=None)}")
       if now_time>marketopen and now_time < intradayclose:
         if now_time.minute%5==0:
           if "IDX:5M" in time_frame:
             bnf_5m_trade=index_trade('BANKNIFTY','5m')
             nf_5m_trade=index_trade('NIFTY','5m')
-            if "OPT:5M" in time_frame: near_option_trade("5m")
-            log_string=(f"{log_string} Bank Nifty :{bnf_5m_trade['Close'].values[-1]} {bnf_5m_trade['Indicator'].values[-1]}")
-            log_string=(f"{log_string} Nifty :{nf_5m_trade['Close'].values[-1]} {nf_5m_trade['Indicator'].values[-1]}")
         if now_time.minute%15==0:
           if "IDX:15M" in time_frame:
             bnf_15m_trade=index_trade('BANKNIFTY','15m')
             nf_15m_trade=index_trade('NIFTY','15m')
-            log_string=(f"{log_string} Bank Nifty :{bnf_15m_trade['Close'].values[-1]} {bnf_15m_trade['Indicator'].values[-1]}")
-            log_string=(f"{log_string} Nifty :{nf_15m_trade['Close'].values[-1]} {nf_15m_trade['Indicator'].values[-1]}")
       elif now_time>marketopen and now_time < marketclose:
         st.session_state['algo_running']="Intraday Market Closed"
       else:st.session_state['algo_running']="Market Closed"
-      with logholder:
-        st.write(f"{log_string}")
       update_app()
+      log_holder.empty()
+      with log_holder.container():
+        st.write(f"{now_time.time()}")
+        st.write(f"Bank Nifty 5M: {st.session_state['5m_bnf']}")
+        st.write(f"Nifty 5M: {st.session_state['5m_nf']}")
+        st.write(f"Bank Nifty 15M: {st.session_state['15m_bnf']}")
+        st.write(f"Nifty 15M: {st.session_state['15m_nf']}")
+        st.write(f"Bank Nifty 3M: {st.session_state['3m_bnf']}")
+        st.write(f"Nifty 3M: {st.session_state['3m_nf']}")
+        st.write(f"Bank Nifty 1M: {st.session_state['1m_bnf']}")
+        st.write(f"Nifty 1M: {st.session_state['1m_nf']}")
+        
       time.sleep(60-datetime.datetime.now().second)
     except Exception as e:
       print(e)
