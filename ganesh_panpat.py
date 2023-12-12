@@ -416,7 +416,7 @@ def angel_data(token,interval,exch_seg,fromdate,todate):
     res_json=obj.getCandleData(historicParam)
     df = pd.DataFrame(res_json['data'], columns=['timestamp','O','H','L','C','V'])
     df = df.rename(columns={'timestamp':'Datetime','O':'Open','H':'High','L':'Low','C':'Close','V':'Volume'})
-    df['Datetime'] = datetime.datetime.fromisoformat(df['Datetime'])
+    df['Datetime'] = df['Datetime'].apply(lambda x: datetime.datetime.fromisoformat(x))
     df['Datetime'] = pd.to_datetime(df['Datetime'],format = '%Y-%m-%d %H:%M:%S')
     df['Datetime']=df['Datetime'].dt.tz_localize(None)
     df = df.set_index('Datetime')
@@ -862,7 +862,7 @@ if algo_state:
       last_login.text(f"Login: {st.session_state['login_time']} Algo: {st.session_state['algo_running']} Last run : {now_time.time()}")
       logger.info(now_time.time())
       if now_time>marketopen and now_time < intradayclose:
-        if now_time.minute%5==0:
+        if now_time.minute%1==0:
           if "IDX:5M" in time_frame:
             bnf_5m_trade=index_trade('BANKNIFTY','5m')
             nf_5m_trade=index_trade('NIFTY','5m')
