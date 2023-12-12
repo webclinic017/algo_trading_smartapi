@@ -629,8 +629,6 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
       buy_option(strike_symbol,indicator_strategy,interval)
     print(symbol + "_" +fut_data['Time Frame'].values[-1]+" " +str(datetime.datetime.now())+
           "\n"+fut_data.tail(2)[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','RSI','Indicator']].to_string(index=False))
-    with logholder:
-      st.write(fut_data.tail(2)[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','RSI','Indicator']])
     return fut_data
   except Exception as e:
     print('Error in index trade:',symbol,e)
@@ -817,6 +815,8 @@ if algo_state:
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       last_login.text(f"Login: {st.session_state['login_time']} Algo: {st.session_state['algo_running']} Last run : {now_time.time()}")
       print(f"{now_time.replace(microsecond=0,tzinfo=None)}")
+      with logholder:
+        st.write(f"{now_time.replace(microsecond=0,tzinfo=None)}")
       if now_time>marketopen and now_time < intradayclose:
         if now_time.minute%5==0:
           if "IDX:5M" in time_frame:
