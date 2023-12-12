@@ -637,11 +637,13 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
       if trade=="Buy" : strike_symbol=get_ce_pe_data(symbol,indexLtp=indexLtp,ce_pe="CE")
       elif trade=="Sell" : strike_symbol=get_ce_pe_data(symbol,indexLtp=indexLtp,ce_pe="PE")
       buy_option(strike_symbol,indicator_strategy,interval)
-    n_symbol="bnf" if symbol=="^NSEBANK" or symbol=="BANKNIFTY" else "nf"
+    if symbol=="^NSEBANK" or symbol=="BANKNIFTY":
+      n_symbol="bnf"
+    else:
+      n_symbol="nf"
     information_name=interval + "_" + n_symbol
-    information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Datetime':fut_data['Datetime'],
+    information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Datetime':fut_data['Datetime'].values[-1],
                  'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],'Trade':fut_data['Trade'].values[-1]}
-    logger.info(information)
     st.session_state[information_name]=information
     return fut_data
   except Exception as e:
