@@ -531,7 +531,6 @@ def get_trade_info(df):
 
     except Exception as e:
       logger.exception(f"Error in get_trade_info: {e}")
-      pass
   df['ADX']=df['ADX'].round(decimals = 2)
   df['ADX']= df['ADX'].astype(str)
   df['Atr']=df['Atr'].round(decimals = 2)
@@ -604,7 +603,6 @@ def calculate_indicator(df):
     df['EMA_High']=pdta.ema(df['High'],length=21)
     df['EMA_Low']=pdta.ema(df['Low'],length=21)
     #df = df.round(decimals=2)
-    df=df.tail(5)
     df=get_trade_info(df)
     return df
   except Exception as e:
