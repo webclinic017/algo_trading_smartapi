@@ -279,6 +279,8 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
   try:
     option_token=symbol['symboltoken']
     option_symbol=symbol['tradingsymbol']
+    with logholder:
+      st.write(option_symbol)
     if 'BANKNIFTY' in option_symbol: lotsize=15
     elif "NIFTY" in option_symbol: lotsize=50
     lotsize=int(lotsize*lots_to_trade)
