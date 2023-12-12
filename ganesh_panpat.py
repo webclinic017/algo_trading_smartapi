@@ -860,7 +860,7 @@ if algo_state:
       last_login.text(f"Login: {st.session_state['login_time']} Algo: {st.session_state['algo_running']} Last run : {now_time.time()}")
       logger.info(now_time.time())
       if now_time>marketopen and now_time < intradayclose:
-        if now_time.minute%1==0:
+        if now_time.minute%5==0:
           if "IDX:5M" in time_frame:
             bnf_5m_trade=index_trade('BANKNIFTY','5m')
             nf_5m_trade=index_trade('NIFTY','5m')
