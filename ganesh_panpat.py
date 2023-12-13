@@ -387,7 +387,6 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     df['VWAP']="-"
     df=df[['Date','Datetime','Open','High','Low','Close','Volume','VWAP','Time Frame']]
     df['Symbol']=symbol
-    logger.info(df.iloc[-1])
     df=calculate_indicator(df)
     df=df.round(2)
     return df
@@ -446,6 +445,7 @@ def get_trade_info(df):
   time_frame=df['Time Frame'][0]
   Symbol=df['Symbol'][0]
   df['Brahmastra']=''
+  logger.info(df.iloc[-1])
   for i in range(0,len(df)):
     try:
       #df['Date'][i]=df['Datetime'][i].strftime('%Y.%m.%d')
@@ -534,6 +534,7 @@ def get_trade_info(df):
 
     except Exception as e:
       logger.exception(f"Error in get_trade_info: {e}")
+  logger.info(df.iloc[-1])
   df['ADX']=df['ADX'].round(decimals = 2)
   df['ADX']= df['ADX'].astype(str)
   df['Atr']=df['Atr'].round(decimals = 2)
@@ -658,7 +659,6 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
     information_name=interval + "_" + n_symbol
     information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Datetime':str(fut_data['Datetime'].values[-1]),
                  'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],'Trade':fut_data['Trade'].values[-1]}
-    logger.info(information)
     st.session_state[information_name]=information
     return fut_data
   except Exception as e:
