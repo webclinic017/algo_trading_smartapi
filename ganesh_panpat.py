@@ -380,7 +380,6 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
       df=df[(df['Open']>0)]
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
     last_candle=now.replace(second=0, microsecond=0)- datetime.timedelta(minutes=delta_time)
-    logger.info(df.iloc[-1])
     df = df[(df['Date_Time'] <= last_candle)]
     df['Time Frame']=odd_interval
     if candle_type=="HEIKIN_ASHI": df=calculate_heikin_ashi(df)
@@ -388,6 +387,7 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     df['VWAP']="-"
     df=df[['Date','Datetime','Open','High','Low','Close','Volume','VWAP','Time Frame']]
     df['Symbol']=symbol
+    logger.info(df.iloc[-1])
     df=calculate_indicator(df)
     df=df.round(2)
     return df
