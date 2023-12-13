@@ -446,7 +446,7 @@ def get_trade_info(df):
   Symbol=df['Symbol'][0]
   df['Brahmastra']=''
   logger.info(type(df['Close'].iloc[-1]))
-  for i in range(0,len(df)):
+  for i in range(10,len(df)):
     try:
       #df['Date'][i]=df['Datetime'][i].strftime('%Y.%m.%d')
       if df['Close'][i-1]<=df['Supertrend'][i-1] and df['Close'][i]> df['Supertrend'][i]: df['St Trade'][i]="Buy"
