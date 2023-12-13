@@ -859,14 +859,14 @@ if bnf_pe: manual_buy("BANKNIFTY",'PE',st.session_state['BankNifty'])
 if algo_state:
   st.session_state['algo_running']="Running"
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-  intradayclose = now_time.replace(hour=14, minute=51, second=0, microsecond=0)
+  intradayclose = now_time.replace(hour=22, minute=51, second=0, microsecond=0)
   marketopen = now_time.replace(hour=6, minute=30, second=0, microsecond=0)
-  marketclose = now_time.replace(hour=15, minute=30, second=0, microsecond=0)
+  marketclose = now_time.replace(hour=22, minute=30, second=0, microsecond=0)
   while True:
     try:
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       last_login.text(f"Login: {st.session_state['login_time']} Algo: {st.session_state['algo_running']} Last run : {now_time.time()}")
-      logger.info(now_time.time())
+      st.session_state['options_trade_list']="-"
       if now_time>marketopen and now_time < intradayclose:
         if now_time.minute%5==0:
           if "IDX:5M" in time_frame:
