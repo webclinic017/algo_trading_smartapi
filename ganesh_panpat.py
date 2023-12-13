@@ -892,5 +892,5 @@ if close_all:
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   logger.info(now_time.time())
   bnf_5m_trade=index_trade('BANKNIFTY','5m')
-  #nf_5m_trade=index_trade('NIFTY','5m')
-  #near_option_trade('5m')
+  nf_5m_trade=index_trade('NIFTY','5m')
+  near_option_trade('5m')
