@@ -378,7 +378,7 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
       df=df[(df['Open']>0)]
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
     last_candle=now.replace(second=0, microsecond=0)- datetime.timedelta(minutes=delta_time)
-    #df = df[(df['Date_Time'] <= last_candle)]
+    df = df[(df['Date_Time'] <= last_candle)]
     df['Time Frame']=odd_interval
     if candle_type=="HEIKIN_ASHI": df=calculate_heikin_ashi(df)
     #df['VWAP']=pdta.vwap(high=df['High'],low=df['Low'],close=df['Close'],volume=df['Volume'])
@@ -400,7 +400,7 @@ def yfna_data(symbol,interval,period):
     df['Date_Time']=df['Datetime']
     df['Date']=df['Datetime'].dt.strftime('%m/%d/%y')
     df['Datetime'] = pd.to_datetime(df['Datetime']).dt.time
-    df=df[['Date','Datetime','Open','High','Low','Close','Volume']]
+    df=df[['Date_Time','Date','Datetime','Open','High','Low','Close','Volume']]
     if isinstance(df, str) or (isinstance(df, pd.DataFrame)==True and len(df)==0):
       print("Yahoo Data Not Found")
       return "No data found, symbol may be delisted"
@@ -421,7 +421,7 @@ def angel_data(token,interval,exch_seg,fromdate,todate):
     df['Datetime']=df['Datetime'].dt.tz_localize(None)
     df['Date']=df['Datetime'].dt.strftime('%m/%d/%y')
     df['Datetime'] = pd.to_datetime(df['Datetime']).dt.time
-    df=df[['Date','Datetime','Open','High','Low','Close','Volume']]
+    df=df[['Date_Time','Date','Datetime','Open','High','Low','Close','Volume']]
     if isinstance(df, str) or (isinstance(df, pd.DataFrame)==True and len(df)==0):
       print("Angel Data Not Found")
       return "No data found, symbol may be delisted"
