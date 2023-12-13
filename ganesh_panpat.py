@@ -366,8 +366,8 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
         if(i.isdigit()): odd_interval+=i
       delta_time=int(odd_interval)
       odd_interval+='m'
-    if (symbol[0]=="^" or "NS" in symbol) and symbol !="-":
-      df=yfna_data(symbol,yf_interval,str(period)+"d")
+    #if (symbol[0]=="^" or "NS" in symbol) and symbol !="-":
+    #  df=yfna_data(symbol,yf_interval,str(period)+"d")
     if isinstance(df, str):
       to_date= datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       from_date = to_date - datetime.timedelta(days=period)
@@ -891,5 +891,5 @@ if algo_state:
 update_app()
 if close_all:
   bnf_5m_trade=index_trade('BANKNIFTY','5m')
-  nf_5m_trade=index_trade('NIFTY','5m')
-  near_option_trade('5m')
+  #nf_5m_trade=index_trade('NIFTY','5m')
+  #near_option_trade('5m')
