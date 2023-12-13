@@ -702,7 +702,7 @@ def near_option_trade(interval):
           indicator_strategy=fut_data['Indicator'].values[-1]
           if (fut_data['St Trade'].values[-1]=="Buy" or fut_data['ST_10_2 Trade'].values[-1]=="Buy"):
             buy_option(strike_symbol,indicator_strategy,"5m")
-          information={'Symbol':opt_symbol,'Datetime':str(fut_data['Datetime'].values[-1]),
+          information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Symbol':opt_symbol,'Datetime':str(fut_data['Datetime'].values[-1]),
                  'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],'Trade':fut_data['Trade'].values[-1]}
           options_trade.append(information)
         except Exception as e:
@@ -847,7 +847,9 @@ def update_app():
       st.write(f"Nifty 3M: {st.session_state['3m_nf']}")
       st.write(f"Bank Nifty 1M: {st.session_state['1m_bnf']}")
       st.write(f"Nifty 1M: {st.session_state['1m_nf']}")
-      st.write(f"Options Trade: {st.session_state['options_trade_list']}")
+      st.write("Options Trade:")
+      for i in st.session_state['options_trade_list']:
+        st.write(i)
         
     
 
@@ -859,9 +861,9 @@ if bnf_pe: manual_buy("BANKNIFTY",'PE',st.session_state['BankNifty'])
 if algo_state:
   st.session_state['algo_running']="Running"
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-  intradayclose = now_time.replace(hour=14, minute=51, second=0, microsecond=0)
+  intradayclose = now_time.replace(hour=23, minute=51, second=0, microsecond=0)
   marketopen = now_time.replace(hour=6, minute=30, second=0, microsecond=0)
-  marketclose = now_time.replace(hour=15, minute=30, second=0, microsecond=0)
+  marketclose = now_time.replace(hour=23, minute=51, second=0, microsecond=0)
   while True:
     try:
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
