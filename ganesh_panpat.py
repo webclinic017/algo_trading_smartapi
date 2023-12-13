@@ -841,15 +841,15 @@ def update_app():
       st.write(f"{now_time.time()}")
       st.write(f"Bank Nifty 5M: {st.session_state['5m_bnf']}")
       st.write(f"Nifty 5M: {st.session_state['5m_nf']}")
-      st.write(f"Bank Nifty 15M: {st.session_state['15m_bnf']}")
-      st.write(f"Nifty 15M: {st.session_state['15m_nf']}")
-      st.write(f"Bank Nifty 3M: {st.session_state['3m_bnf']}")
-      st.write(f"Nifty 3M: {st.session_state['3m_nf']}")
-      st.write(f"Bank Nifty 1M: {st.session_state['1m_bnf']}")
-      st.write(f"Nifty 1M: {st.session_state['1m_nf']}")
+      #st.write(f"Bank Nifty 15M: {st.session_state['15m_bnf']}")
+      #st.write(f"Nifty 15M: {st.session_state['15m_nf']}")
+      #st.write(f"Bank Nifty 3M: {st.session_state['3m_bnf']}")
+      #st.write(f"Nifty 3M: {st.session_state['3m_nf']}")
+      #st.write(f"Bank Nifty 1M: {st.session_state['1m_bnf']}")
+      #st.write(f"Nifty 1M: {st.session_state['1m_nf']}")
       st.write("Options Trade:")
       for i in st.session_state['options_trade_list']:
-        st.write(i)
+        st.write(f"{i}")
         
     
 
