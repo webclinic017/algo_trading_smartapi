@@ -381,7 +381,8 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     #df = df[(df.index <= last_candle)]
     df['Time Frame']=odd_interval
     if candle_type=="HEIKIN_ASHI": df=calculate_heikin_ashi(df)
-    df['VWAP']=pdta.vwap(high=df['High'],low=df['Low'],close=df['Close'],volume=df['Volume'])
+    #df['VWAP']=pdta.vwap(high=df['High'],low=df['Low'],close=df['Close'],volume=df['Volume'])
+    df['VWAP']="-"
     df=df[['Date','Datetime','Open','High','Low','Close','Volume','VWAP','Time Frame']]
     df['Symbol']=symbol
     df=calculate_indicator(df)
