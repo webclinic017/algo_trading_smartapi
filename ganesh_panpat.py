@@ -397,7 +397,7 @@ def yfna_data(symbol,interval,period):
     df['Datetime'] = df.index
     df['Datetime']=df['Datetime'].dt.tz_localize(None)
     df=df.reset_index(drop=True)
-    df['Date_Time']=df['Datetime]
+    df['Date_Time']=df['Datetime']
     df['Date']=df['Datetime'].dt.strftime('%m/%d/%y')
     df['Datetime'] = pd.to_datetime(df['Datetime']).dt.time
     df=df[['Date','Datetime','Open','High','Low','Close','Volume']]
@@ -417,7 +417,7 @@ def angel_data(token,interval,exch_seg,fromdate,todate):
     df = pd.DataFrame(res_json['data'], columns=['timestamp','O','H','L','C','V'])
     df = df.rename(columns={'timestamp':'Datetime','O':'Open','H':'High','L':'Low','C':'Close','V':'Volume'})
     df['Datetime'] = pd.to_datetime(df['Datetime'],format = '%Y-%m-%d %H:%M:%S')
-    df['Date_Time']=df['Datetime]
+    df['Date_Time']=df['Datetime']
     df['Datetime']=df['Datetime'].dt.tz_localize(None)
     df['Date']=df['Datetime'].dt.strftime('%m/%d/%y')
     df['Datetime'] = pd.to_datetime(df['Datetime']).dt.time
