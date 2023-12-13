@@ -847,7 +847,7 @@ if algo_state:
   st.session_state['algo_running']="Running"
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   intradayclose = now_time.replace(hour=14, minute=51, second=0, microsecond=0)
-  marketopen = now_time.replace(hour=0, minute=0, second=0, microsecond=0)
+  marketopen = now_time.replace(hour=06, minute=30, second=0, microsecond=0)
   marketclose = now_time.replace(hour=15, minute=30, second=0, microsecond=0)
   while True:
     try:
