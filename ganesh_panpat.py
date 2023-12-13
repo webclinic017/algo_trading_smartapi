@@ -867,7 +867,7 @@ if algo_state:
         st.session_state['algo_running']="Intraday Market Closed"
       else:st.session_state['algo_running']="Market Closed"
       update_app()
-      time.sleep(60-datetime.datetime.now().second)
+      time.sleep(60-datetime.datetime.now(tz=gettz('Asia/Kolkata')).second)
     except Exception as e:
       logger.exception(f"Error in main loop: {e}")
       print(e)
