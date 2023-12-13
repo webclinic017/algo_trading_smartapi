@@ -445,7 +445,7 @@ def get_trade_info(df):
   time_frame=df['Time Frame'][0]
   Symbol=df['Symbol'][0]
   df['Brahmastra']=''
-  logger.info(df.iloc[-1])
+  logger.info(type(df['Close'].iloc[-1]))
   for i in range(0,len(df)):
     try:
       #df['Date'][i]=df['Datetime'][i].strftime('%Y.%m.%d')
@@ -534,7 +534,6 @@ def get_trade_info(df):
 
     except Exception as e:
       logger.exception(f"Error in get_trade_info: {e}")
-  logger.info(df.iloc[-1])
   df['ADX']=df['ADX'].round(decimals = 2)
   df['ADX']= df['ADX'].astype(str)
   df['Atr']=df['Atr'].round(decimals = 2)
