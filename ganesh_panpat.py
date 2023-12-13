@@ -36,15 +36,16 @@ user="Ganesh"
 #cnt=st_autorefresh(interval=60*1000,debounce=False,key="Ganesh_refresh")
 if 'algo_running' not in st.session_state:st.session_state['algo_running']="Not Running"
 if 'algo_last_run' not in st.session_state:st.session_state['algo_last_run']=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-st.session_state['1m_bnf']="-"
-st.session_state['1m_nf']="-"
-st.session_state['5m_bnf']="-"
-st.session_state['5m_nf']="-"
-st.session_state['3m_bnf']="-"
-st.session_state['3m_nf']="-"
-st.session_state['15m_bnf']="-"
-st.session_state['15m_nf']="-"
-st.session_state['options_trade_list']='-'
+if '5m_bnf' not in st.session_state:
+  st.session_state['1m_bnf']="-"
+  st.session_state['1m_nf']="-"
+  st.session_state['5m_bnf']="-"
+  st.session_state['5m_nf']="-"
+  st.session_state['3m_bnf']="-"
+  st.session_state['3m_nf']="-"
+  st.session_state['15m_bnf']="-"
+  st.session_state['15m_nf']="-"
+  st.session_state['options_trade_list']='-'
 
 def get_user_pwd(user):
   if user=='Ganesh': username = 'G93179'; pwd = '4789'; apikey = 'CjOKjC5g'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
