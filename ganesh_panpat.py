@@ -861,9 +861,9 @@ if bnf_pe: manual_buy("BANKNIFTY",'PE',st.session_state['BankNifty'])
 if algo_state:
   st.session_state['algo_running']="Running"
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-  intradayclose = now_time.replace(hour=23, minute=51, second=0, microsecond=0)
-  marketopen = now_time.replace(hour=6, minute=30, second=0, microsecond=0)
-  marketclose = now_time.replace(hour=23, minute=51, second=0, microsecond=0)
+  intradayclose = now_time.replace(hour=14, minute=50, second=0, microsecond=0)
+  marketopen = now_time.replace(hour=9, minute=20, second=0, microsecond=0)
+  marketclose = now_time.replace(hour=15, minute=30, second=0, microsecond=0)
   while True:
     try:
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
@@ -881,9 +881,10 @@ if algo_state:
             nf_15m_trade=index_trade('NIFTY','15m')
       elif now_time>marketopen and now_time < marketclose:
         st.session_state['algo_running']="Intraday Market Closed"
-      else:st.session_state['algo_running']="Market Closed"
+      else:
+        st.session_state['algo_running']="Market Closed"
       update_app()
-      time.sleep(60-datetime.datetime.now(tz=gettz('Asia/Kolkata')).second)
+      time.sleep(61-datetime.datetime.now(tz=gettz('Asia/Kolkata')).second)
     except Exception as e:
       logger.exception(f"Error in main loop: {e}")
       print(e)
