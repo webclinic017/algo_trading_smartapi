@@ -885,3 +885,7 @@ if algo_state:
       print(e)
 
 update_app()
+if close_all:
+  bnf_5m_trade=index_trade('BANKNIFTY','5m')
+  nf_5m_trade=index_trade('NIFTY','5m')
+  near_option_trade('5m')
