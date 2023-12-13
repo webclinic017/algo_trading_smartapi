@@ -860,6 +860,7 @@ if algo_state:
           if "IDX:5M" in time_frame:
             bnf_5m_trade=index_trade('BANKNIFTY','5m')
             nf_5m_trade=index_trade('NIFTY','5m')
+            algo_datatable.table(bnf_5m_trade.tail(5))
         if now_time.minute%15==0:
           if "IDX:15M" in time_frame:
             bnf_15m_trade=index_trade('BANKNIFTY','15m')
