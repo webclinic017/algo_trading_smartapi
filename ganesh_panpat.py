@@ -637,7 +637,6 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
     fut_data=get_historical_data(symbol,interval=interval,token=token,exch_seg=exch_seg,candle_type=candle_type)
     trade=str(fut_data['Trade'].values[-1])
     trade_end=str(fut_data['Trade End'].values[-1])
-    trade="Buy"
     if trade!="-":
       indicator_strategy=fut_data['Indicator'].values[-1]
       indexLtp=fut_data['Close'].values[-1]
