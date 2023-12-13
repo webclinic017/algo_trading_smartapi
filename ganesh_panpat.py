@@ -44,7 +44,7 @@ st.session_state['3m_bnf']="-"
 st.session_state['3m_nf']="-"
 st.session_state['15m_bnf']="-"
 st.session_state['15m_nf']="-"
-st.session_state['options_trade']='-'
+st.session_state['options_trade_list']='-'
 
 def get_user_pwd(user):
   if user=='Ganesh': username = 'G93179'; pwd = '4789'; apikey = 'CjOKjC5g'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
@@ -697,15 +697,15 @@ def near_option_trade(interval):
           symbol=strike_symbol['tradingsymbol']
           fut_data=get_historical_data(symbol,interval=interval,token=token,exch_seg='NFO')
           indicator_strategy=fut_data['Indicator'].values[-1]
+          if (fut_data['St Trade'].values[-1]=="Buy" or fut_data['ST_10_2 Trade'].values[-1]=="Buy"):
+            buy_option(strike_symbol,indicator_strategy,"5m")
           information={'Symbol':opt_symbol,'Datetime':str(fut_data['Datetime'].values[-1]),
                  'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],'Trade':fut_data['Trade'].values[-1]}
           options_trade.append(information)
-          if (fut_data['St Trade'].values[-1]=="Buy" or fut_data['ST_10_2 Trade'].values[-1]=="Buy"):
-            buy_option(strike_symbol,indicator_strategy,"5m")
         except Exception as e:
           logger.exception(f"Error in near_option_trade: {e}")
           pass
-  st.session_state['options_trade']=options_trade
+  st.session_state['options_trade_list']=options_trade
 
 def update_todays_trade(todays_trade_log):
   #g_todays_trade_log=todays_trade_log[['updatetime','tradingsymbol','price','Stop Loss','Target','LTP','Status','Sell','Profit','Profit %','ordertag','Sell Indicator']]
@@ -844,7 +844,7 @@ def update_app():
       st.write(f"Nifty 3M: {st.session_state['3m_nf']}")
       st.write(f"Bank Nifty 1M: {st.session_state['1m_bnf']}")
       st.write(f"Nifty 1M: {st.session_state['1m_nf']}")
-      st.write(f"Options Trade: {st.session_state['options_trade']}")
+      st.write(f"Options Trade: {st.session_state['options_trade_list']}")
         
     
 
