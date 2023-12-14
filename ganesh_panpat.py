@@ -846,17 +846,10 @@ def update_app():
       st.write(f"{now_time.time()}")
       st.write(f"Bank Nifty 5M: {st.session_state['5m_bnf']}")
       st.write(f"Nifty 5M: {st.session_state['5m_nf']}")
-      #st.write(f"Bank Nifty 15M: {st.session_state['15m_bnf']}")
-      #st.write(f"Nifty 15M: {st.session_state['15m_nf']}")
-      #st.write(f"Bank Nifty 3M: {st.session_state['3m_bnf']}")
-      #st.write(f"Nifty 3M: {st.session_state['3m_nf']}")
-      #st.write(f"Bank Nifty 1M: {st.session_state['1m_bnf']}")
-      #st.write(f"Nifty 1M: {st.session_state['1m_nf']}")
-      st.write("Options Trade:")
+      st.write("**Options Trade**")
       for i in st.session_state['options_trade_list']:
-        st.write(f"{i}")
-        
-    
+        print_string=(f'''{print_string}  \n {i}''')
+      st.write(print_string)
 
 if nf_ce: manual_buy("NIFTY",'CE',st.session_state['Nifty'])
 if bnf_ce: manual_buy("BANKNIFTY",'CE',st.session_state['BankNifty'])
@@ -866,9 +859,9 @@ if bnf_pe: manual_buy("BANKNIFTY",'PE',st.session_state['BankNifty'])
 if algo_state:
   st.session_state['algo_running']="Running"
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-  intradayclose = now_time.replace(hour=14, minute=50, second=0, microsecond=0)
+  intradayclose = now_time.replace(hour=20, minute=50, second=0, microsecond=0)
   marketopen = now_time.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now_time.replace(hour=15, minute=30, second=0, microsecond=0)
+  marketclose = now_time.replace(hour=20, minute=30, second=0, microsecond=0)
   while True:
     try:
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
