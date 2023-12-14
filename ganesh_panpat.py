@@ -838,11 +838,11 @@ def update_app():
     log_holder.empty()
     with log_holder.container():
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-      st.write("""
+      st.write(f"""
       {now_time.time()}
       Bank Nifty 5M: {st.session_state['5m_bnf']}
       Nifty 5M: {st.session_state['5m_nf']}
-      """)
+      """,unsafe_allow_html=True)
       st.write(f"{now_time.time()}")
       st.write(f"Bank Nifty 5M: {st.session_state['5m_bnf']}")
       st.write(f"Nifty 5M: {st.session_state['5m_nf']}")
