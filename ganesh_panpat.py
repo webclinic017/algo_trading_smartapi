@@ -204,7 +204,9 @@ def update_order_book():
       orderbook=update_price_orderbook(orderbook)
       orderbook['price']=round(orderbook['price'].astype(int),2)
       orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
-      order_datatable.table(orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag']])
+      orderbook['LTP']=''
+      orderbook=update_ltp_buy_df(orderbook)
+      order_datatable.table(orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','LTP','quantity','ordertag']])
       return orderbook
   except Exception as e:
     logger.exception(f"Unable to update_order_book: {e}")
@@ -747,13 +749,16 @@ def update_ltp_buy_df(buy_df):
   tokenlist=buy_df['symboltoken'].values.tolist()
   ltp_df=get_ltp_token(numpy.unique(tokenlist))
   for i in range(0,len(buy_df)):
-    symboltoken=int(buy_df['symboltoken'].iloc[i])
-    n_ltp_df=ltp_df[ltp_df['symbolToken']==symboltoken]
-    if len(n_ltp_df)!=0:
-      buy_df['LTP'].iloc[i]=n_ltp_df['ltp'].iloc[0]
-    else:
-      buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
-  buy_df['LTP']=round(buy_df['LTP'].astype(int),2)
+    try:
+      symboltoken=int(buy_df['symboltoken'].iloc[i])
+      n_ltp_df=ltp_df[ltp_df['symbolToken']==symboltoken]
+      if len(n_ltp_df)!=0:
+        buy_df['LTP'].iloc[i]=n_ltp_df['ltp'].iloc[0]
+      else:
+        buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
+      buy_df['LTP']=round(buy_df['LTP'].astype(int),2)
+    except Exception as e:
+      pass
   return buy_df
 
 def ganesh_sl_trail():
