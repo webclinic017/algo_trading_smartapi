@@ -843,9 +843,6 @@ def update_app():
       Bank Nifty 5M: {st.session_state['5m_bnf']}<br>
       Nifty 5M: {st.session_state['5m_nf']}<br>
       """,unsafe_allow_html=True)
-      st.write(f"{now_time.time()}")
-      st.write(f"Bank Nifty 5M: {st.session_state['5m_bnf']}")
-      st.write(f"Nifty 5M: {st.session_state['5m_nf']}")
       st.write("**Options Trade**")
       print_string=""
       for i in st.session_state['options_trade_list']:
