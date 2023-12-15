@@ -210,7 +210,7 @@ def update_order_book():
       orderbook['price']=round(orderbook['price'].astype(int),2)
       orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
       orderbook['LTP']=''
-      orderbook=update_ltp_buy_df(orderbook)
+      #orderbook=update_ltp_buy_df(orderbook)
       order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
       order_datatable.table(orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','LTP','quantity','ordertag']])
       return orderbook
