@@ -71,6 +71,7 @@ obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_sta
                  refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
 st.header(f"Welcome {st.session_state['user_name']}")
 last_login=st.empty()
+last_login.text(f"Login: {st.session_state['login_time']} Algo: Not Running")
 placeholder = st.empty()
 col1,col2=st.columns([1,9])
 with col1:
