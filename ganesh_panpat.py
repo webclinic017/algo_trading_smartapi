@@ -162,7 +162,14 @@ def print_ltp():
     for i in range(0,len(data)):
       if data.iloc[i]['tradingSymbol']=="Nifty 50" and int(data.iloc[i]['ltp'])>1:st.session_state['Nifty']=int(data.iloc[i]['ltp'])
       if data.iloc[i]['tradingSymbol']=="Nifty Bank" and int(data.iloc[i]['ltp'])>1:st.session_state['BankNifty']=int(data.iloc[i]['ltp'])
-      print_sting=f"{print_sting} {data.iloc[i]['tradingSymbol']} {int(data.iloc[i]['ltp'])}({int(data.iloc[i]['change'])})"
+      sym=data.iloc[i]['tradingSymbol']
+      sym_ltp=int(data.iloc[i]['ltp'])
+      sym_change=int(data.iloc[i]['change'])
+      if sym_change<0:
+        sym_change=(f" :red[{sym_change}]")
+      else:
+        sym_change=(f" :blue[{sym_change}]")
+      print_sting=f"{print_sting} {sym} {sym_ltp}({sym_change})"
       print_sting=print_sting.replace("Nifty 50","Nifty")
       print_sting=print_sting.replace("Nifty Bank","BankNifty")
       placeholder.text(print_sting)
