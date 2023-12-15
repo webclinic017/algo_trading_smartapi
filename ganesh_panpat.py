@@ -46,13 +46,11 @@ if '5m_bnf' not in st.session_state:
   st.session_state['15m_bnf']="-"
   st.session_state['15m_nf']="-"
   st.session_state['options_trade_list']='-'
-
-def get_user_pwd(user):
-  if user=='Ganesh': username = 'G93179'; pwd = '4789'; apikey = 'CjOKjC5g'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
-  elif user=='Kalyani': username = 'K205244'; pwd = '4789'; apikey = 'lzC7yJmt'; token='YDV6CJI6BEU3GWON7GZTZNU3RM'
-  elif user=="Akshay": username='A325394'; pwd='1443'; apikey='OeSllszj'; token='G4OKBQKHXPS67EN2WMVP3TZ7X4'
-  return username,pwd,apikey,token
-username,pwd,apikey,token=get_user_pwd(user)
+  
+username=st.secrets["username"]
+pwd=st.secrets["pwd"]
+apikey=st.secrets["apikey"]
+token=st.secrets["token"]
 if 'user_name' not in st.session_state:
     obj=SmartConnect(api_key=apikey)
     obj.generateSession(username,pwd,pyotp.TOTP(token).now())
