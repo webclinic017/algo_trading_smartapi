@@ -695,9 +695,13 @@ def near_option_trade(interval):
       expiry_day=st.session_state['nf_expiry_day']
       gap=50
     for ce_pe in ['CE','PE']:
-      for i in range(-2,2):
+      for i in range(1,2):
         try:
-          opt_symbol=index_symbol+expiry_day+str(int(index_ltp+(i*gap)))+ce_pe
+          if ce_pe=="CE":
+            strike_price=index_ltp+(i*gap))
+          else:
+            strike_price=index_ltp-(i*gap))
+          opt_symbol=index_symbol+expiry_day+str(int(strike_price))+ce_pe
           strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
           token=strike_symbol['symboltoken']
           symbol=strike_symbol['tradingsymbol']
