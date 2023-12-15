@@ -698,7 +698,7 @@ def near_option_trade(interval):
       for i in range(1,2):
         try:
           if ce_pe=="CE":
-            strike_price=index_ltp+(i*gap))
+            strike_price=index_ltp+(i*gap)
           else:
             strike_price=index_ltp-(i*gap))
           opt_symbol=index_symbol+expiry_day+str(int(strike_price))+ce_pe
