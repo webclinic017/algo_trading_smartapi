@@ -84,7 +84,10 @@ with col1:
 with col2:
   tab0, tab1, tab2, tab3, tab4= st.tabs(["Log","Order_Book", "Position","Algo Trade", "Settings"])
   with tab0:log_holder=st.empty()
-  with tab1:order_datatable=st.empty()
+  with tab1:
+    order_book_updated=st.empty()
+    order_book_updated.text(f"Orderbook : ")
+    order_datatable=st.empty()
   with tab2:position_datatable=st.empty()
   with tab3:algo_datatable=st.empty()
   with tab4:
@@ -198,6 +201,7 @@ def update_order_book():
     orderbook=obj.orderBook()['data']
     if orderbook==None:
       order_datatable.write("No Order Placed")
+      order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
       orderbook=pd.DataFrame(columns =['updatetime','tradingsymbol','price','ordertag','transactiontype','status'])
     else:
       orderbook=pd.DataFrame(orderbook)
@@ -207,6 +211,7 @@ def update_order_book():
       orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
       orderbook['LTP']=''
       orderbook=update_ltp_buy_df(orderbook)
+      order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
       order_datatable.table(orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','LTP','quantity','ordertag']])
       return orderbook
   except Exception as e:
