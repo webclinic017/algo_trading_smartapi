@@ -695,7 +695,7 @@ def near_option_trade(interval):
       expiry_day=st.session_state['nf_expiry_day']
       gap=50
     for ce_pe in ['CE','PE']:
-      for i in range(1,2):
+      for i in range(1,3):
         try:
           if ce_pe=="CE":
             strike_price=index_ltp+(i*gap)
