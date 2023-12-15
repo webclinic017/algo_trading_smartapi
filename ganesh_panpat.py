@@ -165,11 +165,7 @@ def print_ltp():
       sym=data.iloc[i]['tradingSymbol']
       sym_ltp=int(data.iloc[i]['ltp'])
       sym_change=int(data.iloc[i]['change'])
-      if sym_change<0:
-        print_sting=f"{print_sting} {sym} {sym_ltp}( :red[{sym_change}])"
-      else:
-        print_sting=f"{print_sting} {sym} {sym_ltp}( :blue[{sym_change}])"
-      #print_sting=f"{print_sting} {sym} {sym_ltp}({sym_change})"
+      print_sting=f"{print_sting} {sym} {sym_ltp}({sym_change})"
       print_sting=print_sting.replace("Nifty 50","Nifty")
       print_sting=print_sting.replace("Nifty Bank","BankNifty")
       placeholder.text(print_sting)
