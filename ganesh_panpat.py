@@ -94,25 +94,25 @@ with col2:
     with ind_col1:
       five_buy_indicator = st.multiselect('Five Minute Indicator',indicator_list,['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade'])
       three_buy_indicator = st.multiselect('Three Minute Indicator',indicator_list,[])
-      time_frame = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M', 'OPT:5M'])
-    with ind_col2:
       one_buy_indicator = st.multiselect('One Minute Indicator',indicator_list,[])
       option_buy_indicator = st.multiselect('Option Indicator',indicator_list,['St Trade', 'ST_10_2 Trade'])
-    col1_tab4,col2_tab4,col3_tab4,col4_tab4,col5_tab4=st.columns(5)
-    with col1_tab4:
-      banknifty_target=st.number_input(label="Bank Nifty Target",min_value=10, max_value=100, value=10, step=None)
-      nifty_target=st.number_input(label="Nifty Target",min_value=5, max_value=100, value=5, step=None)
-    with col2_tab4:
-      banknifty_sl=st.number_input(label="Bank Nifty SL",min_value=10, max_value=100, value=10, step=None)
-      nifty_sl=st.number_input(label="Nifty SL",min_value=5, max_value=100, value=5, step=None)
-    with col3_tab4:
-      target_order_type = st.selectbox('Target Order',('Target', 'Stop_Loss', 'NA'),1)
-      lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
-    with col4_tab4:
-      target_type = st.selectbox('Target Type',('Points', 'Per Cent'),0)
-    with col5_tab4:
-      expiry_days_bnf=st.empty()
-      expiry_days_nf=st.empty()
+      time_frame = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M', 'OPT:5M'])
+    with ind_col2:
+      col1_tab4,col2_tab4,col3_tab4,col4_tab4,col5_tab4=st.columns(5)
+      with col1_tab4:
+        banknifty_target=st.number_input(label="Bank Nifty Target",min_value=10, max_value=100, value=10, step=None)
+        nifty_target=st.number_input(label="Nifty Target",min_value=5, max_value=100, value=5, step=None)
+      with col2_tab4:
+        banknifty_sl=st.number_input(label="Bank Nifty SL",min_value=10, max_value=100, value=10, step=None)
+        nifty_sl=st.number_input(label="Nifty SL",min_value=5, max_value=100, value=5, step=None)
+      with col3_tab4:
+        target_order_type = st.selectbox('Target Order',('Target', 'Stop_Loss', 'NA'),1)
+        lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
+      with col4_tab4:
+        target_type = st.selectbox('Target Type',('Points', 'Per Cent'),0)
+      with col5_tab4:
+        expiry_days_bnf=st.empty()
+        expiry_days_nf=st.empty()
 
 def split_opt_name(options_contract):
   pattern = re.compile(r'([A-Za-z]+)(\d{2}[A-Za-z]+\d{2})(\d+)([CEP]+)')
