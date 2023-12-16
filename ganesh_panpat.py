@@ -882,12 +882,22 @@ if algo_state:
           if "IDX:5M" in time_frame:
             bnf_5m_trade=index_trade('BANKNIFTY','5m')
             nf_5m_trade=index_trade('NIFTY','5m')
-            near_option_trade('5m')
-            algo_datatable.table(bnf_5m_trade.tail(5))
+          if "OPT:5M" in time_frame: near_option_trade('5m')
         if now_time.minute%15==0:
           if "IDX:15M" in time_frame:
             bnf_15m_trade=index_trade('BANKNIFTY','15m')
             nf_15m_trade=index_trade('NIFTY','15m')
+          if "OPT:15M" in time_frame: near_option_trade('15m')
+        if now_time%3==0:
+          if "IDX:3M" in time_frame:
+            bnf_3m_trade=index_trade('BANKNIFTY','3m')
+            nf_3m_trade=index_trade('NIFTY','3m')
+          if "OPT:3M" in time_frame:time_frame: near_option_trade('3m')
+        if "IDX:1M" in time_frame:
+          bnf_1m_trade=index_trade('BANKNIFTY','1m')
+          nf_1m_trade=index_trade('NIFTY','1m')
+        if "OPT:1M" in time_frame:time_frame: near_option_trade('1m')
+        st.session_state['algo_running']="Running"
       elif now_time>marketopen and now_time < marketclose:
         st.session_state['algo_running']="Intraday Market Closed"
       else:
