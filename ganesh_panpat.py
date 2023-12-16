@@ -152,7 +152,7 @@ if 'bnf_expiry_day' not in st.session_state or 'nf_expiry_day' not in st.session
     st.session_state['bnf_expiry_day']=bnf_expiry_day
     nf_expiry_day=get_expiry_day("NIFTY")
     st.session_state['nf_expiry_day']=nf_expiry_day
-exp_inpu.text=bnf_expiry_day
+exp_inpu.value=st.session_state['bnf_expiry_day']
 def print_ltp():
   try:
     data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={ "NSE": ["99926000","99926009"], "NFO": []})['data']['fetched'])
