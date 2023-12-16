@@ -146,7 +146,7 @@ def get_expiry_day(symbol):
     logger.exception(f"Unable to find expiry date: {e}")
     return "Unable to find expiry date"
 
-if 'bnf_expiry_day' not in st.session_state or 'nf_expiry_day' not in st.session_state:
+if 'bnf_expiry_day' not in st.session_state:
     bnf_expiry_day=get_expiry_day("BANKNIFTY")
     st.session_state['bnf_expiry_day']=bnf_expiry_day
     nf_expiry_day=get_expiry_day("NIFTY")
