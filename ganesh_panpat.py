@@ -888,7 +888,7 @@ if algo_state:
             bnf_15m_trade=index_trade('BANKNIFTY','15m')
             nf_15m_trade=index_trade('NIFTY','15m')
           if "OPT:15M" in time_frame: near_option_trade('15m')
-        if now_time%3==0:
+        if now_time.minute%3==0:
           if "IDX:3M" in time_frame:
             bnf_3m_trade=index_trade('BANKNIFTY','3m')
             nf_3m_trade=index_trade('NIFTY','3m')
