@@ -89,21 +89,24 @@ with col2:
   with tab2:position_datatable=st.empty()
   with tab3:algo_datatable=st.empty()
   with tab4:
-    ind_col1,ind_col2=st.columns(2)
+    ind_col1,ind_col2,ind_col3,ind_col4=st.columns([5.5,1.5,1.5,1.5)
     indicator_list=['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade']
     with ind_col1:
       five_buy_indicator = st.multiselect('Five Minute Indicator',indicator_list,['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade'])
       option_buy_indicator = st.multiselect('Option Indicator',indicator_list,['St Trade', 'ST_10_2 Trade'])
       time_frame = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M', 'OPT:5M'])
-    with ind_col2:
       three_buy_indicator = st.multiselect('Three Minute Indicator',indicator_list,[])
       one_buy_indicator = st.multiselect('One Minute Indicator',indicator_list,[])
+    with ind_col2:
+      banknifty_target=st.number_input(label="Bank Nifty Target",min_value=10, max_value=100, value=10, step=None)
+    with ind_col3:
+      banknifty_sl=st.number_input(label="Bank Nifty SL",min_value=10, max_value=100, value=10, step=None)
     col1_tab4,col2_tab4,col3_tab4,col4_tab4,col5_tab4=st.columns(5)
     with col1_tab4:
-      banknifty_target=st.number_input(label="Bank Nifty Target",min_value=10, max_value=100, value=10, step=None)
+      
       nifty_target=st.number_input(label="Nifty Target",min_value=5, max_value=100, value=5, step=None)
     with col2_tab4:
-      banknifty_sl=st.number_input(label="Bank Nifty SL",min_value=10, max_value=100, value=10, step=None)
+      
       nifty_sl=st.number_input(label="Nifty SL",min_value=5, max_value=100, value=5, step=None)
     with col3_tab4:
       target_order_type = st.selectbox('Target Order',('Target', 'Stop_Loss', 'NA'),1)
