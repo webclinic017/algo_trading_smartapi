@@ -106,7 +106,6 @@ with col2:
       nifty_sl=st.number_input(label="Nifty SL",min_value=5, max_value=100, value=5, step=None)
       lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
     with ind_col4:
-      exp_inpu=st.text_input(label="BNKEXP")
       expiry_days_bnf=st.empty()
       expiry_days_nf=st.empty()
       target_type = st.selectbox('Target Type',('Points', 'Per Cent'),0)
@@ -152,7 +151,6 @@ if 'bnf_expiry_day' not in st.session_state or 'nf_expiry_day' not in st.session
     st.session_state['bnf_expiry_day']=bnf_expiry_day
     nf_expiry_day=get_expiry_day("NIFTY")
     st.session_state['nf_expiry_day']=nf_expiry_day
-exp_inpu.value=st.session_state['bnf_expiry_day']
 def print_ltp():
   try:
     data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={ "NSE": ["99926000","99926009"], "NFO": []})['data']['fetched'])
