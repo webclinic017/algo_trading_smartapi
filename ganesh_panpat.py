@@ -707,6 +707,7 @@ def get_near_option_list():
         except Exception as e:
           pass
   st.session_state['Near_option_list']=options_trade
+  near_option=st.container()
   with near_option:
     st.write(f"Near Option List : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
     for i in st.session_state['Near_option_list']:
