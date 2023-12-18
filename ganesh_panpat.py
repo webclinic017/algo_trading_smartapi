@@ -711,8 +711,10 @@ def get_near_option_list():
   near_option.empty()
   with near_option.container():
     st.write(f"Near Option List : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
+    print_string=""
     for i in st.session_state['Near_option_list']:
-      st.write(f'{i}')
+      print_string=(f'''{print_string}  \n {i}''')
+    st.write(print_string)
 def near_option_trade(interval):
   options_trade=[]
   for i in st.session_state['Near_option_list']:
