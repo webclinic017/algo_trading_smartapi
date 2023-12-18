@@ -723,8 +723,8 @@ def near_option_trade(interval):
       fut_data=get_historical_data(symbol,interval=interval,token=token,exch_seg='NFO')
       indicator_strategy=fut_data['Indicator'].values[-1]
       if (fut_data['St Trade'].values[-1]=="Buy" or fut_data['ST_10_2 Trade'].values[-1]=="Buy"):
-        buy_option(strike_symbol,indicator_strategy,"5m")
-      information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Symbol':opt_symbol,
+        buy_option(i,indicator_strategy,"5m")
+      information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Symbol':symbol,
                  'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],
                  'Trade':fut_data['Trade'].values[-1]}
       options_trade.append(information)
