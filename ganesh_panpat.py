@@ -46,7 +46,7 @@ if '5m_bnf' not in st.session_state:
   st.session_state['15m_bnf']="-"
   st.session_state['15m_nf']="-"
   st.session_state['options_trade_list']='-'
-  
+st.session_state['Near_option_list']=[]
 username=st.secrets["username"]
 pwd=st.secrets["pwd"]
 apikey=st.secrets["apikey"]
@@ -684,6 +684,31 @@ def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
     logger.exception(f"Error in manual_buy: {e}")
     print(e)
 
+def get_near_option_list():
+  options_trade=[]
+  for index_symbol in ['BANKNIFTY','NIFTY']:
+    if index_symbol=="BANKNIFTY" or index_symbol=="^NSEBANK":
+      index_ltp=st.session_state['BankNifty']
+      expiry_day=st.session_state['bnf_expiry_day']
+      index_ltp = math.floor(index_ltp/100)*100
+      gap=100
+    if index_symbol=="NIFTY" or index_symbol=="^NSEI":
+      index_ltp=st.session_state['Nifty']
+      val2 = math.fmod(index_ltp, 50)
+      val3 = 50 if val2 >= 25 else 0
+      index_ltp = index_ltp - val2 + val3
+      expiry_day=st.session_state['nf_expiry_day']
+      gap=50
+    for ce_pe in ['CE','PE']:
+      for i in range(1,3):
+        try:
+          if ce_pe=="CE":
+            strike_price=index_ltp+(i*gap)
+          else:
+            strike_price=index_ltp-(i*gap)
+          opt_symbol=index_symbol+expiry_day+str(int(strike_price))+ce_pe
+          strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
+          options_trade.append(strike_symbol)
 def near_option_trade(interval):
   options_trade=[]
   for index_symbol in ['BANKNIFTY','NIFTY']:
