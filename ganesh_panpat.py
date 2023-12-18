@@ -701,8 +701,11 @@ def get_near_option_list():
         if ce_pe=="CE":strike_price=index_ltp+(i*diff)
         else:strike_price=index_ltp-(i*diff)
         opt_symbol=symbol+expiry_day+str(int(strike_price))+ce_pe
-        strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
-        options_trade.append(strike_symbol)
+        try:
+          strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
+          options_trade.append(strike_symbol)
+        except exceptions as e:
+          pass
   st.session_state['Near_option_list']=options_trade
   with near_option:
     st.write(f"Near Option List : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
@@ -887,7 +890,7 @@ def update_app():
   update_position()
   print_ltp()
   #get_todays_trade(orderbook)
-#get_near_option_list()
+get_near_option_list()
 
 if nf_ce: manual_buy("NIFTY",'CE',st.session_state['Nifty'])
 if bnf_ce: manual_buy("BANKNIFTY",'CE',st.session_state['BankNifty'])
