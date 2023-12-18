@@ -699,11 +699,13 @@ def get_near_option_list():
         if ce_pe=="CE":strike_price=index_ltp+(i*diff)
         else:strike_price=index_ltp-(i*diff)
         opt_symbol=symbol+expiry_day+str(int(strike_price))+ce_pe
-        try:
-          strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
-          options_trade.append(strike_symbol)
-        except Exception as e:
-          pass
+        for j in range(0,3):
+          try:
+            strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
+            options_trade.append(strike_symbol)
+            break
+          except Exception as e:
+            pass
   st.session_state['Near_option_list']=options_trade
   with tab5:
     near_option=st.empty()
