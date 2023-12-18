@@ -704,7 +704,7 @@ def get_near_option_list():
         try:
           strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
           options_trade.append(strike_symbol)
-        except exceptions as e:
+        except exception as e:
           pass
   st.session_state['Near_option_list']=options_trade
   with near_option:
