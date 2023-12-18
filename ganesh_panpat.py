@@ -700,7 +700,7 @@ def get_near_option_list():
         index_ltp=diff*round(index_ltp/diff)
         if ce_pe=="CE":strike_price=index_ltp+(i*diff)
         else:strike_price=index_ltp-(i*diff)
-        opt_symbol=index_symbol+expiry_day+str(int(strike_price))+ce_pe
+        opt_symbol=symbol+expiry_day+str(int(strike_price))+ce_pe
         strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
         options_trade.append(strike_symbol)
   st.session_state['Near_option_list']=options_trade
