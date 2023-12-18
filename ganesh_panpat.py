@@ -686,29 +686,28 @@ def manual_buy(index_symbol,ce_pe="CE",index_ltp="-"):
 
 def get_near_option_list():
   options_trade=[]
-  for index_symbol in ['BANKNIFTY','NIFTY']:
-    if index_symbol=="BANKNIFTY" or index_symbol=="^NSEBANK":
-      index_ltp=st.session_state['BankNifty']
-      expiry_day=st.session_state['bnf_expiry_day']
-      index_ltp = math.floor(index_ltp/100)*100
-      gap=100
-    if index_symbol=="NIFTY" or index_symbol=="^NSEI":
-      index_ltp=st.session_state['Nifty']
-      val2 = math.fmod(index_ltp, 50)
-      val3 = 50 if val2 >= 25 else 0
-      index_ltp = index_ltp - val2 + val3
-      expiry_day=st.session_state['nf_expiry_day']
-      gap=50
-    for ce_pe in ['CE','PE']:
-      for i in range(1,3):
-        try:
-          if ce_pe=="CE":
-            strike_price=index_ltp+(i*gap)
-          else:
-            strike_price=index_ltp-(i*gap)
-          opt_symbol=index_symbol+expiry_day+str(int(strike_price))+ce_pe
-          strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
-          options_trade.append(strike_symbol)
+  for i in range(0,3):
+    for symbol in ['BANKNIFTY','NIFTY']:
+      for ce_pe in ['CE','PE']:
+        if symbol=='BANKNIFTY':
+          expiry_day=st.session_state['bnf_expiry_day']
+          index_ltp=st.session_state['BankNifty']
+          diff=100
+        elif symbol=='NIFTY':
+          expiry_day=st.session_state['nf_expiry_day']
+          index_ltp=st.session_state['Nifty']
+          diff=50
+        index_ltp=diff*round(index_ltp/diff)
+        if ce_pe=="CE":strike_price=index_ltp+(i*diff)
+        else:strike_price=index_ltp-(i*diff)
+        opt_symbol=index_symbol+expiry_day+str(int(strike_price))+ce_pe
+        strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
+        options_trade.append(strike_symbol)
+  st.session_state['Near_option_list']=options_trade
+  with near_option:
+    st.write(f"Near Option List : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
+    for i in st.session_state['Near_option_list']:
+      st.write(f'{i}')
 def near_option_trade(interval):
   options_trade=[]
   for index_symbol in ['BANKNIFTY','NIFTY']:
@@ -888,6 +887,7 @@ def update_app():
   update_position()
   print_ltp()
   #get_todays_trade(orderbook)
+get_near_option_list()
 
 if nf_ce: manual_buy("NIFTY",'CE',st.session_state['Nifty'])
 if bnf_ce: manual_buy("BANKNIFTY",'CE',st.session_state['BankNifty'])
