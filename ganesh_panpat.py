@@ -80,7 +80,7 @@ with col1:
   close_all=st.button("Close All")
   algo_state=st.checkbox("Run Algo")
 with col2:
-  tab0, tab1, tab2, tab3, tab4= st.tabs(["Log","Order_Book", "Position","Algo Trade", "Settings"])
+  tab0, tab1, tab2, tab3, tab4, tab5= st.tabs(["Log","Order_Book", "Position","Algo Trade", "Settings","Near Options])
   with tab0:log_holder=st.empty()
   with tab1:
     order_book_updated=st.empty()
@@ -88,6 +88,8 @@ with col2:
     order_datatable=st.empty()
   with tab2:position_datatable=st.empty()
   with tab3:algo_datatable=st.empty()
+  with tab5:
+    near_option=st.empty()
   with tab4:
     ind_col1,ind_col2,ind_col3,ind_col4=st.columns([5.5,1.5,1.5,1.5])
     indicator_list=['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade']
