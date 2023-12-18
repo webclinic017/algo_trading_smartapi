@@ -88,6 +88,7 @@ with col2:
     order_datatable=st.empty()
   with tab2:position_datatable=st.empty()
   with tab3:algo_datatable=st.empty()
+  with tab5:near_option=st.empty()
   with tab4:
     ind_col1,ind_col2,ind_col3,ind_col4=st.columns([5.5,1.5,1.5,1.5])
     indicator_list=['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade']
