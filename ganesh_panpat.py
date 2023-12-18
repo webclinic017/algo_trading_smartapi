@@ -53,7 +53,7 @@ apikey=st.secrets["apikey"]
 token=st.secrets["token"]
 if 'user_name' not in st.session_state:
     obj=SmartConnect(api_key=apikey)
-    obj.generateSession(username,pwd,pyotp.TOTP(token).now())
+    obj.generateSession(username,pwd,pyotp.TOTP(token).datetime.datetime.now())
     st.write('Login Sucess')
     feedToken=obj.getfeedToken()
     userProfile= obj.getProfile(obj.refresh_token)
