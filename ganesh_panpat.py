@@ -716,40 +716,21 @@ def get_near_option_list():
         st.write(f'{i}')
 def near_option_trade(interval):
   options_trade=[]
-  for index_symbol in ['BANKNIFTY','NIFTY']:
-    if index_symbol=="BANKNIFTY" or index_symbol=="^NSEBANK":
-      index_ltp=st.session_state['BankNifty']
-      expiry_day=st.session_state['bnf_expiry_day']
-      index_ltp = math.floor(index_ltp/100)*100
-      gap=100
-    if index_symbol=="NIFTY" or index_symbol=="^NSEI":
-      index_ltp=st.session_state['Nifty']
-      val2 = math.fmod(index_ltp, 50)
-      val3 = 50 if val2 >= 25 else 0
-      index_ltp = index_ltp - val2 + val3
-      expiry_day=st.session_state['nf_expiry_day']
-      gap=50
-    for ce_pe in ['CE','PE']:
-      for i in range(1,3):
-        try:
-          if ce_pe=="CE":
-            strike_price=index_ltp+(i*gap)
-          else:
-            strike_price=index_ltp-(i*gap)
-          opt_symbol=index_symbol+expiry_day+str(int(strike_price))+ce_pe
-          strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
-          token=strike_symbol['symboltoken']
-          symbol=strike_symbol['tradingsymbol']
-          fut_data=get_historical_data(symbol,interval=interval,token=token,exch_seg='NFO')
-          indicator_strategy=fut_data['Indicator'].values[-1]
-          if (fut_data['St Trade'].values[-1]=="Buy" or fut_data['ST_10_2 Trade'].values[-1]=="Buy"):
-            buy_option(strike_symbol,indicator_strategy,"5m")
-          information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Symbol':opt_symbol,'Datetime':str(fut_data['Datetime'].values[-1]),
-                 'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],'Trade':fut_data['Trade'].values[-1]}
-          options_trade.append(information)
-        except Exception as e:
-          logger.exception(f"Error in near_option_trade: {e}")
-          pass
+  for i in st.session_state['Near_option_list']:
+    try:
+      token=i['symboltoken']
+      symbol=i['tradingsymbol']
+      fut_data=get_historical_data(symbol,interval=interval,token=token,exch_seg='NFO')
+      indicator_strategy=fut_data['Indicator'].values[-1]
+      if (fut_data['St Trade'].values[-1]=="Buy" or fut_data['ST_10_2 Trade'].values[-1]=="Buy"):
+        buy_option(strike_symbol,indicator_strategy,"5m")
+        information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Symbol':opt_symbol,
+                   'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],
+                   'Trade':fut_data['Trade'].values[-1]}
+        options_trade.append(information)
+    except Exception as e:
+      logger.exception(f"Error in near_option_trade: {e}")
+      pass
   st.session_state['options_trade_list']=options_trade
 
 def update_todays_trade(todays_trade_log):
@@ -904,7 +885,7 @@ if algo_state:
   st.session_state['algo_running']="Running"
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   intradayclose = now_time.replace(hour=20, minute=50, second=0, microsecond=0)
-  marketopen = now_time.replace(hour=9, minute=20, second=0, microsecond=0)
+  marketopen = now_time.replace(hour=0, minute=1, second=0, microsecond=0)
   marketclose = now_time.replace(hour=20, minute=30, second=0, microsecond=0)
   while True:
     try:
