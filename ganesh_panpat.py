@@ -80,7 +80,7 @@ with col1:
   close_all=st.button("Close All")
   algo_state=st.checkbox("Run Algo")
 with col2:
-  tab0, tab1, tab2, tab3, tab4, tab5= st.tabs(["Log","Order_Book", "Position","Algo Trade", "Settings","Near Options])
+  tab0, tab1, tab2, tab3, tab4, tab5= st.tabs(["Log","Order_Book", "Position","Algo Trade", "Settings","Near Options"])
   with tab0:log_holder=st.empty()
   with tab1:
     order_book_updated=st.empty()
