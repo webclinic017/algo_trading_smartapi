@@ -891,7 +891,7 @@ def update_app():
   update_position()
   print_ltp()
   #get_todays_trade(orderbook)
-#get_near_option_list()
+get_near_option_list()
 
 if nf_ce: manual_buy("NIFTY",'CE',st.session_state['Nifty'])
 if bnf_ce: manual_buy("BANKNIFTY",'CE',st.session_state['BankNifty'])
