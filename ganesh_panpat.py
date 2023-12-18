@@ -88,8 +88,6 @@ with col2:
     order_datatable=st.empty()
   with tab2:position_datatable=st.empty()
   with tab3:algo_datatable=st.empty()
-  with tab5:
-    near_option=st.empty()
   with tab4:
     ind_col1,ind_col2,ind_col3,ind_col4=st.columns([5.5,1.5,1.5,1.5])
     indicator_list=['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade']
@@ -707,11 +705,13 @@ def get_near_option_list():
         except Exception as e:
           pass
   st.session_state['Near_option_list']=options_trade
-  near_option=st.container()
-  with near_option:
-    st.write(f"Near Option List : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
-    for i in st.session_state['Near_option_list']:
-      st.write(f'{i}')
+  with tab5:
+    near_option=st.empty()
+    near_option=st.container()
+    with near_option:
+      st.write(f"Near Option List : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
+      for i in st.session_state['Near_option_list']:
+        st.write(f'{i}')
 def near_option_trade(interval):
   options_trade=[]
   for index_symbol in ['BANKNIFTY','NIFTY']:
