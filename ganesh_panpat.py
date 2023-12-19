@@ -883,7 +883,6 @@ if nf_pe: manual_buy("NIFTY",'PE',st.session_state['Nifty'])
 if bnf_pe: manual_buy("BANKNIFTY",'PE',st.session_state['BankNifty'])
 
 if algo_state:
-  st.session_state['algo_running']="Running"
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   intradayclose = now_time.replace(hour=20, minute=50, second=0, microsecond=0)
   marketopen = now_time.replace(hour=9, minute=19, second=0, microsecond=0)
@@ -903,10 +902,11 @@ if algo_state:
           if "IDX:15M" in time_frame:
             bnf_15m_trade=index_trade('BANKNIFTY','15m')
             nf_15m_trade=index_trade('NIFTY','15m')
+        st.session_state['algo_running']="Algo Running: Market Open"
       elif now_time>marketopen and now_time < marketclose:
-        st.session_state['algo_running']="Intraday Market Closed"
+        st.session_state['algo_running']="Algo Running: Intraday Market Closed"
       else:
-        st.session_state['algo_running']="Market Closed"
+        st.session_state['algo_running']="Algo Running: Market Closed"
       update_app()
       time.sleep(61-datetime.datetime.now(tz=gettz('Asia/Kolkata')).second)
     except Exception as e:
