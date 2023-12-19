@@ -623,7 +623,7 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
       n_symbol="nf"
     information_name=interval + "_" + n_symbol
     information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Datetime':str(fut_data['Datetime'].values[-1]),
-                 'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],'Trade':fut_data['Trade'].values[-1]}
+                 'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],'Trade':trade,'Trade End':trade_end}
     st.session_state[information_name]=information
     return fut_data
   except Exception as e:
@@ -663,6 +663,7 @@ def get_near_option_list():
           try:
             strike_symbol=obj.searchScrip("NFO",opt_symbol)['data'][0]
             options_trade.append(strike_symbol)
+            time.sleep(0.5)
             break
           except Exception as e:
             pass
@@ -675,6 +676,7 @@ def get_near_option_list():
       print_string=(f'''{print_string}  \n {i}''')
     st.write(print_string)
 def near_option_trade(interval):
+  if st.session_state['Near_option_list']==[]:get_near_option_list()
   options_trade=[]
   for i in st.session_state['Near_option_list']:
     try:
