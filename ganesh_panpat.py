@@ -875,12 +875,12 @@ with col2:
       nifty_sl=st.number_input(label="Nifty SL",min_value=5, max_value=100, value=5, step=None)
       lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
     with ind_col4:
-      expiry_days_bnf=st.empty()
-      expiry_days_nf=st.empty()
       target_type = st.selectbox('Target Type',('Points', 'Per Cent'),0)
       start_time=st.time_input('Algo Start', datetime.time(9, 20))
       intraday_close=st.time_input('Intraday Close', datetime.time(14, 45))
       algo_stop=st.time_input('Algo Stop', datetime.time(15, 30))
+      expiry_days_bnf=st.empty()
+      expiry_days_nf=st.empty()
 
 expiry_days_bnf.write(f'BNF Exp: {st.session_state["bnf_expiry_day"]}')
 expiry_days_nf.write(f'NF Exp: {st.session_state["nf_expiry_day"]}')
