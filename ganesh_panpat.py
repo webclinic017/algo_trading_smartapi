@@ -36,16 +36,15 @@ user="Ganesh"
 #cnt=st_autorefresh(interval=60*1000,debounce=False,key="Ganesh_refresh")
 if 'algo_running' not in st.session_state:st.session_state['algo_running']="Not Running"
 if 'algo_last_run' not in st.session_state:st.session_state['algo_last_run']=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-if '5m_bnf' not in st.session_state:
-  st.session_state['1m_bnf']="-"
-  st.session_state['1m_nf']="-"
-  st.session_state['5m_bnf']="-"
-  st.session_state['5m_nf']="-"
-  st.session_state['3m_bnf']="-"
-  st.session_state['3m_nf']="-"
-  st.session_state['15m_bnf']="-"
-  st.session_state['15m_nf']="-"
-  st.session_state['options_trade_list']='-'
+st.session_state['1m_bnf']="-"
+st.session_state['1m_nf']="-"
+st.session_state['5m_bnf']="-"
+st.session_state['5m_nf']="-"
+st.session_state['3m_bnf']="-"
+st.session_state['3m_nf']="-"
+st.session_state['15m_bnf']="-"
+st.session_state['15m_nf']="-"
+st.session_state['options_trade_list']='-'
 st.session_state['Near_option_list']=[]
 username=st.secrets["username"]
 pwd=st.secrets["pwd"]
@@ -79,6 +78,7 @@ with col1:
   bnf_pe=st.button(label="BNF PE")
   close_all=st.button("Close All")
   algo_state=st.checkbox("Run Algo")
+  restart=st.checkbox("Restart")
 with col2:
   tab0, tab1, tab2, tab3, tab4, tab5= st.tabs(["Log","Order_Book", "Position","Algo Trade", "Settings","Near Options"])
   with tab0:log_holder=st.empty()
@@ -914,3 +914,7 @@ if algo_state:
       print(e)
 
 update_app()
+if restart:
+  for key in st.session_state.keys():
+    del st.session_state[key]
+  st.rerun()
