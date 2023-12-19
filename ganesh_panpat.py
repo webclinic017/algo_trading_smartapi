@@ -77,8 +77,8 @@ with col1:
   nf_pe=st.button(label="NF PE")
   bnf_pe=st.button(label="BNF PE")
   close_all=st.button("Close All")
+  restart=st.button("Restart")
   algo_state=st.checkbox("Run Algo")
-  restart=st.checkbox("Restart")
 with col2:
   tab0, tab1, tab2, tab3, tab4, tab5= st.tabs(["Log","Order_Book", "Position","Algo Trade", "Settings","Near Options"])
   with tab0:log_holder=st.empty()
