@@ -878,6 +878,9 @@ with col2:
       expiry_days_bnf=st.empty()
       expiry_days_nf=st.empty()
       target_type = st.selectbox('Target Type',('Points', 'Per Cent'),0)
+      start_time=st.time_input('Algo Start', datetime.time(9, 20))
+      intraday_close=st.time_input('Intraday Close', datetime.time(14, 45))
+      algo_stop=st.time_input('Algo Stop', datetime.time(15, 30))
 
 expiry_days_bnf.write(f'BNF Exp: {st.session_state["bnf_expiry_day"]}')
 expiry_days_nf.write(f'NF Exp: {st.session_state["nf_expiry_day"]}')
