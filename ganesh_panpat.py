@@ -132,8 +132,6 @@ def print_ltp():
     logger.exception(f"Unable to print_ltp: {e}")
     pass
 print_ltp()
-expiry_days_bnf.write(f'BNF Exp: {st.session_state["bnf_expiry_day"]}')
-expiry_days_nf.write(f'NF Exp: {st.session_state["nf_expiry_day"]}')
 
 def update_price_orderbook(df):
   for j in range(0,len(df)):
@@ -878,7 +876,9 @@ with col2:
       expiry_days_bnf=st.empty()
       expiry_days_nf=st.empty()
       target_type = st.selectbox('Target Type',('Points', 'Per Cent'),0)
-      
+
+expiry_days_bnf.write(f'BNF Exp: {st.session_state["bnf_expiry_day"]}')
+expiry_days_nf.write(f'NF Exp: {st.session_state["nf_expiry_day"]}')
 if nf_ce: manual_buy("NIFTY",'CE',st.session_state['Nifty'])
 if bnf_ce: manual_buy("BANKNIFTY",'CE',st.session_state['BankNifty'])
 if nf_pe: manual_buy("NIFTY",'PE',st.session_state['Nifty'])
