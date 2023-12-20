@@ -364,7 +364,6 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
     orders_status=orders.iloc[0]['orderstatus']; trade_price=orders.iloc[0]['averageprice']
     if orders_status != 'complete': trade_price='-'
     order_price=ltp_price if trade_price=='-' else trade_price
-    trade_price=ltp_price
     if trade_price!='-':
       if target_order_type=="Target":
         place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='LIMIT',price=target_price,
