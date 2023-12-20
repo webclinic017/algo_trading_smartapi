@@ -821,18 +821,7 @@ def ganesh_sl_trail():
 
 def get_todays_trade(orderbook):
   try:
-    buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
-    buy_df['Target']="-"
-    buy_df['Stop Loss']="-"
-    buy_df['Sell']='-'
-    buy_df['Exit Time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(hour=15, minute=30, second=0, microsecond=0,tzinfo=None)
-    buy_df['Sell Indicator']='-';
-    buy_df['Status']='Pending'
-    buy_df['LTP']="-"
-    #buy_df=update_ltp_buy_df(buy_df)
-    #'updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag'
-    todays_trade_log=buy_df[['orderid','updatetime','tradingsymbol','price','quantity','ordertag','Status',
-                             'Target','Stop Loss','LTP','Sell','Exit Time','Sell Indicator']]
+    todays_trade_log=orderbook
     update_todays_trade(todays_trade_log)
   except Exception as e:
     logger.exception(f"Error in todays_trade_log: {e}")
