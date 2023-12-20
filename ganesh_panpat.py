@@ -959,7 +959,7 @@ def get_todays_trade(orderbook):
             buy_df['Trade Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[j]='Taken'
             break
     buy_df=get_profit_loss(buy_df)
-    buy_df=check_target_sl(buy_df)
+    #buy_df=check_target_sl(buy_df)
     todays_trade_log=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Sell','Target','Stop Loss','LTP','Trade Status',
                             'Profit','Exit Time','Sell Indicator']]
     todays_trade_log=todays_trade_log.sort_values(by = ['Trade Status', 'updatetime'], ascending = [False, True], na_position = 'first')
