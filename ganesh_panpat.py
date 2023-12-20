@@ -749,7 +749,7 @@ def update_todays_trade(todays_trade_log):
   #g_todays_trade_log = g_todays_trade_log.rename(columns={'updatetime':'Time','tradingsymbol':'Symbol','price':'Price','Stop Loss':'SL','Target':'TGT','Profit %':'PL%','ordertag':'Buy Indicator'})
   #g_todays_trade_log=todays_trade_log[['updatetime','tradingsymbol','price','Stop Loss','Target','LTP','Status','Exit Time','Sell','Profit','Profit %','ordertag','Sell Indicator']]
   algo_trade_updated.text(f"Algo Trade : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
-  algo_datatable.table(todays_trade_log)
+  algo_datatable.table(todays_trade_log.style.format("{:.2f}"))
 
 def update_target_sl(buy_df):
   global order_history,target_history
@@ -789,7 +789,7 @@ def update_ltp_buy_df(buy_df):
         buy_df['LTP'].iloc[i]=n_ltp_df['ltp'].iloc[0]
       else:
         buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
-      buy_df['LTP'].iloc[i]=round(buy_df['LTP'].iloc[i],2)
+      #buy_df['LTP'].iloc[i]=round(buy_df['LTP'].iloc[i],2)
       #buy_df['LTP']=round(buy_df['LTP'].astype(int),2)
     except Exception as e:
       pass
