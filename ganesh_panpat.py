@@ -208,7 +208,7 @@ def update_order_book():
     if orderbook==None:
       order_datatable.write("No Order Placed")
       order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
-      orderbook=pd.DataFrame(columns =['updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag'])
+      orderbook=pd.DataFrame(columns =['updatetime','orderid','transactiontype','status','symboltoken','tradingsymbol','price','quantity','ordertag'])
     else:
       orderbook=pd.DataFrame(orderbook)
       orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
@@ -219,7 +219,7 @@ def update_order_book():
       #orderbook=update_ltp_buy_df(orderbook)
       order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
       order_datatable.table(orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag']])
-      orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag']]
+      orderbook=orderbook[['updatetime','orderid','transactiontype','status','symboltoken','tradingsymbol','price','quantity','ordertag']]
     return orderbook
   except Exception as e:
     logger.exception(f"Unable to update_order_book: {e}")
