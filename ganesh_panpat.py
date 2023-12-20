@@ -825,7 +825,7 @@ def get_todays_trade(orderbook):
     buy_df['Sell Indicator']='-';
     buy_df['Status']='Pending'
     buy_df['LTP']="-"
-    buy_df=update_ltp_buy_df(buy_df)
+    #buy_df=update_ltp_buy_df(buy_df)
     #'updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag'
     todays_trade_log=buy_df[['orderid','updatetime','tradingsymbol','price','quantity','ordertag','Status',
                              'Target','Stop Loss','LTP','Sell','Exit Time','Sell Indicator']]
