@@ -896,7 +896,6 @@ def get_profit_loss(buy_df):
   return buy_df
 
 def check_target_sl(buy_df):
-  global buy_df
   for i in range(0,len(buy_df)):
     try:
       if buy_df['Trade Status'].iloc[i]=='Pending':
