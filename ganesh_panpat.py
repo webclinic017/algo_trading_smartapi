@@ -749,7 +749,8 @@ def update_todays_trade(todays_trade_log):
   #g_todays_trade_log = g_todays_trade_log.rename(columns={'updatetime':'Time','tradingsymbol':'Symbol','price':'Price','Stop Loss':'SL','Target':'TGT','Profit %':'PL%','ordertag':'Buy Indicator'})
   #g_todays_trade_log=todays_trade_log[['updatetime','tradingsymbol','price','Stop Loss','Target','LTP','Status','Exit Time','Sell','Profit','Profit %','ordertag','Sell Indicator']]
   algo_trade_updated.text(f"Algo Trade : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
-  algo_datatable.table(todays_trade_log.style.format("{:.2f}"))
+  todays_trade_log=todays_trade_log.round(2)
+  algo_datatable.table(todays_trade_log)
 
 def update_target_sl(buy_df):
   global order_history,target_history
