@@ -117,7 +117,6 @@ with col2:
       algo_stop=st.time_input('Algo Stop', datetime.time(15, 30))
       expiry_days_bnf=st.empty()
       expiry_days_nf=st.empty()
-expiry_date.text(f'BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}')
 
 def split_opt_name(options_contract):
   pattern = re.compile(r'([A-Za-z]+)(\d{2}[A-Za-z]+\d{2})(\d+)([CEP]+)')
@@ -983,6 +982,7 @@ def update_app():
   get_todays_trade(orderbook)
   get_near_option_list()
   print_ltp()
+  expiry_date.text(f'BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}')
 
 if nf_ce: manual_buy("NIFTY",'CE',st.session_state['Nifty'])
 if bnf_ce: manual_buy("BANKNIFTY",'CE',st.session_state['BankNifty'])
