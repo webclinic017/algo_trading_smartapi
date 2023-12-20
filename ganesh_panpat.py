@@ -817,48 +817,18 @@ def ganesh_sl_trail():
 
 def get_todays_trade(orderbook):
   try:
-    sell_df=orderbook[(orderbook['transactiontype']=="SELL") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
-    sell_df['Remark']='-'
     buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
-    buy_df['updatetime'] = pd.to_datetime(buy_df['updatetime']).dt.time
-    sell_df['updatetime'] = pd.to_datetime(sell_df['updatetime']).dt.time
-    buy_df['Sell']='-'
-    buy_df['Exit Time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(hour=15, minute=30, second=0, microsecond=0,tzinfo=None)
-    buy_df['Sell Indicator']='-';buy_df['Status']='Pending'
-    buy_df['LTP']="-"
-    buy_df['Profit']="-"
-    buy_df['Time Frame']="-"
     buy_df['Target']="-"
     buy_df['Stop Loss']="-"
-    buy_df['Profit %']="-"
-    for i in range(0,len(buy_df)):
-      symbol=buy_df['tradingsymbol'].iloc[i];  updatetime=buy_df['updatetime'].iloc[i];  orderid=buy_df['orderid'].iloc[i]
-      if buy_df['Status'].iloc[i]=='Pending':
-        for k in range(0,len(sell_df)):
-          if (sell_df['tradingsymbol'].iloc[k]==symbol and sell_df['updatetime'].iloc[k] >= updatetime and sell_df['Remark'].iloc[k] =='-' and
-              buy_df['status'].iloc[i]==sell_df['status'].iloc[k] and str(orderid) in sell_df['ordertag'].iloc[k]):
-            buy_df['Sell'].iloc[i]=sell_df['price'].iloc[k]
-            buy_df['Exit Time'].iloc[i]=sell_df['updatetime'].iloc[k]
-            buy_df['Sell Indicator'].iloc[i]=sell_df['ordertag'].iloc[k]
-            buy_df['Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[k]='Taken'
-            break
-    for i in range(0,len(buy_df)):
-      symbol=buy_df['tradingsymbol'].iloc[i]
-      updatetime=buy_df['updatetime'].iloc[i]
-      orderid=buy_df['orderid'].iloc[i]
-      if buy_df['Status'].iloc[i]=='Pending':
-        for j in range(0,len(sell_df)):
-          if (sell_df['tradingsymbol'].iloc[j]==symbol and sell_df['updatetime'].iloc[j] >= updatetime and sell_df['Remark'].iloc[j] =='-' and
-              buy_df['status'].iloc[i]==sell_df['status'].iloc[j]):
-            buy_df['Sell'].iloc[i]=sell_df['price'].iloc[j]
-            buy_df['Exit Time'].iloc[i]=sell_df['updatetime'].iloc[j]
-            buy_df['Sell Indicator'].iloc[i]=sell_df['ordertag'].iloc[j]
-            buy_df['Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[j]='Taken'
-            break
-    buy_df=update_target_sl(buy_df)
+    buy_df['Sell']='-'
+    buy_df['Exit Time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(hour=15, minute=30, second=0, microsecond=0,tzinfo=None).time()
+    buy_df['Sell Indicator']='-';
+    buy_df['Status']='Pending'
+    buy_df['LTP']="-"
     buy_df=update_ltp_buy_df(buy_df)
-    buy_df['Exit Time'] = pd.to_datetime(buy_df['Exit Time']).dt.time
-    todays_trade_log = buy_df
+    #'updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag'
+    todays_trade_log=buy_df[['orderid','updatetime','tradingsymbol','price','quantity','ordertag','Status',
+                             'Target','Stop Loss','LTP','Sell','Exit Time','Sell Indicator']]
     update_todays_trade(todays_trade_log)
   except Exception as e:
     logger.exception(f"Error in todays_trade_log: {e}")
@@ -880,7 +850,7 @@ def update_app():
   orderbook=update_order_book()
   update_position()
   print_ltp()
-  #get_todays_trade(orderbook)
+  get_todays_trade(orderbook)
   get_near_option_list()
 
 if nf_ce: manual_buy("NIFTY",'CE',st.session_state['Nifty'])
