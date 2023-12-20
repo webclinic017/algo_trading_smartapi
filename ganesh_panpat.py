@@ -822,7 +822,7 @@ def ganesh_sl_trail():
 def get_profit_loss(buy_df):
   for i in range(0,len(buy_df)):
     if buy_df['Trade Status'].iloc[i]=='Pending':
-      buy_df['Profit'].iloc[i]=buy_df['quantity'].iloc[i]*(buy_df['LTP'].iloc[i]-buy_df['price'].iloc[i])
+      buy_df['Profit'].iloc[i]=int(buy_df['quantity'].iloc[i])*(int(buy_df['LTP'].iloc[i])-int(buy_df['price'].iloc[i]))
     else:
       buy_df['Profit'].iloc[i]=buy_df['quantity'].iloc[i]*(buy_df['Sell'].iloc[i]-buy_df['price'].iloc[i])
   buy_df['Profit']=round(buy_df['Profit'].astype(int),2)
