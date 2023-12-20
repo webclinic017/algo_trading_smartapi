@@ -88,7 +88,10 @@ with col2:
     order_book_updated.text(f"Orderbook : ")
     order_datatable=st.empty()
   with tab2:position_datatable=st.empty()
-  with tab3:algo_datatable=st.empty()
+  with tab3:
+    algo_trade_updated=st.empty()
+    algo_trade_updated.text(f"Algo Trade : ")
+    algo_datatable=st.empty()
   with tab5:near_option=st.empty()
   with tab4:
     ind_col1,ind_col2,ind_col3,ind_col4=st.columns([5.5,1.5,1.5,1.5])
@@ -205,7 +208,7 @@ def update_order_book():
     if orderbook==None:
       order_datatable.write("No Order Placed")
       order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
-      orderbook=pd.DataFrame(columns =['updatetime','tradingsymbol','price','ordertag','transactiontype','status'])
+      orderbook=pd.DataFrame(columns =['updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag'])
     else:
       orderbook=pd.DataFrame(orderbook)
       orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
@@ -216,7 +219,8 @@ def update_order_book():
       #orderbook=update_ltp_buy_df(orderbook)
       order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
       order_datatable.table(orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag']])
-      return orderbook
+      orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag']]
+    return orderbook
   except Exception as e:
     logger.exception(f"Unable to update_order_book: {e}")
     pass
@@ -821,7 +825,7 @@ def get_todays_trade(orderbook):
     buy_df['Target']="-"
     buy_df['Stop Loss']="-"
     buy_df['Sell']='-'
-    buy_df['Exit Time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(hour=15, minute=30, second=0, microsecond=0,tzinfo=None).time()
+    buy_df['Exit Time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(hour=15, minute=30, second=0, microsecond=0,tzinfo=None)
     buy_df['Sell Indicator']='-';
     buy_df['Status']='Pending'
     buy_df['LTP']="-"
