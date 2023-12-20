@@ -220,7 +220,8 @@ def update_order_book():
       #orderbook['LTP']=''
       #orderbook=update_ltp_buy_df(orderbook)
       order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
-      order_datatable.table(orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag']])
+      #order_datatable.table(orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag']])
+      order_datatable.dataframe(orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag']])
       orderbook=orderbook[['updatetime','orderid','transactiontype','status','symboltoken','tradingsymbol','price','quantity','ordertag']]
     return orderbook
   except Exception as e:
