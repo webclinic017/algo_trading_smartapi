@@ -830,9 +830,12 @@ def get_todays_trade(orderbook):
     buy_df=update_ltp_buy_df(buy_df)
     buy_df['Trade Status']='-'
     buy_df['Profit']='-'
+    buy_df['Exit Time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(hour=15, minute=30, second=0, microsecond=0,tzinfo=None)
+    buy_df['Exit Time'] = pd.to_datetime(buy_df['Exit Time']).dt.time
     buy_df['Sell Indicator']='-'
-    todays_trade_log=buy_df[['orderid','updatetime','tradingsymbol','price','quantity','ordertag','Sell','Target','Stop Loss','LTP','Trade Status',
-                            'Profit','Sell Indicator']]
+    buy_df=update_target_sl(buy_df)
+    todays_trade_log=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Sell','Target','Stop Loss','LTP','Trade Status',
+                            'Profit','Exit Time','Sell Indicator']]
     update_todays_trade(todays_trade_log)
   except Exception as e:
     logger.exception(f"Error in todays_trade_log: {e}")
