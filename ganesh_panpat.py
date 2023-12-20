@@ -157,10 +157,11 @@ def get_expiry_day(symbol):
     return "Unable to find expiry date"
 
 if 'bnf_expiry_day' not in st.session_state:
-    bnf_expiry_day=get_expiry_day("BANKNIFTY")
-    st.session_state['bnf_expiry_day']=bnf_expiry_day
-    nf_expiry_day=get_expiry_day("NIFTY")
-    st.session_state['nf_expiry_day']=nf_expiry_day
+  bnf_expiry_day=get_expiry_day("BANKNIFTY")
+  st.session_state['bnf_expiry_day']=bnf_expiry_day
+  nf_expiry_day=get_expiry_day("NIFTY")
+  st.session_state['nf_expiry_day']=nf_expiry_day
+  expiry_date.text(f'BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}')
 def print_ltp():
   try:
     data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={ "NSE": ["99926000","99926009"], "NFO": []})['data']['fetched'])
@@ -987,9 +988,7 @@ def update_app():
   orderbook=update_order_book()
   update_position()
   get_todays_trade(orderbook)
-  get_near_option_list()
   print_ltp()
-  expiry_date.text(f'BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}')
 
 if nf_ce: manual_buy("NIFTY",'CE',st.session_state['Nifty'])
 if bnf_ce: manual_buy("BANKNIFTY",'CE',st.session_state['BankNifty'])
@@ -1017,6 +1016,7 @@ if algo_state:
             bnf_15m_trade=index_trade('BANKNIFTY','15m')
             nf_15m_trade=index_trade('NIFTY','15m')
         st.session_state['algo_running']="Market Open"
+        get_near_option_list()
       elif now_time>marketopen and now_time < marketclose:
         st.session_state['algo_running']="Intraday Market Closed"
       else:
