@@ -311,6 +311,21 @@ def cancel_order(orderID,variety):
   obj.cancelOrder(orderID,variety=variety)
   print('order cancelled',orderID)
 
+def cancel_all_order(symbol):
+  orderbook,pending_orders=get_order_book()
+  try:
+    if isinstance(orderbook,NoneType)!=True:
+      orderlist = orderbook[(orderbook['tradingsymbol'] == symbol) &
+                            ((orderbook['orderstatus'] != 'complete') & (orderbook['orderstatus'] != 'cancelled') &
+                              (orderbook['orderstatus'] != 'rejected') & (orderbook['orderstatus'] != 'AMO CANCELLED'))]
+      orderlist_a = orderbook[(orderbook['tradingsymbol'] == symbol) & (orderbook['variety'] == 'ROBO') &
+                              (orderbook['transactiontype'] == 'BUY') & (orderbook['orderstatus'] == 'complete')]
+      orderlist=orderlist.append(orderlist_a)
+      for i in range(0,len(orderlist)):
+        cancel_order(orderlist.iloc[i]['orderid'],orderlist.iloc[i]['variety'])
+  except Exception as e:
+    print("Error cancel_all_order",e)
+    
 def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
   try:
     option_token=symbol['symboltoken']
@@ -364,6 +379,66 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
     logger.exception(f"Error in buy_option: {e}")
     print('Error in buy_option:',e)
 
+def exit_position(symboltoken,tradingsymbol,qty,ltp_price,sl,ordertag='',producttype='CARRYFORWARD'):
+  position,open_position=get_open_position()
+  try:
+    if isinstance(open_position,str)==True or len(open_position)==0:
+      orderId,ltp_price=place_order(token=symboltoken,symbol=tradingsymbol,qty=qty,buy_sell='SELL',ordertype='MARKET',price=0,
+                          variety='NORMAL',exch_seg='NFO',producttype=producttype,ordertag=ordertag)
+    else:
+      position=open_position[(open_position.tradingsymbol==tradingsymbol) & (open_position.netqty!='0')]
+      if len(position)!=0:
+        cancel_all_order(tradingsymbol)
+        orderId,ltp_price=place_order(token=symboltoken,symbol=tradingsymbol,qty=qty,buy_sell='SELL',ordertype='STOPLOSS_LIMIT',price=sl,
+                        variety='STOPLOSS',exch_seg='NFO',producttype=producttype,triggerprice=sl,squareoff=sl, stoploss=sl,ordertag=ordertag)
+        print ('Exit Alert In Option: ' , tradingsymbol,'LTP:',ltp_price,'SL:',sl)
+      else: print('No Open Position : ',tradingsymbol)
+  except Exception as e:
+    print('Error in exit_position:',e)
+
+def get_order_book():
+  global orderbook,pending_orders
+  try:
+    for attempt in range(3):
+      try:
+        orderbook=obj.orderBook()['data']
+        if orderbook!=None: break
+      except: pass
+    if orderbook!=None: #or isinstance(orderbook,NoneType)!=True
+      orderbook= pd.DataFrame.from_dict(orderbook)
+      orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime'])
+      orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [True], na_position = 'first')
+      orderbook = orderbook[(orderbook['exchange'] == 'NFO')]
+      #orderbook['price']="-"
+      for i in range(0,len(orderbook)):
+        if orderbook['ordertag'].iloc[i]=="": orderbook['ordertag'].iloc[i]="-"
+        if orderbook['status'].iloc[i]=="complete":
+          orderbook['ordertag'].iloc[i]="*" + orderbook['ordertag'].iloc[i]
+          orderbook['price'].iloc[i]=orderbook['averageprice'].iloc[i]
+  except Exception as e:
+    orderbook= pd.DataFrame(columns = ['variety', 'ordertype', 'producttype', 'duration', 'price','triggerprice', 'quantity', 'disclosedquantity',
+                'squareoff','stoploss', 'trailingstoploss', 'tradingsymbol', 'transactiontype','exchange', 'symboltoken', 'ordertag', 'instrumenttype',
+                'strikeprice','optiontype', 'expirydate', 'lotsize', 'cancelsize', 'averageprice','filledshares', 'unfilledshares', 'orderid', 'text',
+                'status','orderstatus', 'updatetime', 'exchtime', 'exchorderupdatetime','fillid', 'filltime', 'parentorderid'])
+  pending_orders = orderbook[((orderbook['orderstatus'] != 'complete') & (orderbook['orderstatus'] != 'cancelled') &
+                              (orderbook['orderstatus'] != 'rejected') & (orderbook['orderstatus'] != 'AMO CANCELLED'))]
+  return orderbook,pending_orders
+  
+def get_open_position():
+  position=obj.position()['data']
+  if position!=None:
+    position=pd.DataFrame(position)
+    position[['realised', 'unrealised']] = position[['realised', 'unrealised']].astype(float)
+  else:
+    position= pd.DataFrame(columns = ["exchange","symboltoken","producttype","tradingsymbol","symbolname","instrumenttype","priceden",
+                                  "pricenum","genden","gennum","precision","multiplier","boardlotsize","buyqty","sellqty","buyamount",
+                                  "sellamount","symbolgroup","strikeprice","optiontype","expirydate","lotsize","cfbuyqty","cfsellqty",
+                                  "cfbuyamount","cfsellamount","buyavgprice","sellavgprice","avgnetprice","netvalue","netqty","totalbuyvalue",
+                                  "totalsellvalue","cfbuyavgprice","cfsellavgprice","totalbuyavgprice","totalsellavgprice","netprice",'realised', 'unrealised'])
+  pnl=float(position['realised'].sum())+float(position['unrealised'].sum())
+  open_position = position[(position['netqty'] > '0') & (position['instrumenttype'] == 'OPTIDX')]
+  return position,open_position
+  
 def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_type="NORMAL"):
   try:
     if (symbol=="^NSEI" or symbol=="NIFTY") : symbol,token,exch_seg="^NSEI",99926000,"NSE"
@@ -820,6 +895,7 @@ def ganesh_sl_trail():
       except Exception as e:
         logger.exception(f"Error in sl_trail: {e}")
         print(e)
+
 def get_profit_loss(buy_df):
   for i in range(0,len(buy_df)):
     if buy_df['Trade Status'].iloc[i]=='Pending':
@@ -828,6 +904,32 @@ def get_profit_loss(buy_df):
       buy_df['Profit'].iloc[i]=int(buy_df['quantity'].iloc[i])*(int(buy_df['Sell'].iloc[i])-int(buy_df['price'].iloc[i]))
   buy_df['Profit']=round(buy_df['Profit'].astype(int),2)
   return buy_df
+
+def check_target_sl(todays_trade_log):
+  for i in range(0,len(todays_trade_log)):
+    if todays_trade_log['Trade Status'].iloc[i]=='Pending':
+      symboltoken=todays_trade_log['symboltoken'].iloc[i]
+      tradingsymbol=todays_trade_log['tradingsymbol'].iloc[i]
+      producttype=todays_trade_log['producttype'].iloc[i]
+      orderid=todays_trade_log['orderid'].iloc[i]
+      ltp_price=todays_trade_log['LTP'].iloc[i]
+      updatetime=todays_trade_log['updatetime'].iloc[i]
+      qty=todays_trade_log['quantity'].iloc[i]
+      indicator=str(todays_trade_log['ordertag'].iloc[i])
+      trade_info=(todays_trade_log['tradingsymbol'].iloc[i]+ '\nBuy: ' + str(todays_trade_log['price'].iloc[i])+
+                      '\nTarget: ' +str(int(todays_trade_log['Target'].iloc[i]))+ ' Stop Loss: ' +str(int(todays_trade_log['Stop Loss'].iloc[i]))+
+                      ' LTP:' +str(todays_trade_log['LTP'].iloc[i]) + '\nBuy Time: '+str(todays_trade_log['updatetime'].iloc[i]) +
+                      '\n' + str(todays_trade_log['ordertag'].iloc[i])+'\nProfit:'+str(int(todays_trade_log['Profit'].iloc[i])))
+      if int(ltp_price) <= int(todays_trade_log['Stop Loss'].iloc[i]):
+        todays_trade_log['Status'].iloc[i]="Stop Loss Hit"
+        orderId,ltp_price=exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Stop Loss Hit LTP: "+str(float(ltp_price)),producttype=producttype)
+        if str(orderId)!='Order placement failed': telegram_bot_sendtext("Stop Loss Hit LTP: "+str(float(ltp_price))+ '\n' + trade_info)
+      elif int(ltp_price) >= int(todays_trade_log['Target'].iloc[i]):
+        todays_trade_log['Status'].iloc[i]="Target Hit"
+        orderId,ltp_price=exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Target Hit LTP: "+str(float(ltp_price)),producttype=producttype)
+        if str(orderId)!='Order placement failed': telegram_bot_sendtext("Target Hit LTP: "+str(float(ltp_price))+ '\n' + trade_info)
+  return todays_trade_log
+        
 def get_todays_trade(orderbook):
   try:
     buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
@@ -871,6 +973,7 @@ def get_todays_trade(orderbook):
             buy_df['Sell Indicator'].iloc[i]=sell_df['ordertag'].iloc[j]
             buy_df['Trade Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[j]='Taken'
             break
+    buy_df=check_target_sl(buy_df)
     todays_trade_log=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Sell','Target','Stop Loss','LTP','Trade Status',
                             'Profit','Exit Time','Sell Indicator']]
     update_todays_trade(todays_trade_log)
