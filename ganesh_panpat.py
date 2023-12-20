@@ -789,7 +789,7 @@ def update_ltp_buy_df(buy_df):
         buy_df['LTP'].iloc[i]=n_ltp_df['ltp'].iloc[0]
       else:
         buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
-      buy_df['LTP']=round(buy_df['LTP'].astype(int),2)
+      #buy_df['LTP']=round(buy_df['LTP'].astype(int),2)
     except Exception as e:
       pass
   return buy_df
@@ -824,7 +824,7 @@ def get_profit_loss(buy_df):
     if buy_df['Trade Status'].iloc[i]=='Pending':
       buy_df['Profit'].iloc[i]=int(buy_df['quantity'].iloc[i])*(int(buy_df['LTP'].iloc[i])-int(buy_df['price'].iloc[i]))
     else:
-      buy_df['Profit'].iloc[i]=buy_df['quantity'].iloc[i]*(buy_df['Sell'].iloc[i]-buy_df['price'].iloc[i])
+      buy_df['Profit'].iloc[i]=int(buy_df['quantity'].iloc[i])*(int(buy_df['Sell'].iloc[i])-int(buy_df['price'].iloc[i]))
   buy_df['Profit']=round(buy_df['Profit'].astype(int),2)
   return buy_df
 def get_todays_trade(orderbook):
