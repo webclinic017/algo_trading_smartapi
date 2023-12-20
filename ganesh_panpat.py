@@ -956,7 +956,7 @@ def get_todays_trade(orderbook):
             buy_df['Sell Indicator'].iloc[i]=sell_df['ordertag'].iloc[j]
             buy_df['Trade Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[j]='Taken'
             break
-    #buy_df=check_target_sl(buy_df)
+    buy_df=check_target_sl(buy_df)
     todays_trade_log=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Sell','Target','Stop Loss','LTP','Trade Status',
                             'Profit','Exit Time','Sell Indicator']]
     update_todays_trade(todays_trade_log)
