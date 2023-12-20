@@ -931,7 +931,6 @@ def get_todays_trade(orderbook):
     buy_df['Sell Indicator']='-'
     buy_df=update_ltp_buy_df(buy_df)
     buy_df=update_target_sl(buy_df)
-    buy_df=get_profit_loss(buy_df)
     for i in range(0,len(buy_df)):
       symbol=buy_df['tradingsymbol'].iloc[i]
       updatetime=buy_df['updatetime'].iloc[i]
@@ -958,6 +957,7 @@ def get_todays_trade(orderbook):
             buy_df['Sell Indicator'].iloc[i]=sell_df['ordertag'].iloc[j]
             buy_df['Trade Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[j]='Taken'
             break
+    buy_df=get_profit_loss(buy_df)
     #buy_df=check_target_sl(buy_df)
     todays_trade_log=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Sell','Target','Stop Loss','LTP','Trade Status',
                             'Profit','Exit Time','Sell Indicator']]
