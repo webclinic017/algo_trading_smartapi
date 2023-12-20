@@ -914,7 +914,7 @@ def check_target_sl(buy_df):
           exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Target Hit LTP: "+str(float(ltp_price)))
     except Exception as e:
       logger.exception(f"Error in check_target_sl: {e}")
-  return todays_trade_log
+  return buy_df
         
 def get_todays_trade(orderbook):
   try:
