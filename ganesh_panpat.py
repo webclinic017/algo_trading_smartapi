@@ -959,6 +959,7 @@ def get_todays_trade(orderbook):
     #buy_df=check_target_sl(buy_df)
     todays_trade_log=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Sell','Target','Stop Loss','LTP','Trade Status',
                             'Profit','Exit Time','Sell Indicator']]
+    todays_trade_log=todays_trade_log.sort_values(by = ['Trade Status', 'updatetime'], ascending = [False, True], na_position = 'first')
     update_todays_trade(todays_trade_log)
   except Exception as e:
     logger.exception(f"Error in todays_trade_log: {e}")
