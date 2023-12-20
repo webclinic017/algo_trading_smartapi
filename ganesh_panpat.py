@@ -831,6 +831,8 @@ def get_profit_loss(buy_df):
 def get_todays_trade(orderbook):
   try:
     buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
+    sell_df=orderbook[(orderbook['transactiontype']=="SELL") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
+    sell_df['Remark']='-'
     buy_df['Sell']='-'
     buy_df['Target']='-'
     buy_df['Stop Loss']='-'
@@ -843,6 +845,32 @@ def get_todays_trade(orderbook):
     buy_df=update_ltp_buy_df(buy_df)
     buy_df=update_target_sl(buy_df)
     buy_df=get_profit_loss(buy_df)
+    for i in range(0,len(buy_df)):
+      symbol=buy_df['tradingsymbol'].iloc[i]
+      updatetime=buy_df['updatetime'].iloc[i]
+      orderid=buy_df['orderid'].iloc[i]
+      if buy_df['Trade Status'].iloc[i]=='Pending':
+        for k in range(0,len(sell_df)):
+          if (sell_df['tradingsymbol'].iloc[k]==symbol and sell_df['updatetime'].iloc[k] >= updatetime and sell_df['Remark'].iloc[k] =='-' and
+              buy_df['status'].iloc[i]==sell_df['status'].iloc[k] and str(orderid) in sell_df['ordertag'].iloc[k]):
+            buy_df['Sell'].iloc[i]=sell_df['price'].iloc[k]
+            buy_df['Exit Time'].iloc[i]=sell_df['updatetime'].iloc[k]
+            buy_df['Sell Indicator'].iloc[i]=sell_df['ordertag'].iloc[k]
+            buy_df['Trade Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[k]='Taken'
+            break
+    for i in range(0,len(buy_df)):
+      symbol=buy_df['tradingsymbol'].iloc[i]
+      updatetime=buy_df['updatetime'].iloc[i]
+      orderid=buy_df['orderid'].iloc[i]
+      if buy_df['Trade Status'].iloc[i]=='Pending':
+        for j in range(0,len(sell_df)):
+          if (sell_df['tradingsymbol'].iloc[j]==symbol and sell_df['updatetime'].iloc[j] >= updatetime and sell_df['Remark'].iloc[j] =='-' and
+              buy_df['status'].iloc[i]==sell_df['status'].iloc[j]):
+            buy_df['Sell'].iloc[i]=sell_df['price'].iloc[j]
+            buy_df['Exit Time'].iloc[i]=sell_df['updatetime'].iloc[j]
+            buy_df['Sell Indicator'].iloc[i]=sell_df['ordertag'].iloc[j]
+            buy_df['Trade Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[j]='Taken'
+            break
     todays_trade_log=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Sell','Target','Stop Loss','LTP','Trade Status',
                             'Profit','Exit Time','Sell Indicator']]
     update_todays_trade(todays_trade_log)
