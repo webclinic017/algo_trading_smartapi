@@ -380,19 +380,9 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
     print('Error in buy_option:',e)
 
 def exit_position(symboltoken,tradingsymbol,qty,ltp_price,sl,ordertag='',producttype='CARRYFORWARD'):
-  position,open_position=get_open_position()
   try:
-    if isinstance(open_position,str)==True or len(open_position)==0:
-      orderId,ltp_price=place_order(token=symboltoken,symbol=tradingsymbol,qty=qty,buy_sell='SELL',ordertype='MARKET',price=0,
-                          variety='NORMAL',exch_seg='NFO',producttype=producttype,ordertag=ordertag)
-    else:
-      position=open_position[(open_position.tradingsymbol==tradingsymbol) & (open_position.netqty!='0')]
-      if len(position)!=0:
-        cancel_all_order(tradingsymbol)
-        orderId,ltp_price=place_order(token=symboltoken,symbol=tradingsymbol,qty=qty,buy_sell='SELL',ordertype='STOPLOSS_LIMIT',price=sl,
-                        variety='STOPLOSS',exch_seg='NFO',producttype=producttype,triggerprice=sl,squareoff=sl, stoploss=sl,ordertag=ordertag)
-        print ('Exit Alert In Option: ' , tradingsymbol,'LTP:',ltp_price,'SL:',sl)
-      else: print('No Open Position : ',tradingsymbol)
+    orderId,ltp_price=place_order(token=symboltoken,symbol=tradingsymbol,qty=qty,buy_sell='SELL',ordertype='STOPLOSS_LIMIT',price=0,
+                                  variety='STOPLOSS',exch_seg='NFO',producttype=producttype,triggerprice=sl,squareoff=sl, stoploss=sl,ordertag=ordertag)
   except Exception as e:
     print('Error in exit_position:',e)
 
@@ -908,11 +898,11 @@ def get_profit_loss(buy_df):
 def check_target_sl(todays_trade_log):
   for i in range(0,len(todays_trade_log)):
     if todays_trade_log['Trade Status'].iloc[i]=='Pending':
+      ltp_price=todays_trade_log['LTP'].iloc[i]
       symboltoken=todays_trade_log['symboltoken'].iloc[i]
       tradingsymbol=todays_trade_log['tradingsymbol'].iloc[i]
       producttype=todays_trade_log['producttype'].iloc[i]
       orderid=todays_trade_log['orderid'].iloc[i]
-      ltp_price=todays_trade_log['LTP'].iloc[i]
       updatetime=todays_trade_log['updatetime'].iloc[i]
       qty=todays_trade_log['quantity'].iloc[i]
       indicator=str(todays_trade_log['ordertag'].iloc[i])
@@ -921,11 +911,11 @@ def check_target_sl(todays_trade_log):
                       ' LTP:' +str(todays_trade_log['LTP'].iloc[i]) + '\nBuy Time: '+str(todays_trade_log['updatetime'].iloc[i]) +
                       '\n' + str(todays_trade_log['ordertag'].iloc[i])+'\nProfit:'+str(int(todays_trade_log['Profit'].iloc[i])))
       if int(ltp_price) <= int(todays_trade_log['Stop Loss'].iloc[i]):
-        todays_trade_log['Status'].iloc[i]="Stop Loss Hit"
+        todays_trade_log['Trade Status'].iloc[i]="Stop Loss Hit"
         orderId,ltp_price=exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Stop Loss Hit LTP: "+str(float(ltp_price)),producttype=producttype)
         if str(orderId)!='Order placement failed': telegram_bot_sendtext("Stop Loss Hit LTP: "+str(float(ltp_price))+ '\n' + trade_info)
       elif int(ltp_price) >= int(todays_trade_log['Target'].iloc[i]):
-        todays_trade_log['Status'].iloc[i]="Target Hit"
+        todays_trade_log['Trade Status'].iloc[i]="Target Hit"
         orderId,ltp_price=exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Target Hit LTP: "+str(float(ltp_price)),producttype=producttype)
         if str(orderId)!='Order placement failed': telegram_bot_sendtext("Target Hit LTP: "+str(float(ltp_price))+ '\n' + trade_info)
   return todays_trade_log
