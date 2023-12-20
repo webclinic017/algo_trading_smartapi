@@ -994,9 +994,9 @@ if bnf_pe: manual_buy("BANKNIFTY",'PE',st.session_state['BankNifty'])
 
 if algo_state:
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-  intradayclose = now_time.replace(hour=22, minute=50, second=0, microsecond=0)
+  intradayclose = now_time.replace(hour=14, minute=50, second=0, microsecond=0)
   marketopen = now_time.replace(hour=9, minute=19, second=0, microsecond=0)
-  marketclose = now_time.replace(hour=22, minute=30, second=0, microsecond=0)
+  marketclose = now_time.replace(hour=15, minute=30, second=0, microsecond=0)
   while True:
     try:
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
