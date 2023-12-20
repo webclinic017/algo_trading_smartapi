@@ -1010,11 +1010,11 @@ if algo_state:
           if "IDX:15M" in time_frame:
             bnf_15m_trade=index_trade('BANKNIFTY','15m')
             nf_15m_trade=index_trade('NIFTY','15m')
-        st.session_state['algo_running']="Algo Running: Market Open"
+        st.session_state['algo_running']="Market Open"
       elif now_time>marketopen and now_time < marketclose:
-        st.session_state['algo_running']="Algo Running: Intraday Market Closed"
+        st.session_state['algo_running']="Intraday Market Closed"
       else:
-        st.session_state['algo_running']="Algo Running: Market Closed"
+        st.session_state['algo_running']="Market Closed"
       update_app()
       time.sleep(61-datetime.datetime.now(tz=gettz('Asia/Kolkata')).second)
     except Exception as e:
