@@ -382,6 +382,8 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
 
 def exit_position(symboltoken,tradingsymbol,qty,ltp_price,sl,ordertag='',producttype='CARRYFORWARD'):
   try:
+    if ltp_price==0:
+      ltp_price=1
     place_order(token=symboltoken,symbol=tradingsymbol,qty=qty,buy_sell='SELL',ordertype='STOPLOSS_LIMIT',price=sl,
                 variety='STOPLOSS',exch_seg='NFO',producttype=producttype,triggerprice=sl,squareoff=sl,stoploss=sl, ordertag=ordertag)
   except Exception as e:
