@@ -832,7 +832,7 @@ def get_todays_trade(orderbook):
     buy_df['Sell Indicator']='-'
     todays_trade_log=buy_df[['orderid','updatetime','tradingsymbol','price','quantity','ordertag','Sell','Target','Stop Loss','LTP','Trade Status',
                             'Profit','Sell Indicator']]
-    update_todays_trade(orderbook)
+    update_todays_trade(todays_trade_log)
   except Exception as e:
     logger.exception(f"Error in todays_trade_log: {e}")
     pass
