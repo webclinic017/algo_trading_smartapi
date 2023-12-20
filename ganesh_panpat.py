@@ -895,21 +895,22 @@ def get_profit_loss(buy_df):
   buy_df['Profit']=round(buy_df['Profit'].astype(int),2)
   return buy_df
 
-def check_target_sl(todays_trade_log):
-  for i in range(0,len(todays_trade_log)):
-    if todays_trade_log['Trade Status'].iloc[i]=='Pending':
-      symboltoken=todays_trade_log['symboltoken'].iloc[i]
-      tradingsymbol=todays_trade_log['tradingsymbol'].iloc[i]
-      qty=todays_trade_log['quantity'].iloc[i]
-      ltp_price=todays_trade_log['LTP'].iloc[i]
-      orderid=todays_trade_log['orderid'].iloc[i]
-      updatetime=todays_trade_log['updatetime'].iloc[i]
-      if int(ltp_price) <= int(todays_trade_log['Stop Loss'].iloc[i]):
-        todays_trade_log['Trade Status'].iloc[i]="Stop Loss Hit"
-        orderId,ltp_price=exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Stop Loss Hit LTP: "+str(float(ltp_price)),producttype="CARRYFORWARD")
-      elif int(ltp_price) >= int(todays_trade_log['Target'].iloc[i]):
-        todays_trade_log['Trade Status'].iloc[i]="Target Hit"
-        orderId,ltp_price=exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Target Hit LTP: "+str(float(ltp_price)),producttype="CARRYFORWARD")
+def check_target_sl(buy_df):
+  for i in range(0,len(buy_df)):
+    try:
+      if buy_df['Trade Status'].iloc[i]=='Pending':
+        symboltoken=buy_df['symboltoken'].iloc[i]
+        tradingsymbol=buy_df['tradingsymbol'].iloc[i]
+        qty=buy_df['quantity'].iloc[i]
+        ltp_price=buy_df['LTP'].iloc[i]
+        orderid=buy_df['orderid'].iloc[i]
+        if int(float(ltp_price)) <= int(float(buy_df['Stop Loss'].iloc[i])):
+          buy_df['Trade Status'].iloc[i]="Stop Loss Hit"
+          orderId,ltp_price=exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Stop Loss Hit LTP: "+str(float(ltp_price)),producttype="CARRYFORWARD")
+        elif int(float(ltp_price)) >= int(float(buy_df['Target'].iloc[i])):
+          buy_df['Trade Status'].iloc[i]="Target Hit"
+          orderId,ltp_price=exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Target Hit LTP: "+str(float(ltp_price)),producttype="CARRYFORWARD")
+    except: pass
   return todays_trade_log
         
 def get_todays_trade(orderbook):
