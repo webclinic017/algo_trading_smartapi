@@ -782,7 +782,7 @@ def update_ltp_buy_df(buy_df):
   ltp_df=get_ltp_token(numpy.unique(tokenlist))
   for i in range(0,len(buy_df)):
     try:
-      symboltoken=int(buy_df['symboltoken'].iloc[i])
+      symboltoken=(buy_df['symboltoken'].iloc[i])
       n_ltp_df=ltp_df[ltp_df['symbolToken']==symboltoken]
       if len(n_ltp_df)!=0:
         buy_df['LTP'].iloc[i]=n_ltp_df['ltp'].iloc[0]
