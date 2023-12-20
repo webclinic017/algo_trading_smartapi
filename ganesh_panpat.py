@@ -790,9 +790,9 @@ def update_ltp_buy_df(buy_df):
       else:
         buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
       #buy_df['LTP'].iloc[i]=round(buy_df['LTP'].iloc[i],2)
-      #buy_df['LTP']=round(buy_df['LTP'].astype(int),2)
     except Exception as e:
       pass
+  buy_df['LTP']=round(buy_df['LTP'].astype(int),2)
   return buy_df
 
 def ganesh_sl_trail():
