@@ -912,12 +912,12 @@ def check_target_sl(buy_df):
         orderid=buy_df['orderid'].iloc[i]
         if int(float(ltp_price)) <= int(float(buy_df['Stop Loss'].iloc[i])):
           logger.info(f"Exit {tradingsymbol} orderid: {orderid} stop loss: {ltp_price}")
-          buy_df['Trade Status'].iloc[i]="Stop Loss Hit"
           exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Stop Loss Hit LTP: "+str(float(ltp_price)))
+          buy_df['Trade Status'].iloc[i]="Stop Loss Hit"
         elif int(float(ltp_price)) >= int(float(buy_df['Target'].iloc[i])):
           logger.info(f"Exit {tradingsymbol} orderid: {orderid} Target: {ltp_price}")
-          buy_df['Trade Status'].iloc[i]="Target Hit"
           exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Target Hit LTP: "+str(float(ltp_price)))
+          buy_df['Trade Status'].iloc[i]="Target Hit"
     except Exception as e:
       logger.exception(f"Error in check_target_sl: {e}")
       pass
