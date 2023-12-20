@@ -819,7 +819,14 @@ def ganesh_sl_trail():
       except Exception as e:
         logger.exception(f"Error in sl_trail: {e}")
         print(e)
-
+def get_profit_loss(buy_df):
+  for i in range(0,len(buy_df)):
+    if buy_df['Trade Status'].iloc[i]=='Pending':
+      buy_df['Profit'].iloc[i]=buy_df['quantity'].iloc[i]*(buy_df['LTP'].iloc[i]-buy_df['price'].iloc[i])
+    else:
+      buy_df['Profit'].iloc[i]=buy_df['quantity'].iloc[i]*(buy_df['Sell'].iloc[i]-buy_df['price'].iloc[i])
+  buy_df['Profit']=round(buy_df['Profit'].astype(int),2)
+  return buy_df
 def get_todays_trade(orderbook):
   try:
     buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
@@ -827,13 +834,14 @@ def get_todays_trade(orderbook):
     buy_df['Target']='-'
     buy_df['Stop Loss']='-'
     buy_df['LTP']='-'
-    buy_df=update_ltp_buy_df(buy_df)
-    buy_df['Trade Status']='-'
+    buy_df['Trade Status']='Pending'
     buy_df['Profit']='-'
     buy_df['Exit Time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(hour=15, minute=30, second=0, microsecond=0,tzinfo=None)
     buy_df['Exit Time'] = pd.to_datetime(buy_df['Exit Time']).dt.time
     buy_df['Sell Indicator']='-'
+    buy_df=update_ltp_buy_df(buy_df)
     buy_df=update_target_sl(buy_df)
+    buy_df=get_profit_loss(buy_df)
     todays_trade_log=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Sell','Target','Stop Loss','LTP','Trade Status',
                             'Profit','Exit Time','Sell Indicator']]
     update_todays_trade(todays_trade_log)
