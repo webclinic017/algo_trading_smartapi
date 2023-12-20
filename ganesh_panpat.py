@@ -71,6 +71,7 @@ last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']} Algo: Not Running")
 placeholder = st.empty()
 expiry_date=st.empty()
+expiry_date.text(f"Expiry Dates: ")
 col1,col2=st.columns([1,9])
 with col1:
   nf_ce=st.button(label="NF CE")
