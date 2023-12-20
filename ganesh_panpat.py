@@ -70,6 +70,51 @@ st.header(f"Welcome {st.session_state['user_name']}")
 last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']} Algo: Not Running")
 placeholder = st.empty()
+expiry_date=st.empty()
+col1,col2=st.columns([1,9])
+with col1:
+  nf_ce=st.button(label="NF CE")
+  bnf_ce=st.button(label="BNF CE")
+  nf_pe=st.button(label="NF PE")
+  bnf_pe=st.button(label="BNF PE")
+  close_all=st.button("Close All")
+  restart=st.button("Restart")
+  algo_state=st.checkbox("Run Algo")
+with col2:
+  tab0, tab1, tab2, tab3, tab4, tab5= st.tabs(["Log","Order_Book", "Position","Algo Trade", "Settings","Near Options"])
+  with tab0:log_holder=st.empty()
+  with tab1:
+    order_book_updated=st.empty()
+    order_book_updated.text(f"Orderbook : ")
+    order_datatable=st.empty()
+  with tab2:position_datatable=st.empty()
+  with tab3:algo_datatable=st.empty()
+  with tab5:near_option=st.empty()
+  with tab4:
+    ind_col1,ind_col2,ind_col3,ind_col4=st.columns([5.5,1.5,1.5,1.5])
+    indicator_list=['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade']
+    with ind_col1:
+      five_buy_indicator = st.multiselect('Five Minute Indicator',indicator_list,['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade'])
+      option_buy_indicator = st.multiselect('Option Indicator',indicator_list,['St Trade', 'ST_10_2 Trade'])
+      time_frame = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M', 'OPT:5M'])
+      three_buy_indicator = st.multiselect('Three Minute Indicator',indicator_list,[])
+      one_buy_indicator = st.multiselect('One Minute Indicator',indicator_list,[])
+    with ind_col2:
+      banknifty_target=st.number_input(label="Bank Nifty Target",min_value=10, max_value=100, value=10, step=None)
+      nifty_target=st.number_input(label="Nifty Target",min_value=5, max_value=100, value=5, step=None)
+      target_order_type = st.selectbox('Target Order',('Target', 'Stop_Loss', 'NA'),1)
+    with ind_col3:
+      banknifty_sl=st.number_input(label="Bank Nifty SL",min_value=10, max_value=100, value=10, step=None)
+      nifty_sl=st.number_input(label="Nifty SL",min_value=5, max_value=100, value=5, step=None)
+      lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
+    with ind_col4:
+      target_type = st.selectbox('Target Type',('Points', 'Per Cent'),0)
+      start_time=st.time_input('Algo Start', datetime.time(9, 20))
+      intraday_close=st.time_input('Intraday Close', datetime.time(14, 45))
+      algo_stop=st.time_input('Algo Stop', datetime.time(15, 30))
+      expiry_days_bnf=st.empty()
+      expiry_days_nf=st.empty()
+expiry_date.text(f'BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}')
 
 def split_opt_name(options_contract):
   pattern = re.compile(r'([A-Za-z]+)(\d{2}[A-Za-z]+\d{2})(\d+)([CEP]+)')
@@ -838,52 +883,6 @@ def update_app():
   #get_todays_trade(orderbook)
   get_near_option_list()
 
-col1,col2=st.columns([1,9])
-with col1:
-  nf_ce=st.button(label="NF CE")
-  bnf_ce=st.button(label="BNF CE")
-  nf_pe=st.button(label="NF PE")
-  bnf_pe=st.button(label="BNF PE")
-  close_all=st.button("Close All")
-  restart=st.button("Restart")
-  algo_state=st.checkbox("Run Algo")
-with col2:
-  tab0, tab1, tab2, tab3, tab4, tab5= st.tabs(["Log","Order_Book", "Position","Algo Trade", "Settings","Near Options"])
-  with tab0:log_holder=st.empty()
-  with tab1:
-    order_book_updated=st.empty()
-    order_book_updated.text(f"Orderbook : ")
-    order_datatable=st.empty()
-  with tab2:position_datatable=st.empty()
-  with tab3:algo_datatable=st.empty()
-  with tab5:near_option=st.empty()
-  with tab4:
-    ind_col1,ind_col2,ind_col3,ind_col4=st.columns([5.5,1.5,1.5,1.5])
-    indicator_list=['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade']
-    with ind_col1:
-      five_buy_indicator = st.multiselect('Five Minute Indicator',indicator_list,['St Trade', 'ST_10_2 Trade', 'RSI MA Trade', 'RSI_60 Trade'])
-      option_buy_indicator = st.multiselect('Option Indicator',indicator_list,['St Trade', 'ST_10_2 Trade'])
-      time_frame = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M', 'OPT:5M'])
-      three_buy_indicator = st.multiselect('Three Minute Indicator',indicator_list,[])
-      one_buy_indicator = st.multiselect('One Minute Indicator',indicator_list,[])
-    with ind_col2:
-      banknifty_target=st.number_input(label="Bank Nifty Target",min_value=10, max_value=100, value=10, step=None)
-      nifty_target=st.number_input(label="Nifty Target",min_value=5, max_value=100, value=5, step=None)
-      target_order_type = st.selectbox('Target Order',('Target', 'Stop_Loss', 'NA'),1)
-    with ind_col3:
-      banknifty_sl=st.number_input(label="Bank Nifty SL",min_value=10, max_value=100, value=10, step=None)
-      nifty_sl=st.number_input(label="Nifty SL",min_value=5, max_value=100, value=5, step=None)
-      lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
-    with ind_col4:
-      target_type = st.selectbox('Target Type',('Points', 'Per Cent'),0)
-      start_time=st.time_input('Algo Start', datetime.time(9, 20))
-      intraday_close=st.time_input('Intraday Close', datetime.time(14, 45))
-      algo_stop=st.time_input('Algo Stop', datetime.time(15, 30))
-      expiry_days_bnf=st.empty()
-      expiry_days_nf=st.empty()
-
-expiry_days_bnf.write(f'BNF Exp: {st.session_state["bnf_expiry_day"]}')
-expiry_days_nf.write(f'NF Exp: {st.session_state["nf_expiry_day"]}')
 if nf_ce: manual_buy("NIFTY",'CE',st.session_state['Nifty'])
 if bnf_ce: manual_buy("BANKNIFTY",'CE',st.session_state['BankNifty'])
 if nf_pe: manual_buy("NIFTY",'PE',st.session_state['Nifty'])
