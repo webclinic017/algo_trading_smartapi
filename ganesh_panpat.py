@@ -381,8 +381,9 @@ def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
 
 def exit_position(symboltoken,tradingsymbol,qty,ltp_price,sl,ordertag='',producttype='CARRYFORWARD'):
   try:
-    orderId,ltp_price=place_order(token=symboltoken,symbol=tradingsymbol,qty=qty,buy_sell='SELL',ordertype='LIMIT',price=sl,
-                          variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',ordertag=ordertag)
+    place_order(token=symboltoken,symbol=tradingsymbol,qty=qty,buy_sell='SELL',ordertype='STOPLOSS_LIMIT',price=sl,
+                    variety='STOPLOSS',exch_seg='NFO',producttype=producttype,triggerprice=sl,squareoff=sl,
+                    stoploss=sl, ordertag=ordertag)
   except Exception as e:
     print('Error in exit_position:',e)
 
@@ -908,10 +909,10 @@ def check_target_sl(buy_df):
         orderid=buy_df['orderid'].iloc[i]
         if int(float(ltp_price)) <= int(float(buy_df['Stop Loss'].iloc[i])):
           buy_df['Trade Status'].iloc[i]="Stop Loss Hit"
-          orderId,ltp_price=exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Stop Loss Hit LTP: "+str(float(ltp_price)),producttype="CARRYFORWARD")
+          exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Stop Loss Hit LTP: "+str(float(ltp_price)))
         elif int(float(ltp_price)) >= int(float(buy_df['Target'].iloc[i])):
           buy_df['Trade Status'].iloc[i]="Target Hit"
-          orderId,ltp_price=exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Target Hit LTP: "+str(float(ltp_price)),producttype="CARRYFORWARD")
+          exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Target Hit LTP: "+str(float(ltp_price)))
     except: pass
   return todays_trade_log
         
@@ -958,7 +959,7 @@ def get_todays_trade(orderbook):
             buy_df['Trade Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[j]='Taken'
             break
     buy_df=get_profit_loss(buy_df)
-    #buy_df=check_target_sl(buy_df)
+    buy_df=check_target_sl(buy_df)
     todays_trade_log=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Sell','Target','Stop Loss','LTP','Trade Status',
                             'Profit','Exit Time','Sell Indicator']]
     todays_trade_log=todays_trade_log.sort_values(by = ['Trade Status', 'updatetime'], ascending = [False, True], na_position = 'first')
