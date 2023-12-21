@@ -843,6 +843,8 @@ def update_todays_trade(todays_trade_log):
   pl=("Realised:"+str(int(todays_trade_log[(todays_trade_log['Trade Status']=='Closed')]['Profit'].sum())) +
             " Unrealised:"+str(int(todays_trade_log[(todays_trade_log['Trade Status']!='Closed')]['Profit'].sum())))
   algo_trade_updated.text(f"Algo Trade: {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()} {pl}")
+  todays_trade_log=todays_trade_log[['updatetime','tradingsymbol','price','quantity','ordertag','Sell','Target','Stop Loss','LTP','Trade Status',
+                            'Profit','Exit Time','Sell Indicator']]
   algo_datatable.dataframe(todays_trade_log,hide_index=True)
   #algo_datatable.table(todays_trade_log)
 
