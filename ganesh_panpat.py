@@ -982,7 +982,7 @@ def update_app():
   try:
     log_holder.empty()
     with log_holder.container():
-      st.write(f"{datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}",unsafe_allow_html=True)
+      st.write(f"Log: {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}",unsafe_allow_html=True)
       st.dataframe(pd.DataFrame.from_dict(st.session_state['options_trade_list']),hide_index=True)
     orderbook=update_order_book()
     update_position()
