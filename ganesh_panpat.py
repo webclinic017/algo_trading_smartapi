@@ -985,13 +985,8 @@ def update_app():
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       st.write(f"""
       {now_time.time()}<br>
-      Bank Nifty 5M: {st.session_state['5m_bnf']}<br>
-      Nifty 5M: {st.session_state['5m_nf']}<br>
+      **Options Trade**<br>
       """,unsafe_allow_html=True)
-      st.write("**Options Trade**")
-      print_string=""
-      #for i in st.session_state['options_trade_list']:
-      #  print_string=(f'''{print_string}  \n {i}''')
       st.dataframe(pd.DataFrame.from_dict(st.session_state['options_trade_list']),hide_index=True)
     orderbook=update_order_book()
     update_position()
