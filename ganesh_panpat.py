@@ -794,6 +794,7 @@ def get_near_option_list():
     for i in st.session_state['Near_option_list']:
       print_string=(f'''{print_string}  \n {i}''')
     st.write(print_string)
+    st.write(st.session_state['Near_option_list'])
 def near_option_trade(interval):
   if st.session_state['Near_option_list']==[]:get_near_option_list()
   options_trade=[]
@@ -989,7 +990,6 @@ def update_app():
     for i in st.session_state['options_trade_list']:
       print_string=(f'''{print_string}  \n {i}''')
     st.write(print_string)
-    st.write(st.session_state['options_trade_list'])
   orderbook=update_order_book()
   update_position()
   get_todays_trade(orderbook)
