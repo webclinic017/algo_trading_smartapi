@@ -790,11 +790,11 @@ def get_near_option_list():
   near_option.empty()
   with near_option.container():
     st.write(f"Near Option List : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
-    print_string=""
-    for i in st.session_state['Near_option_list']:
-      print_string=(f'''{print_string}  \n {i}''')
+    #print_string=""
+    #for i in st.session_state['Near_option_list']:
+    #  print_string=(f'''{print_string}  \n {i}''')
     #st.write(print_string)
-    st.write(pd.DataFrame.from_dict(st.session_state['Near_option_list']))
+    st.write(pd.DataFrame.from_dict(st.session_state['Near_option_list']),hide_index=True)
 def near_option_trade(interval):
   if st.session_state['Near_option_list']==[]:get_near_option_list()
   options_trade=[]
