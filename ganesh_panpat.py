@@ -986,9 +986,8 @@ def update_app():
     """,unsafe_allow_html=True)
     st.write("**Options Trade**")
     print_string=""
-    #for i in st.session_state['options_trade_list']:
-    #  print_string=(f'''{print_string}  \n {i}''')
-    print_string=pd.DataFrame.from_dict(st.session_state['options_trade_list'])
+    for i in st.session_state['options_trade_list']:
+      print_string=(f'''{print_string}  \n {i}''')
     st.write(print_string)
   orderbook=update_order_book()
   update_position()
