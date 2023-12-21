@@ -977,24 +977,26 @@ def get_todays_trade(orderbook):
     logger.exception(f"Error in todays_trade_log: {e}")
     pass
 def update_app():
-  log_holder.empty()
-  with log_holder.container():
-    now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-    st.write(f"""
-    {now_time.time()}<br>
-    Bank Nifty 5M: {st.session_state['5m_bnf']}<br>
-    Nifty 5M: {st.session_state['5m_nf']}<br>
-    """,unsafe_allow_html=True)
-    st.write("**Options Trade**")
-    print_string=""
-    for i in st.session_state['options_trade_list']:
-      print_string=(f'''{print_string}  \n {i}''')
-    st.write(print_string)
-  orderbook=update_order_book()
-  update_position()
-  get_todays_trade(orderbook)
-  print_ltp()
-
+  try:
+    log_holder.empty()
+    with log_holder.container():
+      now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
+      st.write(f"""
+      {now_time.time()}<br>
+      Bank Nifty 5M: {st.session_state['5m_bnf']}<br>
+      Nifty 5M: {st.session_state['5m_nf']}<br>
+      """,unsafe_allow_html=True)
+      st.write("**Options Trade**")
+      print_string=""
+      #for i in st.session_state['options_trade_list']:
+      #  print_string=(f'''{print_string}  \n {i}''')
+      st.dataframe(pd.DataFrame.from_dict(st.session_state['options_trade_list']_)
+    orderbook=update_order_book()
+    update_position()
+    get_todays_trade(orderbook)
+    print_ltp()
+  except:
+    pass
 if nf_ce: manual_buy("NIFTY",'CE',st.session_state['Nifty'])
 if bnf_ce: manual_buy("BANKNIFTY",'CE',st.session_state['BankNifty'])
 if nf_pe: manual_buy("NIFTY",'PE',st.session_state['Nifty'])
