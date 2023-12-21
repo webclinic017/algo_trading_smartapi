@@ -181,9 +181,7 @@ def print_ltp():
       print_sting=print_sting.replace("Nifty Bank","BankNifty")
       placeholder.empty()
       with placeholder.container():
-        st.write(f'{print_sting} BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}')
-        temperature = "-10"
-        st.write(f"temprature: :blue[{temperature}]")
+        st.write(f'{print_sting} BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}', unsafe_allow_html=True)
   except Exception as e:
     logger.exception(f"Unable to print_ltp: {e}")
     pass
