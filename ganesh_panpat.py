@@ -70,8 +70,6 @@ st.header(f"Welcome {st.session_state['user_name']}")
 last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']} Algo: Not Running")
 placeholder = st.empty()
-expiry_date=st.empty()
-expiry_date.text(f"Expiry Dates: ")
 col1,col2=st.columns([1,9])
 with col1:
   nf_ce=st.button(label="NF CE")
@@ -167,7 +165,6 @@ def print_ltp():
     data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={ "NSE": ["99926000","99926009"], "NFO": []})['data']['fetched'])
     data['change']=data['ltp']-data['close']
     print_sting=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
-    #expiry_date.text(f'BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}')
     for i in range(0,len(data)):
       if data.iloc[i]['tradingSymbol']=="Nifty 50" and int(data.iloc[i]['ltp'])>1:st.session_state['Nifty']=int(data.iloc[i]['ltp'])
       if data.iloc[i]['tradingSymbol']=="Nifty Bank" and int(data.iloc[i]['ltp'])>1:st.session_state['BankNifty']=int(data.iloc[i]['ltp'])
