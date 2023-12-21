@@ -174,14 +174,12 @@ def print_ltp():
       sym_ltp=int(data.iloc[i]['ltp'])
       sym_change=int(data.iloc[i]['change'])
       if sym_change>0:
-        print_sting=f"{print_sting} {sym} {sym_ltp}( :blue[{sym_change}])"
+        print_sting=f"{print_sting} {sym} {sym_ltp}({sym_change}↑)"
       else:
-        print_sting=f"{print_sting} {sym} {sym_ltp}( :red[{sym_change}])"
+        print_sting=f"{print_sting} {sym} {sym_ltp}({sym_change}↓)"
       print_sting=print_sting.replace("Nifty 50","Nifty")
       print_sting=print_sting.replace("Nifty Bank","BankNifty")
-      placeholder.empty()
-      with placeholder.container():
-        st.write(f'{print_sting} BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}', unsafe_allow_html=True)
+      placeholder.text(f'{print_sting} BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}')
   except Exception as e:
     logger.exception(f"Unable to print_ltp: {e}")
     pass
