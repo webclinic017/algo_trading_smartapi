@@ -183,7 +183,7 @@ def print_ltp():
       with placeholder.container():
         st.write(f'{print_sting} BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}')
         temperature = "-10"
-        st.text(f"temprature: :blue[{temperature}]")
+        st.write(f"temprature: :blue[{temperature}]")
   except Exception as e:
     logger.exception(f"Unable to print_ltp: {e}")
     pass
