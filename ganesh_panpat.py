@@ -44,8 +44,8 @@ st.session_state['3m_bnf']="-"
 st.session_state['3m_nf']="-"
 st.session_state['15m_bnf']="-"
 st.session_state['15m_nf']="-"
-st.session_state['options_trade_list']=[]
-st.session_state['Near_option_list']=[]
+if 'options_trade_list' not in st.session_state: st.session_state['options_trade_list']=[]
+if 'Near_option_list' not in st.session_state: st.session_state['Near_option_list']=[]
 username=st.secrets["username"]
 pwd=st.secrets["pwd"]
 apikey=st.secrets["apikey"]
@@ -743,6 +743,7 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
     information_name=interval + "_" + n_symbol
     information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Datetime':str(fut_data['Datetime'].values[-1]),
                  'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],'Trade':trade,'Trade End':trade_end}
+    st.session_state['options_trade_list'].append(information)
     st.session_state[information_name]=information
     return fut_data
   except Exception as e:
@@ -797,7 +798,7 @@ def get_near_option_list():
     st.dataframe(pd.DataFrame.from_dict(st.session_state['Near_option_list']),hide_index=True)
 def near_option_trade(interval):
   if st.session_state['Near_option_list']==[]:get_near_option_list()
-  options_trade=[]
+  #options_trade=[]
   for i in st.session_state['Near_option_list']:
     try:
       token=i['symboltoken']
@@ -808,11 +809,11 @@ def near_option_trade(interval):
       information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Symbol':symbol,
                  'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],
                  'Trade':fut_data['Trade'].values[-1],'Trade End':fut_data['Trade End'].values[-1]}
-      options_trade.append(information)
+      #options_trade.append(information)
+      st.session_state['options_trade_list'].append(information)
     except Exception as e:
       logger.exception(f"Error in near_option_trade: {e}")
       pass
-  st.session_state['options_trade_list']=options_trade
 
 def update_todays_trade(todays_trade_log):
   #g_todays_trade_log=todays_trade_log[['updatetime','tradingsymbol','price','Stop Loss','Target','LTP','Status','Sell','Profit','Profit %','ordertag','Sell Indicator']]
@@ -1013,6 +1014,7 @@ if algo_state:
       last_login.text(f"Login: {st.session_state['login_time']} Algo: {st.session_state['algo_running']} Last run : {now_time.time()}")
       if now_time>marketopen and now_time < intradayclose:
         if now_time.minute%5==0:
+          st.session_state['options_trade_list']=[]
           if "IDX:5M" in time_frame:
             bnf_5m_trade=index_trade('BANKNIFTY','5m')
             nf_5m_trade=index_trade('NIFTY','5m')
