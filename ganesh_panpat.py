@@ -234,7 +234,7 @@ def update_position():
     if position== None:position_datatable.write("No Position")
     else:
      position=pd.DataFrame(position)
-     position_datatable.table(position[['tradingsymbol','netqty','buyavgprice','sellavgprice','realised','unrealised','ltp']])
+     position_datatable.datatable(position[['tradingsymbol','netqty','buyavgprice','sellavgprice','realised','unrealised','ltp']],index_hide=True)
   except Exception as e:
     logger.exception(f"Unable to update_position: {e}")
     pass
@@ -821,7 +821,7 @@ def update_todays_trade(todays_trade_log):
   pl=("Realised:"+str(int(todays_trade_log[(todays_trade_log['Trade Status']=='Closed')]['Profit'].sum())) +
             " Unrealised:"+str(int(todays_trade_log[(todays_trade_log['Trade Status']!='Closed')]['Profit'].sum())))
   algo_trade_updated.text(f"Algo Trade: {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()} {pl}")
-  algo_datatable.dataframe(todays_trade_log)
+  algo_datatable.dataframe(todays_trade_log,index_hide=True)
   #algo_datatable.table(todays_trade_log)
 
 def update_target_sl(buy_df):
