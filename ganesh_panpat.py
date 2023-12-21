@@ -989,6 +989,7 @@ def update_app():
     for i in st.session_state['options_trade_list']:
       print_string=(f'''{print_string}  \n {i}''')
     st.write(print_string)
+    st.write(st.session_state['options_trade_list'])
   orderbook=update_order_book()
   update_position()
   get_todays_trade(orderbook)
