@@ -173,12 +173,15 @@ def print_ltp():
       sym=data.iloc[i]['tradingSymbol']
       sym_ltp=int(data.iloc[i]['ltp'])
       sym_change=int(data.iloc[i]['change'])
-      print_sting=f"{print_sting} {sym} {sym_ltp}({sym_change})"
+      if sym_change>0:
+        print_sting=f"{print_sting} {sym} {sym_ltp}(blue[{sym_change}])"
+      else:
+        print_sting=f"{print_sting} {sym} {sym_ltp}(red[{sym_change}])"
       print_sting=print_sting.replace("Nifty 50","Nifty")
       print_sting=print_sting.replace("Nifty Bank","BankNifty")
       placeholder.empty()
       with placeholder.container():
-        st.text(f'{print_sting} BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}')
+        st.write(f'{print_sting} BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}')
         temperature = "-10"
         st.text(f"temprature: :blue[{temperature}]")
   except Exception as e:
