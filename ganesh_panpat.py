@@ -803,8 +803,7 @@ def near_option_trade(interval):
       symbol=i['tradingsymbol']
       fut_data=get_historical_data(symbol,interval=interval,token=token,exch_seg='NFO')
       indicator_strategy=fut_data['Indicator'].values[-1]
-      if (fut_data['St Trade'].values[-1]=="Buy" or fut_data['ST_10_2 Trade'].values[-1]=="Buy"):
-        buy_option(i,indicator_strategy,"5m")
+      if (fut_data['St Trade'].values[-1]=="Buy" or fut_data['ST_10_2 Trade'].values[-1]=="Buy"):buy_option(i,indicator_strategy,"5m")
       information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Symbol':symbol,
                  'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],
                  'Trade':fut_data['Trade'].values[-1]}
@@ -987,8 +986,9 @@ def update_app():
     """,unsafe_allow_html=True)
     st.write("**Options Trade**")
     print_string=""
-    for i in st.session_state['options_trade_list']:
-      print_string=(f'''{print_string}  \n {i}''')
+    #for i in st.session_state['options_trade_list']:
+    #  print_string=(f'''{print_string}  \n {i}''')
+    print_string=pd.DataFrame.from_dict(st.session_state['options_trade_list'])
     st.write(print_string)
   orderbook=update_order_book()
   update_position()
@@ -1002,9 +1002,9 @@ if bnf_pe: manual_buy("BANKNIFTY",'PE',st.session_state['BankNifty'])
 
 if algo_state:
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-  intradayclose = now_time.replace(hour=14, minute=50, second=0, microsecond=0)
+  intradayclose = now_time.replace(hour=20, minute=50, second=0, microsecond=0)
   marketopen = now_time.replace(hour=9, minute=19, second=0, microsecond=0)
-  marketclose = now_time.replace(hour=15, minute=30, second=0, microsecond=0)
+  marketclose = now_time.replace(hour=20, minute=30, second=0, microsecond=0)
   while True:
     try:
       now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
