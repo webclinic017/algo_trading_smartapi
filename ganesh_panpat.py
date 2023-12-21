@@ -330,7 +330,25 @@ def cancel_all_order(symbol):
         cancel_order(orderlist.iloc[i]['orderid'],orderlist.iloc[i]['variety'])
   except Exception as e:
     print("Error cancel_all_order",e)
-    
+
+def cancel_options_all_order(bnf_signal='-',nf_signal='-'):
+  orderbook,pending_orders=get_order_book()
+  orderlist = orderbook[((orderbook['orderstatus'] != 'complete') & (orderbook['orderstatus'] != 'cancelled') &
+                      (orderbook['orderstatus'] != 'rejected') & (orderbook['orderstatus'] != 'AMO CANCELLED'))]
+  orderlist_a = orderbook[(orderbook['variety'] == 'ROBO') & (orderbook['transactiontype'] == 'BUY') & (orderbook['orderstatus'] == 'complete')]
+  orderlist=orderlist.append(orderlist_a)
+  orderlist=orderlist[['orderid','updatetime','symboltoken','tradingsymbol','exchange','price','variety','quantity','status']]
+  for i in range(0,len(orderlist)):
+    try:
+      tradingsymbol=orderlist['tradingsymbol'].iloc[i]
+      if ((bnf_signal=='Sell' and tradingsymbol[-2:]=='CE' and tradingsymbol[:4]=='BANK') or
+        (bnf_signal=='Buy' and tradingsymbol[-2:]=='PE' and tradingsymbol[:4]=='BANK') or
+        (nf_signal=='Sell' and tradingsymbol[-2:]=='CE' and tradingsymbol[:5]=='NIFTY') or
+        (nf_signal=='Buy' and tradingsymbol[-2:]=='PE' and tradingsymbol[:5]=='NIFTY')):
+        cancel_order(orderlist['orderid'].iloc[i],orderlist['variety'].iloc[i])
+    except Exception as e:
+      print("Error in cancel_options_all_order", e)
+
 def buy_option(symbol,indicator_strategy,interval,index_sl="-"):
   try:
     option_token=symbol['symboltoken']
@@ -973,10 +991,11 @@ def get_todays_trade(orderbook):
             break
     buy_df=get_profit_loss(buy_df)
     buy_df=check_target_sl(buy_df)
-    todays_trade_log=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Sell','Target','Stop Loss','LTP','Trade Status',
+    todays_trade_log=buy_df[['updatetime','tradingsymbol','producttype','price','quantity','ordertag','Sell','Target','Stop Loss','LTP','Trade Status',
                             'Profit','Exit Time','Sell Indicator']]
     todays_trade_log=todays_trade_log.sort_values(by = ['Trade Status', 'updatetime'], ascending = [False, True], na_position = 'first')
     update_todays_trade(todays_trade_log)
+    return todays_trade_log
   except Exception as e:
     logger.exception(f"Error in todays_trade_log: {e}")
     pass
