@@ -44,6 +44,8 @@ st.session_state['3m_bnf']="-"
 st.session_state['3m_nf']="-"
 st.session_state['15m_bnf']="-"
 st.session_state['15m_nf']="-"
+st.session_state['Nifty']="-"
+st.session_state['BankNifty']="-"
 if 'options_trade_list' not in st.session_state: st.session_state['options_trade_list']=[]
 if 'Near_option_list' not in st.session_state: st.session_state['Near_option_list']=[]
 username=st.secrets["username"]
@@ -174,10 +176,7 @@ def print_ltp():
       print_sting=f"{print_sting} {sym} {sym_ltp}({sym_change})"
       print_sting=print_sting.replace("Nifty 50","Nifty")
       print_sting=print_sting.replace("Nifty Bank","BankNifty")
-      placeholder.text(f'''
-                        {print_sting}
-                        BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}
-                        ''')
+      placeholder.text(f'{print_sting} BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}')
   except Exception as e:
     logger.exception(f"Unable to print_ltp: {e}")
     pass
