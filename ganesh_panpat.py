@@ -178,7 +178,7 @@ def print_ltp():
       print_sting=print_sting.replace("Nifty Bank","BankNifty")
       placeholder.empty()
       with placeholder.container():
-        st.test(f'{print_sting}')
+        st.text(f'{print_sting}')
         st.write(f'BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}')
   except Exception as e:
     logger.exception(f"Unable to print_ltp: {e}")
