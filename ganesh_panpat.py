@@ -990,7 +990,7 @@ def update_app():
       print_string=""
       #for i in st.session_state['options_trade_list']:
       #  print_string=(f'''{print_string}  \n {i}''')
-      st.dataframe(pd.DataFrame.from_dict(st.session_state['options_trade_list']_)
+      st.dataframe(pd.DataFrame.from_dict(st.session_state['options_trade_list']))
     orderbook=update_order_book()
     update_position()
     get_todays_trade(orderbook)
