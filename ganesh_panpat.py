@@ -793,8 +793,8 @@ def get_near_option_list():
     print_string=""
     for i in st.session_state['Near_option_list']:
       print_string=(f'''{print_string}  \n {i}''')
-    st.write(print_string)
-    st.write(st.session_state['Near_option_list'])
+    #st.write(print_string)
+    st.write(pd.DataFrame.from_dict(st.session_state['Near_option_list']))
 def near_option_trade(interval):
   if st.session_state['Near_option_list']==[]:get_near_option_list()
   options_trade=[]
