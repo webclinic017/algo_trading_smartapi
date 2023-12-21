@@ -1021,12 +1021,12 @@ if algo_state:
             bnf_15m_trade=index_trade('BANKNIFTY','15m')
             nf_15m_trade=index_trade('NIFTY','15m')
         st.session_state['algo_running']="Market Open"
-        get_near_option_list()
       elif now_time>marketopen and now_time < marketclose:
         st.session_state['algo_running']="Intraday Market Closed"
       else:
         st.session_state['algo_running']="Market Closed"
       update_app()
+      get_near_option_list()
       time.sleep(61-datetime.datetime.now(tz=gettz('Asia/Kolkata')).second)
     except Exception as e:
       logger.exception(f"Error in main loop: {e}")
