@@ -959,7 +959,7 @@ def check_target_sl(buy_df):
               exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Indicator Exit LTP: "+str(float(ltp_price)))
               buy_df['Trade Status'].iloc[i]="Indicator Exit"
         else:
-          fut_data=get_historical_data(tradingsymbol,interval="5m,token=symboltoken,exch_seg='NFO')
+          fut_data=get_historical_data(tradingsymbol,interval="5m",token=symboltoken,exch_seg='NFO')
           if (fut_data['St Trade'].values[-1]=="Sell" or fut_data['ST_10_2 Trade'].values[-1]=="Sell"):
             logger.info(f"Exit {tradingsymbol} orderid: {orderid} Target: {ltp_price}")
             exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Indicator Exit LTP: "+str(float(ltp_price)))
