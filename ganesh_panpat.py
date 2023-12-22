@@ -964,9 +964,9 @@ def check_target_sl(buy_df):
             logger.info(f"Exit {tradingsymbol} orderid: {orderid} Target: {ltp_price}")
             exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Indicator Exit LTP: "+str(float(ltp_price)))
             buy_df['Trade Status'].iloc[i]="Opt Indicator Exit"
-        else:
-          if int(ltp_price)> int(fut_data['Supertrend'].values[-1]):buy_df['Stop Loss'].iloc[i]=int(fut_data['Supertrend'].values[-1])
-          elif int(ltp_price)> int(fut_data['Supertrend_10_2'].values[-1]):buy_df['Stop Loss'].iloc[i]=int(fut_data['Supertrend_10_2'].values[-1])
+          else:
+            if int(ltp_price)> int(fut_data['Supertrend'].values[-1]):buy_df['Stop Loss'].iloc[i]=int(fut_data['Supertrend'].values[-1])
+            elif int(ltp_price)> int(fut_data['Supertrend_10_2'].values[-1]):buy_df['Stop Loss'].iloc[i]=int(fut_data['Supertrend_10_2'].values[-1])
     except Exception as e:
       logger.exception(f"Error in check_target_sl: {e}")
       pass
