@@ -667,7 +667,7 @@ def get_trade_info(df):
   df['Indicator'] = df['Indicator'].str.replace('3m Two Candle Theory:','2 Candle Theory:')
   df["Indicator"] = df["Indicator"].str[:-1]
   return df
-
+  
 def calculate_indicator(df):
   try:
     df['RSI']=pdta.rsi(df['Close'],timeperiod=14)
