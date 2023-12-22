@@ -960,9 +960,10 @@ def check_target_sl(buy_df):
               buy_df['Trade Status'].iloc[i]="Indicator Exit"
         else:
           fut_data=get_historical_data(tradingsymbol,interval="5m",token=symboltoken,exch_seg='NFO')
+          Indicator=fut_data['Indicator'].values[-1]
           if (fut_data['St Trade'].values[-1]=="Sell" or fut_data['ST_10_2 Trade'].values[-1]=="Sell"):
             logger.info(f"Exit {tradingsymbol} orderid: {orderid} Target: {ltp_price}")
-            exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+" Indicator Exit LTP: "+str(float(ltp_price)))
+            exit_position(symboltoken,tradingsymbol,qty,ltp_price,ltp_price,ordertag=str(orderid)+ " " +Indicator +" Exit LTP: "+str(float(ltp_price)))
             buy_df['Trade Status'].iloc[i]="Opt Indicator Exit"
           else:
             if int(ltp_price)> int(fut_data['Supertrend'].values[-1]):buy_df['Stop Loss'].iloc[i]=int(fut_data['Supertrend'].values[-1])
