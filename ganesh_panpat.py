@@ -46,6 +46,8 @@ st.session_state['15m_bnf']="-"
 st.session_state['15m_nf']="-"
 st.session_state['Nifty']="-"
 st.session_state['BankNifty']="-"
+st.session_state['Nifty_Trade_End']="-"
+st.session_state['BankNifty_Trade_End']="-"
 if 'options_trade_list' not in st.session_state: st.session_state['options_trade_list']=[]
 if 'Near_option_list' not in st.session_state: st.session_state['Near_option_list']=[]
 username=st.secrets["username"]
@@ -179,7 +181,8 @@ def print_ltp():
         print_sting=f"{print_sting} {sym} {sym_ltp}({sym_change}↓)"
       print_sting=print_sting.replace("Nifty 50","Nifty")
       print_sting=print_sting.replace("Nifty Bank","BankNifty")
-      placeholder.text(f'{print_sting} BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]}')
+      trade_end_msg=f"Trade End: BNF: {st.session_state['BankNifty_Trade_End']}, NF: {st.session_state['Nifty_Trade_End']}"
+      placeholder.text(f'{print_sting} BNF Exp: {st.session_state["bnf_expiry_day"]} NF Exp: {st.session_state["nf_expiry_day"]} {trade_end_msg}')
   except Exception as e:
     logger.exception(f"Unable to print_ltp: {e}")
     pass
@@ -758,8 +761,10 @@ def index_trade(symbol="-",interval="-",candle_type="NORMAL",token="-",exch_seg=
       buy_option(strike_symbol,indicator_strategy,interval)
     if symbol=="^NSEBANK" or symbol=="BANKNIFTY":
       n_symbol="bnf"
+      st.session_state['BankNifty_Trade_End']=trade_end
     else:
       n_symbol="nf"
+      st.session_state['Nifty_Trade_End']=trade_end
     information_name=interval + "_" + n_symbol
     information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),'Symbol':symbol,
                  'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],'Indicator':fut_data['Indicator'].values[-1],
