@@ -955,7 +955,6 @@ def loop_code():
           index_trade("SENSEX","5m")
           log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
           if 'OPT:5M' in time_frame: trade_near_options(5)
-        trade_near_options(5)
       else: closing_trade()
       print_sting=print_ltp()
       index_ltp_string.text(f"Index Ltp: {print_sting}")
