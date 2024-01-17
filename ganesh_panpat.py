@@ -933,9 +933,9 @@ with tab4:
 
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-  marketopen = now.replace(hour=0, minute=1, second=0, microsecond=0)
-  marketclose = now.replace(hour=23, minute=55, second=0, microsecond=0)
-  day_end = now.replace(hour=23, minute=55, second=0, microsecond=0)
+  marketopen = now.replace(hour=9, minute=19, second=0, microsecond=0)
+  marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
+  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
   st.session_state['options_trade_list']=[]
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
