@@ -430,7 +430,7 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
       df=df[(df['Open']>0)]
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
     last_candle=now.replace(second=0, microsecond=0)- datetime.timedelta(minutes=delta_time)
-    #df = df[(df.index <= last_candle)]
+    df = df[(df.index <= last_candle)]
     df['Time Frame']=odd_interval
     df.index.names = ['']
     df['VWAP']=pdta.vwap(high=df['High'],low=df['Low'],close=df['Close'],volume=df['Volume'])
