@@ -282,40 +282,36 @@ def get_all_near_option(nf_ltp,bnf_ltp,sensex_ltp):
 
 def trade_near_options(time_frame):
   time_frame=str(time_frame)+"m"
+  nf_ltp=get_ltp_price("NIFTY")
+  bnf_ltp=get_ltp_price("BANKNIFTY")
+  sensex_ltp=get_ltp_price("SENSEX")
+  option_list=get_all_near_option(nf_ltp,bnf_ltp,sensex_ltp)
+  near_option_datatable.dataframe(option_list,hide_index=True)
   for symbol in ['NIFTY','BANKNIFTY','SENSEX']:
-    index_ltp=get_ltp_price(symbol)
-    if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
-    elif symbol=="BANKNIFTY":symbol_expiry=st.session_state['bnf_expiry_day']
-    elif symbol=="SENSEX":symbol_expiry=st.session_state['sensex_expiry_day']
-    else:symbol_expiry="-"
-    option_list=get_near_options(symbol,index_ltp,symbol_expiry)
     for i in range(0,len(option_list)):
-      symbol_name=option_list['symbol'].iloc[i]
-      token_symbol=option_list['token'].iloc[i]
-      exch_seg=option_list['exch_seg'].iloc[i]
-      opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
-      information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
-                'Symbol':symbol_name,
-                'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
-                'Indicator':opt_data['Indicator'].values[-1],
-                'Trade':opt_data['Trade'].values[-1],
-                'Trade End':opt_data['Trade End'].values[-1],
-                'Supertrend':opt_data['Supertrend'].values[-1],
-                'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
-                'RSI':opt_data['RSI'].values[-1]}
-      st.session_state['options_trade_list'].append(information)
-      if (opt_data['St Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy"):
-        strike_symbol=option_list.iloc[i]
-        if opt_data['St Trade'].values[-1]=="Buy": sl= int(opt_data['Supertrend'].values[-1])
-        elif opt_data['ST_10_2 Trade'].values[-1]=="Buy": sl= int(opt_data['Supertrend_10_2'].values[-1])
-        else: sl=int(opt_data['Close'].values[-1]*0.7)
-        target=int(int(opt_data['Close'].values[-1])+((int(opt_data['Close'].values[-1])-sl)*2))
-        indicator ="OPT "+str(time_frame)+":"
-        if opt_data['St Trade'].values[-1]=="Buy": indicator=indicator + " ST"
-        elif opt_data['ST_10_2 Trade'].values[-1]=="Buy": indicator=indicator +" ST_10_2"
-        strategy=indicator + " (" +str(sl)+":"+str(target)+') '+" RSI:"+str(int(opt_data['RSI'].values[-1]))
-        buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
-        break
+      if option_list['name'].iloc[i]==symbol:
+        symbol_name=option_list['symbol'].iloc[i]
+        token_symbol=option_list['token'].iloc[i]
+        exch_seg=option_list['exch_seg'].iloc[i]
+        opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
+        information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+                  'Symbol':symbol_name,'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
+                  'Indicator':opt_data['Indicator'].values[-1],'Trade':opt_data['Trade'].values[-1],
+                  'Trade End':opt_data['Trade End'].values[-1],'Supertrend':opt_data['Supertrend'].values[-1],
+                  'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],'RSI':opt_data['RSI'].values[-1]}
+        st.session_state['options_trade_list'].append(information)
+        if (opt_data['St Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy"):
+          strike_symbol=option_list.iloc[i]
+          if opt_data['St Trade'].values[-1]=="Buy": sl= int(opt_data['Supertrend'].values[-1])
+          elif opt_data['ST_10_2 Trade'].values[-1]=="Buy": sl= int(opt_data['Supertrend_10_2'].values[-1])
+          else: sl=int(opt_data['Close'].values[-1]*0.7)
+          target=int(int(opt_data['Close'].values[-1])+((int(opt_data['Close'].values[-1])-sl)*2))
+          indicator ="OPT "+str(time_frame)+":"
+          if opt_data['St Trade'].values[-1]=="Buy": indicator=indicator + " ST"
+          elif opt_data['ST_10_2 Trade'].values[-1]=="Buy": indicator=indicator +" ST_10_2"
+          strategy=indicator + " (" +str(sl)+":"+str(target)+') '+" RSI:"+str(int(opt_data['RSI'].values[-1]))
+          buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
+          break
 
 def getTokenInfo(symbol, exch_seg ='NFO',instrumenttype='OPTIDX',strike_price = 0,pe_ce = 'CE',expiry_day = None):
   token_df=st.session_state['opt_list']
