@@ -909,6 +909,7 @@ with tab3:
     algo_trade_updated=st.empty()
     algo_trade_updated.text(f"Algo Trade : ")
     algo_datatable=st.empty()
+    st.session_state['algo_trade']=[]
 with tab4:
     ind_col1,ind_col2,ind_col3,ind_col4=st.columns([5,1.5,1.5,1.5])
     indicator_list=['St Trade', 'ST_10_2 Trade','ST_10_1 Trade', 'RSI MA Trade','RSI_60 Trade','MACD Trade','PSAR Trade','DI Trade',
@@ -974,3 +975,8 @@ print_sting=print_ltp()
 index_ltp_string.text(f"Index Ltp: {print_sting}")
 update_order_book()
 update_position()
+
+if nf_ce:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data("BANKNIFTY,indexLtp=46000)
+  my_check=st.session_state['algo_trade']
+  algo_datatable.dataframe(my_check,hide_index=True)
