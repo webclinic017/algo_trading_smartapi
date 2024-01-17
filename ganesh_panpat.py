@@ -262,10 +262,10 @@ def get_ltp_token(tokenlist):
 def get_near_options(symbol,index_ltp,symbol_expiry):
   token_df=st.session_state['opt_list']
   ltp=index_ltp*100
-  a=token_df[(token_df['name'] == symbol) & (token_df['expiry']==symbol_expiry) & (token_df['strike']<=ltp) &
+  a=token_df[(token_df['name'] == symbol)  & (token_df['strike']<=ltp) &
             (token_df['symbol'].str.endswith('PE'))].sort_values(by=['strike'], ascending=False).head(2)
   a.reset_index(inplace=True)
-  b=token_df[(token_df['name'] == symbol) & (token_df['expiry']==symbol_expiry) & (token_df['strike']>=ltp) &
+  b=token_df[(token_df['name'] == symbol)  & (token_df['strike']>=ltp) &
             (token_df['symbol'].str.endswith('CE'))].sort_values(by=['strike'], ascending=True).head(2)
   b.reset_index(inplace=True)
   df=pd.concat([a,b])
@@ -282,7 +282,6 @@ def get_all_near_option(nf_ltp,bnf_ltp,sensex_ltp):
 
 def trade_near_options(time_frame):
   time_frame=str(time_frame)+"m"
-  st['near_option_list']=[]
   for symbol in ['NIFTY','BANKNIFTY','SENSEX']:
     index_ltp=get_ltp_price(symbol)
     if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
@@ -290,8 +289,6 @@ def trade_near_options(time_frame):
     elif symbol=="SENSEX":symbol_expiry=st.session_state['sensex_expiry_day']
     else:symbol_expiry="-"
     option_list=get_near_options(symbol,index_ltp,symbol_expiry)
-    st['near_option_list'].append(option_list)
-    near_option_datatable=st.dataframe(st.session_state['near_option_list'],hide_index=True)
     for i in range(0,len(option_list)):
       symbol_name=option_list['symbol'].iloc[i]
       token_symbol=option_list['token'].iloc[i]
