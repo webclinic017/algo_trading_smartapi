@@ -436,6 +436,7 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
       df=df[(df['Open']>0)]
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
     last_candle=now.replace(second=0, microsecond=0)- datetime.timedelta(minutes=delta_time)
+    algo_datatable=st.dataframe(df)
     df = df[(df.index <= last_candle)]
     df['Time Frame']=odd_interval
     df.index.names = ['']
@@ -909,7 +910,6 @@ with tab3:
     algo_trade_updated=st.empty()
     algo_trade_updated.text(f"Algo Trade : ")
     algo_datatable=st.empty()
-    st.session_state['algo_trade']=[]
 with tab4:
     ind_col1,ind_col2,ind_col3,ind_col4=st.columns([5,1.5,1.5,1.5])
     indicator_list=['St Trade', 'ST_10_2 Trade','ST_10_1 Trade', 'RSI MA Trade','RSI_60 Trade','MACD Trade','PSAR Trade','DI Trade',
@@ -975,3 +975,5 @@ print_sting=print_ltp()
 index_ltp_string.text(f"Index Ltp: {print_sting}")
 update_order_book()
 update_position()
+if nf_ce:
+  fut_data=get_historical_data(symbol="BANKNIFTY",interval="5m",token="-",exch_seg="-",candle_type="NORMAL")
