@@ -973,4 +973,5 @@ index_ltp_string.text(f"Index Ltp: {print_sting}")
 update_order_book()
 update_position()
 if nf_ce:
-  fut_data=get_historical_data(symbol="NIFTY18JAN2423100PE",interval="5m",token='59419',exch_seg="NFO",candle_type="NORMAL")
+  df=get_all_near_option(21571,46064,71500)
+  log_holder.dataframe(df,hide_index=True)
