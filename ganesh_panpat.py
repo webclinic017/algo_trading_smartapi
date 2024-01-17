@@ -282,6 +282,7 @@ def get_all_near_option(nf_ltp,bnf_ltp,sensex_ltp):
 
 def trade_near_options(time_frame):
   time_frame=str(time_frame)+"m"
+  st['near_option_list']=[]
   for symbol in ['NIFTY','BANKNIFTY','SENSEX']:
     index_ltp=get_ltp_price(symbol)
     if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
@@ -289,8 +290,8 @@ def trade_near_options(time_frame):
     elif symbol=="SENSEX":symbol_expiry=st.session_state['sensex_expiry_day']
     else:symbol_expiry="-"
     option_list=get_near_options(symbol,index_ltp,symbol_expiry)
-    print(symbol,index_ltp,symbol_expiry)
-    print(option_list)
+    st['near_option_list'].append(option_list)
+    near_option_datatable=st.dataframe(st.session_state['near_option_list'],hide_index=True)
     for i in range(0,len(option_list)):
       symbol_name=option_list['symbol'].iloc[i]
       token_symbol=option_list['token'].iloc[i]
@@ -885,7 +886,7 @@ last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']} Algo: Not Running")
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp:")
-tab0, tab1, tab2, tab3, tab4,tab5= st.tabs(["Log","Order Book", "Position","Algo Trade", "Settings","Token List"])
+tab0, tab1, tab2, tab3, tab4,tab5= st.tabs(["Log","Order Book", "Position","Near Options", "Settings","Token List"])
 with tab0:
     col1,col2=st.columns([1,9])
     with col1:
@@ -907,9 +908,9 @@ with tab2:
     position_updated.text(f"Position : ")
     position_datatable=st.empty()
 with tab3:
-    algo_trade_updated=st.empty()
-    algo_trade_updated.text(f"Algo Trade : ")
-    algo_datatable=st.empty()
+    near_option_updated=st.empty()
+    near_option_updated.text(f"Near Options List : ")
+    near_option_datatable=st.empty()
 with tab4:
     ind_col1,ind_col2,ind_col3,ind_col4=st.columns([5,1.5,1.5,1.5])
     indicator_list=['St Trade', 'ST_10_2 Trade','ST_10_1 Trade', 'RSI MA Trade','RSI_60 Trade','MACD Trade','PSAR Trade','DI Trade',
@@ -940,7 +941,7 @@ with tab4:
 
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-  marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
+  marketopen = now.replace(hour=0, minute=1, second=0, microsecond=0)
   marketclose = now.replace(hour=23, minute=55, second=0, microsecond=0)
   day_end = now.replace(hour=23, minute=55, second=0, microsecond=0)
   st.session_state['options_trade_list']=[]
