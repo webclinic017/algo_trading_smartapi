@@ -977,6 +977,8 @@ update_order_book()
 update_position()
 
 if nf_ce:
-  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data("BANKNIFTY,indexLtp=46000)
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data("BANKNIFTY",indexLtp=46000)
+  st.session_state['algo_trade'].append(ce_strike_symbol)
+  st.session_state['algo_trade'].append(pe_strike_symbol)                                                         
   my_check=st.session_state['algo_trade']
   algo_datatable.dataframe(my_check,hide_index=True)
