@@ -29,7 +29,8 @@ pd.set_option('mode.chained_assignment', None)
 st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded",)
 st.markdown("""
   <style>
-    .block-container {padding-top: 0.5rem;padding-bottom: 0rem;padding-left: 2rem;padding-right: 5rem;}  
+    .block-container {padding-top: 0.5rem;padding-bottom: 0rem;padding-left: 2rem;padding-right: 5rem;}
+    .css-1l02zfd {line-height: 1.2 !important;}
   </style>
   """, unsafe_allow_html=True)
 
