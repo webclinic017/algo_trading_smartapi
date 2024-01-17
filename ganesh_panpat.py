@@ -437,7 +437,6 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
       df=df[(df['Open']>0)]
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
     last_candle=now.replace(second=0, microsecond=0)- datetime.timedelta(minutes=delta_time)
-    algo_datatable=st.dataframe(df)
     #df = df[(df.index <= last_candle)]
     df['Time Frame']=odd_interval
     df.index.names = ['']
@@ -959,6 +958,7 @@ def loop_code():
           index_trade("SENSEX","5m")
           log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
           if 'OPT:5M' in time_frame: trade_near_options(5)
+        trade_near_options(5)
       else: closing_trade()
       print_sting=print_ltp()
       index_ltp_string.text(f"Index Ltp: {print_sting}")
