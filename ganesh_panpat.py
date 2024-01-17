@@ -296,6 +296,16 @@ def trade_near_options(time_frame):
       token_symbol=option_list['token'].iloc[i]
       exch_seg=option_list['exch_seg'].iloc[i]
       opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
+      information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+                'Symbol':symbol_name,
+                'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
+                'Indicator':opt_data['Indicator'].values[-1],
+                'Trade':opt_data['Trade'].values[-1],
+                'Trade End':opt_data['Trade End'].values[-1],
+                'Supertrend':opt_data['Supertrend'].values[-1],
+                'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
+                'RSI':opt_data['RSI'].values[-1]}
+      st.session_state['options_trade_list'].append(information)
       if (opt_data['St Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy"):
         strike_symbol=option_list.iloc[i]
         if opt_data['St Trade'].values[-1]=="Buy": sl= int(opt_data['Supertrend'].values[-1])
@@ -308,16 +318,6 @@ def trade_near_options(time_frame):
         strategy=indicator + " (" +str(sl)+":"+str(target)+') '+" RSI:"+str(int(opt_data['RSI'].values[-1]))
         buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
         break
-      information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
-                'Symbol':symbol_name,
-                'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
-                'Indicator':opt_data['Indicator'].values[-1],
-                'Trade':opt_data['Trade'].values[-1],
-                'Trade End':opt_data['Trade End'].values[-1],
-                'Supertrend':opt_data['Supertrend'].values[-1],
-                'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
-                'RSI':opt_data['RSI'].values[-1]}
-      st.session_state['options_trade_list'].append(information)
 
 def getTokenInfo(symbol, exch_seg ='NFO',instrumenttype='OPTIDX',strike_price = 0,pe_ce = 'CE',expiry_day = None):
   token_df=st.session_state['opt_list']
@@ -941,8 +941,8 @@ with tab4:
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now.replace(hour=22, minute=55, second=0, microsecond=0)
-  day_end = now.replace(hour=22, minute=30, second=0, microsecond=0)
+  marketclose = now.replace(hour=23, minute=55, second=0, microsecond=0)
+  day_end = now.replace(hour=23, minute=55, second=0, microsecond=0)
   st.session_state['options_trade_list']=[]
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
@@ -975,10 +975,3 @@ print_sting=print_ltp()
 index_ltp_string.text(f"Index Ltp: {print_sting}")
 update_order_book()
 update_position()
-
-if nf_ce:
-  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data("BANKNIFTY",indexLtp=46000)
-  st.session_state['algo_trade'].append(ce_strike_symbol)
-  st.session_state['algo_trade'].append(pe_strike_symbol)                                                         
-  my_check=st.session_state['algo_trade']
-  algo_datatable.dataframe(my_check,hide_index=True)
