@@ -976,4 +976,4 @@ index_ltp_string.text(f"Index Ltp: {print_sting}")
 update_order_book()
 update_position()
 if nf_ce:
-  fut_data=get_historical_data(symbol="BANKNIFTY",interval="5m",token="-",exch_seg="-",candle_type="NORMAL")
+  fut_data=get_historical_data(symbol="BANKNIFTY17JAN2446300CE",interval="5m",token="35468",exch_seg="NFO",candle_type="NORMAL")
