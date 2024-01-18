@@ -672,7 +672,10 @@ def close_options_position(index_symbol,trade_end):
           print('Error in Close index trade:',e)
 
 def index_trade(symbol,interval):
-  fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
+  if 'SILVER' in symbol:
+    fut_data=get_historical_data(symbol='SILVERMIC24FEBFUT',interval='FIVE_MINUTE',token="257631",exch_seg="MCX",candle_type="NORMAL")  
+  else:
+    fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
   trade=str(fut_data['Trade'].values[-1])
   if trade!="-":
     indicator_strategy=fut_data['Indicator'].values[-1]
@@ -934,10 +937,11 @@ with tab4:
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=19, second=0, microsecond=0)
-  marketclose = now.replace(hour=23, minute=50, second=0, microsecond=0)
-  day_end = now.replace(hour=23, minute=30, second=0, microsecond=0)
+  marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
+  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
+  comm_day_end = now.replace(hour=23, minute=00, second=0, microsecond=0)
   st.session_state['options_trade_list']=[]
-  while now < day_end:
+  while now < comm_day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     last_login.text(f"Login: {st.session_state['login_time']} Algo: Running Last Run: {now.replace(microsecond=0, tzinfo=None).time()}")
     try:
@@ -947,7 +951,9 @@ def loop_code():
           index_trade("BANKNIFTY","5m")
           index_trade("SENSEX","5m")
           if 'OPT:5M' in time_frame: trade_near_options(5)
-      else: closing_trade()
+      if now < comm_day_end:
+        if (now.minute%5==0 and 'IDX:5M' in time_frame):
+          index_trade('SILVERMIC','FIVE_MINUTE')
       print_sting=print_ltp()
       index_ltp_string.text(f"Index Ltp: {print_sting}")
       update_order_book()
