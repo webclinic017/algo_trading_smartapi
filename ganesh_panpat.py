@@ -973,5 +973,5 @@ if nf_ce:
   from_date = to_date - datetime.timedelta(days=period)
   fromdate = from_date.strftime("%Y-%m-%d %H:%M")
   todate = to_date.strftime("%Y-%m-%d %H:%M")
-  historicParam={"exchange": 'NFO,"symboltoken": '55751',"interval": 'FIVE_MINUTE',"fromdate": fromdate, "todate": todate}
+  historicParam={"exchange": 'NFO',"symboltoken": '55751',"interval": 'FIVE_MINUTE',"fromdate": fromdate, "todate": todate}
   log_holder.dataframe(df,hide_index=True)
