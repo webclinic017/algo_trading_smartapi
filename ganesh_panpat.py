@@ -934,8 +934,8 @@ with tab4:
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=19, second=0, microsecond=0)
-  marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
-  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
+  marketclose = now.replace(hour=23, minute=50, second=0, microsecond=0)
+  day_end = now.replace(hour=23, minute=30, second=0, microsecond=0)
   st.session_state['options_trade_list']=[]
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
@@ -968,9 +968,3 @@ print_sting=print_ltp()
 index_ltp_string.text(f"Index Ltp: {print_sting}")
 update_order_book()
 update_position()
-if nf_ce:
-  df=get_historical_data(symbol="BANKNIFTY",interval='5m',token="-",exch_seg="-",candle_type="NORMAL")
-  log_holder.dataframe(df)
-  time.sleep(5)
-  df=get_historical_data(symbol="BANKNIFTY25JAN2445700PE",interval='5m',token="55802",exch_seg="NFO",candle_type="NORMAL")
-  log_holder.dataframe(df)
