@@ -969,5 +969,9 @@ index_ltp_string.text(f"Index Ltp: {print_sting}")
 update_order_book()
 update_position()
 if nf_ce:
-  df=get_all_near_option(21571,46064,71500)
+  to_date= datetime.datetime.now(tz=gettz('Asia/Kolkata'))
+  from_date = to_date - datetime.timedelta(days=period)
+  fromdate = from_date.strftime("%Y-%m-%d %H:%M")
+  todate = to_date.strftime("%Y-%m-%d %H:%M")
+  historicParam={"exchange": 'NFO,"symboltoken": '55751',"interval": 'FIVE_MINUTE',"fromdate": fromdate, "todate": todate}
   log_holder.dataframe(df,hide_index=True)
