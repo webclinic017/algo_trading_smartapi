@@ -978,4 +978,5 @@ if nf_ce:
   df = pd.DataFrame(res_json['data'], columns=['timestamp','O','H','L','C','V'])
   df = df.rename(columns={'timestamp':'Datetime','O':'Open','H':'High','L':'Low','C':'Close','V':'Volume'})
   df['Datetime'] = df['Datetime'].apply(lambda x: datetime.datetime.fromisoformat(x))
+  df['Datetime']=df['Datetime'].dt.tz_localize(None)
   log_holder.dataframe(df,hide_index=True)
