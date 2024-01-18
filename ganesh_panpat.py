@@ -670,7 +670,7 @@ def close_options_position(index_symbol,trade_end):
           time.sleep(1)
         except Exception as e:
           print('Error in Close index trade:',e)
-def future_trade(ymbol,interval):
+def future_trade(symbol,interval):
   if 'SILVER' in symbol:
     option_token="257631"
     exch_seg="MCX"
