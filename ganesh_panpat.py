@@ -984,4 +984,4 @@ if nf_ce:
   df['Date']=df['Datetime'].dt.strftime('%m/%d/%y')
   df['Datetime'] = pd.to_datetime(df['Datetime']).dt.time
   df=df[['Date','Datetime','Open','High','Low','Close','Volume']]
-  log_holder.dataframe(df,hide_index=True)
+  log_holder.dataframe(df)
