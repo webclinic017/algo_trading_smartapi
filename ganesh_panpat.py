@@ -677,6 +677,16 @@ def index_trade(symbol,interval):
   else:
     fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
   trade=str(fut_data['Trade'].values[-1])
+  information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+                'Symbol':symbol,
+                'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
+                'Indicator':fut_data['Indicator'].values[-1],
+                'Trade':fut_data['Trade'].values[-1],
+                'Trade End':fut_data['Trade End'].values[-1],
+                'Supertrend':fut_data['Supertrend'].values[-1],
+                'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],
+                'RSI':fut_data['RSI'].values[-1]}
+  st.session_state['options_trade_list'].append(information)
   if trade!="-":
     indicator_strategy=fut_data['Indicator'].values[-1]
     indexLtp=fut_data['Close'].values[-1]
@@ -689,16 +699,7 @@ def index_trade(symbol,interval):
     close_options_position(symbol,trade_end)
   print(symbol + "_" +interval+"_"+str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time())+"\n"+
         fut_data.tail(2)[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','Supertrend_10_1','RSI','Indicator']].to_string(index=False))
-  information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
-                'Symbol':symbol,
-                'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
-                'Indicator':fut_data['Indicator'].values[-1],
-                'Trade':fut_data['Trade'].values[-1],
-                'Trade End':fut_data['Trade End'].values[-1],
-                'Supertrend':fut_data['Supertrend'].values[-1],
-                'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],
-                'RSI':fut_data['RSI'].values[-1]}
-  st.session_state['options_trade_list'].append(information)
+
 def print_ltp():
   try:
     data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={"NSE": ["99926000","99926009"],"BSE": ['99919000'], "NFO": []})['data']['fetched'])
