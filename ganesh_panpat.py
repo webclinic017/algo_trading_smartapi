@@ -312,6 +312,7 @@ def trade_near_options(time_frame):
           strategy=indicator + " (" +str(sl)+":"+str(target)+') '+" RSI:"+str(int(opt_data['RSI'].values[-1]))
           buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
           break
+        log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
 
 def getTokenInfo(symbol, exch_seg ='NFO',instrumenttype='OPTIDX',strike_price = 0,pe_ce = 'CE',expiry_day = None):
   token_df=st.session_state['opt_list']
