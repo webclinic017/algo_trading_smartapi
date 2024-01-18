@@ -670,12 +670,39 @@ def close_options_position(index_symbol,trade_end):
           time.sleep(1)
         except Exception as e:
           print('Error in Close index trade:',e)
-
-def index_trade(symbol,interval):
+def future_trade(ymbol,interval):
   if 'SILVER' in symbol:
-    fut_data=get_historical_data(symbol='SILVERMIC24FEBFUT',interval='FIVE_MINUTE',token="257631",exch_seg="MCX",candle_type="NORMAL")  
-  else:
-    fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
+    option_token="257631"
+    exch_seg="MCX"
+    option_symbol='SILVERMIC24FEBFUT'
+    fut_data=get_historical_data(symbol=option_symbol,interval='FIVE_MINUTE',token=option_token,exch_seg=exch_seg,candle_type="NORMAL")
+    trade=str(fut_data['Trade'].values[-1])
+    information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+                  'Symbol':symbol,
+                  'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
+                  'Indicator':fut_data['Indicator'].values[-1],
+                  'Trade':fut_data['Trade'].values[-1],
+                  'Trade End':fut_data['Trade End'].values[-1],
+                  'Supertrend':fut_data['Supertrend'].values[-1],
+                  'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],
+                  'RSI':fut_data['RSI'].values[-1]}
+    st.session_state['options_trade_list'].append(information)
+    if trade!="-":
+      lotsize=int(1)*lots_to_trade
+      orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
+                          variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
+      orderbook=obj.orderBook()['data']
+      orderbook=pd.DataFrame(orderbook)
+      orders= orderbook[(orderbook['orderid'] == orderId)]
+      orders_status=orders.iloc[0]['orderstatus']; trade_price=orders.iloc[0]['averageprice']
+      if orders_status != 'complete': trade_price='-'
+      tm=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
+      order_price=ltp_price if trade_price=='-' else trade_price
+      buy_msg=(f'Buy: {option_symbol}\nPrice: {trade_price} LTP: {ltp_price}\n{indicator_strategy}')
+      telegram_bot_sendtext(buy_msg)
+      
+def index_trade(symbol,interval):
+  fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
   trade=str(fut_data['Trade'].values[-1])
   information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
                 'Symbol':symbol,
@@ -954,7 +981,7 @@ def loop_code():
           if 'OPT:5M' in time_frame: trade_near_options(5)
       if now < comm_day_end:
         if (now.minute%5==0 and 'IDX:5M' in time_frame):
-          index_trade('SILVERMIC','FIVE_MINUTE')
+          future_trade('SILVERMIC','FIVE_MINUTE')
       print_sting=print_ltp()
       index_ltp_string.text(f"Index Ltp: {print_sting}")
       update_order_book()
