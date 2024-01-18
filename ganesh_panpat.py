@@ -687,6 +687,7 @@ def future_trade(symbol,interval):
                   'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],
                   'RSI':fut_data['RSI'].values[-1]}
     st.session_state['options_trade_list'].append(information)
+    log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if trade!="-":
       lotsize=int(1)*lots_to_trade
       orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
