@@ -401,9 +401,10 @@ def angel_data(token,interval,exch_seg,fromdate,todate):
 #Historical Data
 def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_type="NORMAL"):
   try:
-    if (symbol=="^NSEI" or symbol=="NIFTY") : symbol,token,exch_seg="^NSEI",99926000,"NSE"
-    elif (symbol=="^NSEBANK" or symbol=="BANKNIFTY") : symbol,token,exch_seg="^NSEBANK",99926009,"NSE"
-    elif (symbol=="^BSESN" or symbol=="SENSEX") : symbol,token,exch_seg="^BSESN",99919000,"BSE"
+    symbol_i=symbol
+    if (symbol=="^NSEI" or symbol=="NIFTY") : symbol_i,token,exch_seg="^NSEI",99926000,"NSE"
+    elif (symbol=="^NSEBANK" or symbol=="BANKNIFTY") : symbol_i,token,exch_seg="^NSEBANK",99926009,"NSE"
+    elif (symbol=="^BSESN" or symbol=="SENSEX") : symbol_i,token,exch_seg="^BSESN",99919000,"BSE"
     if symbol[3:]=='-EQ': symbol=symbol[:-3]+".NS"
     odd_candle,odd_interval,df=False,'','No Data Found'
     if (interval=="5m" or interval=='FIVE_MINUTE'): period,delta_time,agl_interval,yf_interval,odd_interval=7,5,"FIVE_MINUTE","5m",'5m'
@@ -417,8 +418,8 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
         if(i.isdigit()): odd_interval+=i
       delta_time=int(odd_interval)
       odd_interval+='m'
-    if (symbol[0]=="^"):
-      df=yfna_data(symbol,yf_interval,str(period)+"d")
+    #if (symbol_i[0]=="^"):
+    #  df=yfna_data(symbol,yf_interval,str(period)+"d")
     if isinstance(df, str):
       to_date= datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       from_date = to_date - datetime.timedelta(days=period)
