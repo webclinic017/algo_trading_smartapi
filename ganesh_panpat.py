@@ -589,6 +589,9 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
     option_symbol=symbol['symbol']
     exch_seg=symbol['exch_seg']
     lotsize=int(symbol['lotsize'])*lots_to_trade
+    orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
+                          variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
+    if str(orderId)=='Order placement failed': return
     try:
       if "(" in indicator_strategy and ")" in indicator_strategy:
         stop_loss=(indicator_strategy.split('('))[1].split(':')[0]
@@ -605,9 +608,6 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
         target_price=int(float(ltp_price)+(float(ltp_price)-float(stop_loss))*2)
         indicator_strategy=indicator_strategy+ " (" +str(stop_loss)+":"+str(target_price)+') '
     except Exception as e: pass
-    orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
-                          variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
-    if str(orderId)=='Order placement failed': return
     orderbook=obj.orderBook()['data']
     orderbook=pd.DataFrame(orderbook)
     orders= orderbook[(orderbook['orderid'] == orderId)]
