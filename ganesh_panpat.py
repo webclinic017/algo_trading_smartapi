@@ -970,7 +970,7 @@ update_order_book()
 update_position()
 if nf_ce:
   to_date= datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-  from_date = to_date - datetime.timedelta(days=period)
+  from_date = to_date - datetime.timedelta(days=3)
   fromdate = from_date.strftime("%Y-%m-%d %H:%M")
   todate = to_date.strftime("%Y-%m-%d %H:%M")
   historicParam={"exchange": 'NFO',"symboltoken": '55751',"interval": 'FIVE_MINUTE',"fromdate": fromdate, "todate": todate}
