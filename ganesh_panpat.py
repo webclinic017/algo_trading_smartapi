@@ -977,4 +977,5 @@ if nf_ce:
   res_json=obj.getCandleData(historicParam)
   df = pd.DataFrame(res_json['data'], columns=['timestamp','O','H','L','C','V'])
   df = df.rename(columns={'timestamp':'Datetime','O':'Open','H':'High','L':'Low','C':'Close','V':'Volume'})
+  df['Datetime'] = pd.to_datetime(df['Datetime'],format = '%Y-%m-%d %H:%M:%S')
   log_holder.dataframe(df,hide_index=True)
