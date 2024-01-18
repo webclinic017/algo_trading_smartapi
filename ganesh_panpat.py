@@ -979,4 +979,9 @@ if nf_ce:
   df = df.rename(columns={'timestamp':'Datetime','O':'Open','H':'High','L':'Low','C':'Close','V':'Volume'})
   df['Datetime'] = df['Datetime'].apply(lambda x: datetime.datetime.fromisoformat(x))
   df['Datetime']=df['Datetime'].dt.tz_localize(None)
+  df = df.set_index('Datetime')
+  df['Datetime']=pd.to_datetime(df.index,format = '%Y-%m-%d %H:%M:%S')
+  df['Date']=df['Datetime'].dt.strftime('%m/%d/%y')
+  df['Datetime'] = pd.to_datetime(df['Datetime']).dt.time
+  df=df[['Date','Datetime','Open','High','Low','Close','Volume']]
   log_holder.dataframe(df,hide_index=True)
