@@ -974,4 +974,7 @@ if nf_ce:
   fromdate = from_date.strftime("%Y-%m-%d %H:%M")
   todate = to_date.strftime("%Y-%m-%d %H:%M")
   historicParam={"exchange": 'NFO',"symboltoken": '55751',"interval": 'FIVE_MINUTE',"fromdate": fromdate, "todate": todate}
+  res_json=obj.getCandleData(historicParam)
+  df = pd.DataFrame(res_json['data'], columns=['timestamp','O','H','L','C','V'])
+  df = df.rename(columns={'timestamp':'Datetime','O':'Open','H':'High','L':'Low','C':'Close','V':'Volume'})
   log_holder.dataframe(df,hide_index=True)
