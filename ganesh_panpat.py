@@ -312,7 +312,6 @@ def trade_near_options(time_frame):
           strategy=indicator + " (" +str(sl)+":"+str(target)+') '+" RSI:"+str(int(opt_data['RSI'].values[-1]))
           buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
           break
-        log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
 
 def getTokenInfo(symbol, exch_seg ='NFO',instrumenttype='OPTIDX',strike_price = 0,pe_ce = 'CE',expiry_day = None):
   token_df=st.session_state['opt_list']
@@ -418,8 +417,8 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
         if(i.isdigit()): odd_interval+=i
       delta_time=int(odd_interval)
       odd_interval+='m'
-    #if (symbol_i[0]=="^"):
-    #  df=yfna_data(symbol,yf_interval,str(period)+"d")
+    if (symbol_i[0]=="^"):
+      df=yfna_data(symbol,yf_interval,str(period)+"d")
     if isinstance(df, str):
       to_date= datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       from_date = to_date - datetime.timedelta(days=period)
@@ -945,13 +944,9 @@ def loop_code():
     try:
       if now > marketopen and now < marketclose:
         if (now.minute%5==0 and 'IDX:5M' in time_frame):
-          st.session_state['options_trade_list']=[]
           index_trade("NIFTY","5m")
-          log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
           index_trade("BANKNIFTY","5m")
-          log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
           index_trade("SENSEX","5m")
-          log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
           if 'OPT:5M' in time_frame: trade_near_options(5)
       else: closing_trade()
       print_sting=print_ltp()
