@@ -964,6 +964,7 @@ with tab4:
         token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
     with tab6:
       algo_log=st.text_area("Multiline Text", "Ganesh")
+      algo_log.text_area("Multiline Text", "Ganesh")
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=19, second=0, microsecond=0)
