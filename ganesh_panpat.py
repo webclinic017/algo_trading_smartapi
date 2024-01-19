@@ -910,7 +910,7 @@ last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']} Algo: Not Running")
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp:")
-tab0, tab1, tab2, tab3, tab4,tab5= st.tabs(["Log","Order Book", "Position","Near Options", "Settings","Token List"])
+tab0, tab1, tab2, tab3, tab4,tab5,tab6= st.tabs(["Log","Order Book", "Position","Near Options", "Settings","Token List","Algo Log"])
 with tab0:
     col1,col2=st.columns([1,9])
     with col1:
@@ -962,7 +962,9 @@ with tab4:
     with tab5:
         token_df=st.empty()
         token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
-
+    with tab6:
+      log_df=st.empty()
+      log_df=st.dataframe(st.session_state['algo_log'],hide_index=True)
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=19, second=0, microsecond=0)
