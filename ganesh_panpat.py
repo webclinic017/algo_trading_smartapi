@@ -111,12 +111,13 @@ def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NO
       "stoploss": int(float(stoploss)),"quantity": str(qty),"triggerprice":int(float(triggerprice)),"ordertag":ordertag,"trailingStopLoss":5}
     orderId=obj.placeOrder(orderparams)
     LTP_Price=round(float(get_ltp_price(symbol=symbol,token=token,exch_seg=exch_seg)),2)
-    print(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
+    st.session_state['multiline_text'].append(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
     return orderId,LTP_Price
   except Exception as e:
     print("Order placement failed: ",e)
     orderId='Order placement failed'
     LTP_Price='Order placement failed'
+    st.session_state['multiline_text'].append(f'{buy_sell} Order placement failed Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
     return orderId,LTP_Price
 
 #Modify Order
