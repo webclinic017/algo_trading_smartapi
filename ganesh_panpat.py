@@ -976,6 +976,7 @@ def loop_code():
     try:
       if now > marketopen and now < marketclose:
         if (now.minute%5==0 and 'IDX:5M' in time_frame):
+          st.session_state['options_trade_list']=[]
           index_trade("NIFTY","5m")
           index_trade("BANKNIFTY","5m")
           index_trade("SENSEX","5m")
