@@ -973,6 +973,7 @@ def loop_code():
   comm_day_end = now.replace(hour=23, minute=00, second=0, microsecond=0)
   st.session_state['options_trade_list']=[]
   while now < comm_day_end:
+    st.session_state['multiline_text']=['Algo Log']
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     last_login.text(f"Login: {st.session_state['login_time']} Algo: Running Last Run: {now.replace(microsecond=0, tzinfo=None).time()}")
     try:
@@ -1002,7 +1003,6 @@ print_sting=print_ltp()
 index_ltp_string.text(f"Index Ltp: {print_sting}")
 update_order_book()
 update_position()
-if nf_ce:
-  multiline_content_list = ["Line 1", "Line 2", "Line 3", "Line 4"]
-  multiline_text = "\n".join(multiline_content_list)
-  algo_log.text(multiline_text)
+multiline_text = "\n".join(multiline_content_list)
+algo_log.text(multiline_text)
+  
