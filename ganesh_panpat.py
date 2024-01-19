@@ -689,7 +689,8 @@ def future_trade(symbol,interval):
                   'RSI':fut_data['RSI'].values[-1]}
     st.session_state['options_trade_list'].append(information)
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    if trade!="-":
+    ganesh="Yes"
+    if trade!="-" or ganesh=="Yes":
       lotsize=1
       orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
                           variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
