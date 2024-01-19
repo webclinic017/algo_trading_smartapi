@@ -963,9 +963,7 @@ with tab4:
         token_df=st.empty()
         token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
     with tab6:
-      log_df=st.empty()
-      st.session_state['algo_log']=[]
-      log_df=st.dataframe(st.session_state['algo_log'],hide_index=True)
+      algo_log=st.text_area("Multiline Text", "Ganesh")
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=19, second=0, microsecond=0)
@@ -1006,4 +1004,5 @@ update_position()
 if nf_ce:
   multiline_content_list = ["Line 1", "Line 2", "Line 3", "Line 4"]
   multiline_text = "\n".join(multiline_content_list)
-  st.text_area("Multiline Text", multiline_text)
+  algo_log.text(multiline_text)
+  #st.text_area("Multiline Text", multiline_text)
