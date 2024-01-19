@@ -1003,3 +1003,7 @@ print_sting=print_ltp()
 index_ltp_string.text(f"Index Ltp: {print_sting}")
 update_order_book()
 update_position()
+if nf_ce:
+  multiline_content_list = ["Line 1", "Line 2", "Line 3", "Line 4"]
+  multiline_text = "\n".join(multiline_content_list)
+  st.text_area("Multiline Text", multiline_text)
