@@ -691,9 +691,10 @@ def future_trade(symbol,interval):
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     ganesh="Yes"
     if trade!="-" or ganesh=="Yes":
-      lotsize=1
-      orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
-                          variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
+      orderparams = {"variety": 'NORMAL',"tradingsymbol": option_symbol,"symboltoken": option_token,"transactiontype": 'BUY',"exchange": 'MCX',
+              "ordertype": 'MARKET',"producttype": 'CARRYFORWARD',"duration": "DAY","price": int(float(0)),"squareoff":int(float(0)),
+              "stoploss": int(float(0)),"quantity": str(1),"triggerprice":int(float(0)),"ordertag":fut_data['Indicator'].values[-1],"trailingStopLoss":5}
+      orderId=obj.placeOrder(orderparams)
       orderbook=obj.orderBook()['data']
       orderbook=pd.DataFrame(orderbook)
       orders= orderbook[(orderbook['orderid'] == orderId)]
