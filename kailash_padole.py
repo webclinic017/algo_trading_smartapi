@@ -111,12 +111,13 @@ def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NO
       "stoploss": int(float(stoploss)),"quantity": str(qty),"triggerprice":int(float(triggerprice)),"ordertag":ordertag,"trailingStopLoss":5}
     orderId=obj.placeOrder(orderparams)
     LTP_Price=round(float(get_ltp_price(symbol=symbol,token=token,exch_seg=exch_seg)),2)
-    print(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
+    st.session_state['multiline_text'].append(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
     return orderId,LTP_Price
   except Exception as e:
     print("Order placement failed: ",e)
     orderId='Order placement failed'
     LTP_Price='Order placement failed'
+    st.session_state['multiline_text'].append(f'{buy_sell} Order placement failed Symbol: {symbol} LTP: {LTP_Price} Ordertag: {ordertag}')
     return orderId,LTP_Price
 
 #Modify Order
@@ -689,18 +690,12 @@ def future_trade(symbol,interval):
     st.session_state['options_trade_list'].append(information)
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if trade!="-":
-      lotsize=int(1)*lots_to_trade
-      orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
-                          variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
-      orderbook=obj.orderBook()['data']
-      orderbook=pd.DataFrame(orderbook)
-      orders= orderbook[(orderbook['orderid'] == orderId)]
-      orders_status=orders.iloc[0]['orderstatus']; trade_price=orders.iloc[0]['averageprice']
-      if orders_status != 'complete': trade_price='-'
-      tm=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
-      order_price=ltp_price if trade_price=='-' else trade_price
-      buy_msg=(f'Buy: {option_symbol}\nPrice: {trade_price} LTP: {ltp_price}\n{indicator_strategy}')
-      telegram_bot_sendtext(buy_msg)
+      orderparams = {"variety": 'NORMAL',"tradingsymbol": option_symbol,"symboltoken": option_token,"transactiontype": 'BUY',"exchange": 'MCX',
+              "ordertype": 'MARKET',"producttype": 'CARRYFORWARD',"duration": "DAY","price": int(float(0)),"squareoff":int(float(0)),
+              "stoploss": int(float(0)),"quantity": str(1),"triggerprice":int(float(0)),"ordertag":'text',"trailingStopLoss":5}
+      orderId=obj.placeOrder(orderparams)
+      update_order_book()
+      
       
 def index_trade(symbol,interval):
   fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
@@ -910,7 +905,8 @@ last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']} Algo: Not Running")
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp:")
-tab0, tab1, tab2, tab3, tab4,tab5= st.tabs(["Log","Order Book", "Position","Near Options", "Settings","Token List"])
+tab0, tab1, tab2, tab3, tab4,tab5,tab6= st.tabs(["Log","Order Book", "Position","Near Options", "Settings","Token List","Algo Log"])
+st.session_state['options_trade_list']=[]
 with tab0:
     col1,col2=st.columns([1,9])
     with col1:
@@ -962,7 +958,10 @@ with tab4:
     with tab5:
         token_df=st.empty()
         token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
-
+    with tab6:
+        algo_log=st.empty()
+        algo_log.text(f"Algo Log : ")
+        st.session_state['multiline_text']=['Algo Log']
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=19, second=0, microsecond=0)
@@ -971,11 +970,13 @@ def loop_code():
   comm_day_end = now.replace(hour=23, minute=00, second=0, microsecond=0)
   st.session_state['options_trade_list']=[]
   while now < comm_day_end:
+    st.session_state['multiline_text']=['Algo Log']
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     last_login.text(f"Login: {st.session_state['login_time']} Algo: Running Last Run: {now.replace(microsecond=0, tzinfo=None).time()}")
     try:
       if now > marketopen and now < marketclose:
         if (now.minute%5==0 and 'IDX:5M' in time_frame):
+          st.session_state['options_trade_list']=[]
           index_trade("NIFTY","5m")
           index_trade("BANKNIFTY","5m")
           index_trade("SENSEX","5m")
@@ -999,3 +1000,5 @@ print_sting=print_ltp()
 index_ltp_string.text(f"Index Ltp: {print_sting}")
 update_order_book()
 update_position()
+multiline_text = "\n".join(st.session_state['multiline_text'])
+algo_log.text(multiline_text)
