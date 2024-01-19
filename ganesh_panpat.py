@@ -965,6 +965,7 @@ with tab4:
     with tab6:
         algo_log=st.empty()
         algo_log.text(f"Algo Log : ")
+        st.session_state['multiline_text']=['Algo Log']
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=19, second=0, microsecond=0)
