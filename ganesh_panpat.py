@@ -912,6 +912,7 @@ last_login.text(f"Login: {st.session_state['login_time']} Algo: Not Running")
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp:")
 tab0, tab1, tab2, tab3, tab4,tab5,tab6= st.tabs(["Log","Order Book", "Position","Near Options", "Settings","Token List","Algo Log"])
+st.session_state['options_trade_list']=[]
 with tab0:
     col1,col2=st.columns([1,9])
     with col1:
