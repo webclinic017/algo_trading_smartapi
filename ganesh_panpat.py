@@ -689,8 +689,7 @@ def future_trade(symbol,interval):
                   'RSI':fut_data['RSI'].values[-1]}
     st.session_state['options_trade_list'].append(information)
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    ganesh="Yes"
-    if trade!="-" or ganesh=="Yes":
+    if trade!="-":
       orderparams = {"variety": 'NORMAL',"tradingsymbol": option_symbol,"symboltoken": option_token,"transactiontype": 'BUY',"exchange": 'MCX',
               "ordertype": 'MARKET',"producttype": 'CARRYFORWARD',"duration": "DAY","price": int(float(0)),"squareoff":int(float(0)),
               "stoploss": int(float(0)),"quantity": str(1),"triggerprice":int(float(0)),"ordertag":'text',"trailingStopLoss":5}
@@ -1003,5 +1002,3 @@ update_order_book()
 update_position()
 multiline_text = "\n".join(st.session_state['multiline_text'])
 algo_log.text(multiline_text)
-if nf_ce:
-  future_trade("SILVER","FIVE_MINUTE")
