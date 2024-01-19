@@ -695,15 +695,6 @@ def future_trade(symbol,interval):
               "ordertype": 'MARKET',"producttype": 'CARRYFORWARD',"duration": "DAY","price": int(float(0)),"squareoff":int(float(0)),
               "stoploss": int(float(0)),"quantity": str(1),"triggerprice":int(float(0)),"ordertag":fut_data['Indicator'].values[-1],"trailingStopLoss":5}
       orderId=obj.placeOrder(orderparams)
-      orderbook=obj.orderBook()['data']
-      orderbook=pd.DataFrame(orderbook)
-      orders= orderbook[(orderbook['orderid'] == orderId)]
-      orders_status=orders.iloc[0]['orderstatus']; trade_price=orders.iloc[0]['averageprice']
-      if orders_status != 'complete': trade_price='-'
-      tm=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
-      order_price=ltp_price if trade_price=='-' else trade_price
-      buy_msg=(f'Buy: {option_symbol}\nPrice: {trade_price} LTP: {ltp_price}\n{indicator_strategy}')
-      telegram_bot_sendtext(buy_msg)
       
 def index_trade(symbol,interval):
   fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
