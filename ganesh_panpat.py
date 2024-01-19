@@ -695,6 +695,8 @@ def future_trade(symbol,interval):
               "ordertype": 'MARKET',"producttype": 'CARRYFORWARD',"duration": "DAY","price": int(float(0)),"squareoff":int(float(0)),
               "stoploss": int(float(0)),"quantity": str(1),"triggerprice":int(float(0)),"ordertag":fut_data['Indicator'].values[-1],"trailingStopLoss":5}
       orderId=obj.placeOrder(orderparams)
+      update_order_book()
+      
       
 def index_trade(symbol,interval):
   fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
