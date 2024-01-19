@@ -1005,4 +1005,4 @@ update_position()
 if nf_ce:
   multiline_content_list = ["Line 1", "Line 2", "Line 3", "Line 4"]
   multiline_text = "\n".join(multiline_content_list)
-  algo_log.text=multiline_text
+  algo_log.text(multiline_text)
