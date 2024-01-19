@@ -963,8 +963,8 @@ with tab4:
         token_df=st.empty()
         token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
     with tab6:
-      algo_log=st.text_area("Multiline Text", "Ganesh")
-      algo_log.text_area("Multiline Text", "Ganesh")
+        algo_log=st.empty()
+        algo_log.text(f"Algo Log : ")
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=19, second=0, microsecond=0)
@@ -1006,4 +1006,3 @@ if nf_ce:
   multiline_content_list = ["Line 1", "Line 2", "Line 3", "Line 4"]
   multiline_text = "\n".join(multiline_content_list)
   algo_log.text=multiline_text
-  #st.text_area(multiline_text)
