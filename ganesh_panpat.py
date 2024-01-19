@@ -693,7 +693,7 @@ def future_trade(symbol,interval):
     if trade!="-" or ganesh=="Yes":
       orderparams = {"variety": 'NORMAL',"tradingsymbol": option_symbol,"symboltoken": option_token,"transactiontype": 'BUY',"exchange": 'MCX',
               "ordertype": 'MARKET',"producttype": 'CARRYFORWARD',"duration": "DAY","price": int(float(0)),"squareoff":int(float(0)),
-              "stoploss": int(float(0)),"quantity": str(1),"triggerprice":int(float(0)),"ordertag":fut_data['Indicator'].values[-1],"trailingStopLoss":5}
+              "stoploss": int(float(0)),"quantity": str(1),"triggerprice":int(float(0)),"ordertag":'text',"trailingStopLoss":5}
       orderId=obj.placeOrder(orderparams)
       update_order_book()
       
