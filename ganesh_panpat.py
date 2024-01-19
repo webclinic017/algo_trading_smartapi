@@ -964,6 +964,7 @@ with tab4:
         token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
     with tab6:
       log_df=st.empty()
+      st.session_state['algo_log']=[]
       log_df=st.dataframe(st.session_state['algo_log'],hide_index=True)
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
