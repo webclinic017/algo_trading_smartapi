@@ -1003,6 +1003,6 @@ print_sting=print_ltp()
 index_ltp_string.text(f"Index Ltp: {print_sting}")
 update_order_book()
 update_position()
-multiline_text = "\n".join(multiline_content_list)
+multiline_text = "\n".join(st.session_state['multiline_text'])
 algo_log.text(multiline_text)
   
