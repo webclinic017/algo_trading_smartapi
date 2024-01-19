@@ -690,7 +690,7 @@ def future_trade(symbol,interval):
     st.session_state['options_trade_list'].append(information)
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if trade!="-":
-      lotsize=int(1)*lots_to_trade
+      lotsize=1
       orderId,ltp_price=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=0,
                           variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
       orderbook=obj.orderBook()['data']
@@ -1007,4 +1007,5 @@ update_order_book()
 update_position()
 multiline_text = "\n".join(st.session_state['multiline_text'])
 algo_log.text(multiline_text)
-  
+if nf_ce:
+  future_trade("SILVER","FIVE_MINUTE")
