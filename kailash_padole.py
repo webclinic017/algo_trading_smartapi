@@ -690,6 +690,10 @@ def future_trade(symbol,interval):
     st.session_state['options_trade_list'].append(information)
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if trade!="-":
+      if trade=="Buy" or trade =="BUY":
+        trade="BUY"
+      else:
+        trade="SELL"
       orderparams = {"variety": 'NORMAL',"tradingsymbol": option_symbol,"symboltoken": option_token,"transactiontype": 'BUY',"exchange": 'MCX',
               "ordertype": 'MARKET',"producttype": 'CARRYFORWARD',"duration": "DAY","price": int(float(0)),"squareoff":int(float(0)),
               "stoploss": int(float(0)),"quantity": str(1),"triggerprice":int(float(0)),"ordertag":'text',"trailingStopLoss":5}
