@@ -696,7 +696,7 @@ def future_trade(symbol,interval):
         trade="SELL"
       orderparams = {"variety": 'NORMAL',"tradingsymbol": option_symbol,"symboltoken": option_token,"transactiontype": 'BUY',"exchange": 'MCX',
               "ordertype": 'MARKET',"producttype": 'CARRYFORWARD',"duration": "DAY","price": int(float(0)),"squareoff":int(float(0)),
-              "stoploss": int(float(0)),"quantity": str(1),"triggerprice":int(float(0)),"ordertag":'text',"trailingStopLoss":5}
+              "stoploss": int(float(0)),"quantity": str(1),"triggerprice":int(float(0)),"ordertag":fut_data['Indicator'].values[-1],"trailingStopLoss":5}
       orderId=obj.placeOrder(orderparams)
       update_order_book()
       
@@ -985,7 +985,8 @@ def loop_code():
           index_trade("BANKNIFTY","5m")
           index_trade("SENSEX","5m")
           if 'OPT:5M' in time_frame: trade_near_options(5)
-      if now < comm_day_end:
+          log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+      if now > marketopen and now < comm_day_end:
         if (now.minute%5==0 and 'IDX:5M' in time_frame):
           future_trade('SILVERMIC','FIVE_MINUTE')
       print_sting=print_ltp()
