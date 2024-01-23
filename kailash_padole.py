@@ -882,7 +882,7 @@ def update_order_book():
       else:
           orderbook=pd.DataFrame(orderbook)
           orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
-          orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag']]
+          orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']]
           order_datatable.dataframe(orderbook,hide_index=True)
   except Exception as e:
     print("error in update_order_book",e)
