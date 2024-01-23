@@ -878,7 +878,7 @@ def update_order_book():
       order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
       if orderbook==None:
           order_datatable.write("No Order Placed")
-          orderbook=pd.DataFrame(columns =['updatetime','orderid','transactiontype','status','symboltoken','tradingsymbol','price','quantity','ordertag'])
+          orderbook=pd.DataFrame(columns =['updatetime','orderid','transactiontype','status','symboltoken','tradingsymbol','price','averageprice','quantity','ordertag'])
       else:
           orderbook=pd.DataFrame(orderbook)
           orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
