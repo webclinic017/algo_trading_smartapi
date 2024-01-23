@@ -874,11 +874,11 @@ def update_order_book():
       order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()}")
       if orderbook==None:
           order_datatable.write("No Order Placed")
-          orderbook=pd.DataFrame(columns =['updatetime','orderid','transactiontype','status','symboltoken','tradingsymbol','price','quantity','ordertag'])
+          orderbook=pd.DataFrame(columns =['updatetime','orderid','transactiontype','status','symboltoken','tradingsymbol','price','averageprice','quantity','ordertag'])
       else:
           orderbook=pd.DataFrame(orderbook)
           orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
-          orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','quantity','ordertag']]
+          orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']]
           order_datatable.dataframe(orderbook,hide_index=True)
   except Exception as e:
     print("error in update_order_book",e)
@@ -981,7 +981,7 @@ def loop_code():
           index_trade("BANKNIFTY","5m")
           index_trade("SENSEX","5m")
           if 'OPT:5M' in time_frame: trade_near_options(5)
-      if now < comm_day_end:
+      if now > marketopen and now < comm_day_end:
         if (now.minute%5==0 and 'IDX:5M' in time_frame):
           future_trade('SILVERMIC','FIVE_MINUTE')
       print_sting=print_ltp()
