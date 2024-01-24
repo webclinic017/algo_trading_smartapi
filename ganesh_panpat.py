@@ -964,7 +964,7 @@ with tab4:
         st.session_state['multiline_text']=['Algo Log']
     with tab7:
       dt = st.date_input("Select Date", datetime.datetime.today())
-      back_test=st.empty()
+      back_test_updated=st.empty()
       back_test_updated.text(f"Back Test : ")
       back_test_datatable=st.empty()
 def loop_code():
