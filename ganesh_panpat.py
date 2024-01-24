@@ -978,9 +978,7 @@ def loop_code():
         st.session_state['options_trade_list']=[]
         if now > marketopen and now < marketclose:
           index_trade("NIFTY","5m")
-          log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
           index_trade("BANKNIFTY","5m")
-          log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
           index_trade("SENSEX","5m")
           log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
           if 'OPT:5M' in time_frame:
