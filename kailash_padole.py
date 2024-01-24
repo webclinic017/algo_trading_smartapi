@@ -891,15 +891,16 @@ def update_position():
   try:
     position=obj.position()['data']
     now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
-    pnl_realised=position['realised'].sum()
-    pnl_unrealised=position['unrealised'].sum()
-    position_updated.text(f"Position : {now_time} Realised: {pnl_realised}, Unrealised: {pnl_unrealised} ")
+    position_updated.text(f"Position : {now_time}")
     if position==None:
       position_datatable.write("No Position")
     else:
       position=pd.DataFrame(position)
       position=position[['tradingsymbol','netqty','totalbuyavgprice','totalsellavgprice','realised', 'unrealised', 'ltp']]
       position_datatable.dataframe(position,hide_index=True)
+      pnl_realised=position['realised'].sum()
+      pnl_unrealised=position['unrealised'].sum()
+      position_updated.text(f"Position : {now_time} Realised: {pnl_realised}, Unrealised: {pnl_unrealised} ")
   except Exception as e:
     print("error in updating position",e)    
 
