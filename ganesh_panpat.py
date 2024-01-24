@@ -294,7 +294,7 @@ def trade_near_options(time_frame):
   for symbol in ['NIFTY','BANKNIFTY','SENSEX']:
     if ((symbol=="NIFTY" and st.session_state['nf_trade']!="-") or 
         (symbol=="BANKNIFTY" and st.session_state['bnf_trade']!="-") or 
-        (symbol=="SENSEX" and st.session_state['sen_trade']!="-"):
+        (symbol=="SENSEX" and st.session_state['sen_trade']!="-")):
       for i in range(0,len(option_list)):
         if option_list['name'].iloc[i]==symbol:
           symbol_name=option_list['symbol'].iloc[i]
