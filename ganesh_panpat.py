@@ -983,7 +983,6 @@ def loop_code():
           if 'OPT:5M' in time_frame: trade_near_options(5)
       if now > marketopen and now < comm_day_end:
         if (now.minute%5==0 and 'IDX:5M' in time_frame):
-          st.session_state['options_trade_list']=[]
           future_trade('SILVERMIC','FIVE_MINUTE')
       print_sting=print_ltp()
       index_ltp_string.text(f"Index Ltp: {print_sting}")
