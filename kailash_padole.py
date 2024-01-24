@@ -891,8 +891,8 @@ def update_position():
   try:
     position=obj.position()['data']
     now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
-    pnl_realised=df['realised'].sum()
-    pnl_unrealised=df['unrealised'].sum()
+    pnl_realised=position['realised'].sum()
+    pnl_unrealised=position['unrealised'].sum()
     position_updated.text(f"Position : {now_time} Realised: {pnl_realised}, Unrealised: {pnl_unrealised} ")
     if position==None:
       position_datatable.write("No Position")
