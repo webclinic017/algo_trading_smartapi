@@ -418,8 +418,8 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
         if(i.isdigit()): odd_interval+=i
       delta_time=int(odd_interval)
       odd_interval+='m'
-    if (symbol_i[0]=="^"):
-      df=yfna_data(symbol,yf_interval,str(period)+"d")
+    #if (symbol_i[0]=="^"):
+    #  df=yfna_data(symbol,yf_interval,str(period)+"d")
     if isinstance(df, str):
       to_date= datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       from_date = to_date - datetime.timedelta(days=period)
@@ -905,7 +905,7 @@ last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']} Algo: Not Running")
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp:")
-tab0, tab1, tab2, tab3, tab4,tab5,tab6= st.tabs(["Log","Order Book", "Position","Near Options", "Settings","Token List","Algo Log"])
+tab0, tab1, tab2, tab3, tab4,tab5,tab6,tab7= st.tabs(["Log","Order Book", "Position","Near Options", "Settings","Token List","Algo Log","Back Test"])
 st.session_state['options_trade_list']=[]
 with tab0:
     col1,col2=st.columns([1,9])
@@ -962,6 +962,11 @@ with tab4:
         algo_log=st.empty()
         algo_log.text(f"Algo Log : ")
         st.session_state['multiline_text']=['Algo Log']
+    with tab7:
+      dt = st.date_input("Select Date", datetime.datetime.today())
+      back_test=st.empty()
+      back_test_updated.text(f"Back Test : ")
+      back_test_datatable=st.empty()
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=19, second=0, microsecond=0)
