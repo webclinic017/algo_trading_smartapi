@@ -974,16 +974,21 @@ def loop_code():
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     last_login.text(f"Login: {st.session_state['login_time']} Algo: Running Last Run: {now.replace(microsecond=0, tzinfo=None).time()}")
     try:
-      if now > marketopen and now < marketclose:
-        if (now.minute%5==0 and 'IDX:5M' in time_frame):
-          st.session_state['options_trade_list']=[]
+      if (now.minute%5==0 and 'IDX:5M' in time_frame):
+        st.session_state['options_trade_list']=[]
+        if now > marketopen and now < marketclose:
           index_trade("NIFTY","5m")
+          log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
           index_trade("BANKNIFTY","5m")
+          log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
           index_trade("SENSEX","5m")
-          if 'OPT:5M' in time_frame: trade_near_options(5)
-      if now > marketopen and now < comm_day_end:
-        if (now.minute%5==0 and 'IDX:5M' in time_frame):
+          log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+          if 'OPT:5M' in time_frame:
+            trade_near_options(5)
+            log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+        if now > marketopen and now < comm_day_end:
           future_trade('SILVERMIC','FIVE_MINUTE')
+          log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
       print_sting=print_ltp()
       index_ltp_string.text(f"Index Ltp: {print_sting}")
       update_order_book()
