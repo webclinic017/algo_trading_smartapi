@@ -57,6 +57,9 @@ if 'user_name' not in st.session_state:
 obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
                  refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
 
+st.session_state['nf_trade']="-"
+st.session_state['bnf_trade']="-"
+st.session_state['sen_trade']="-"
 #Telegram Msg
 def telegram_bot_sendtext(bot_message):
   BOT_TOKEN = '5051044776:AAHh6XjxhRT94iXkR4Eofp2PPHY3Omk2KtI'
@@ -906,6 +909,8 @@ last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']} Algo: Not Running")
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp:")
+last_trade_string=st.empty()
+last_trade_string.text(f"Last Trade:")
 tab0, tab1, tab2, tab3, tab4,tab5,tab6,tab7= st.tabs(["Log","Order Book", "Position","Near Options", "Settings","Token List","Algo Log","Back Test"])
 st.session_state['options_trade_list']=[]
 with tab0:
@@ -995,6 +1000,7 @@ def loop_code():
           log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
       print_sting=print_ltp()
       index_ltp_string.text(f"Index Ltp: {print_sting}")
+      last_trade_string.text(f"Last Trade: {now.replace(microsecond=0, tzinfo=None).time()} Banknifty: {st.session_state['bnf_trade']}, Nifty: {st.session_state['nf_trade']}, Sensex:{st.session_state['sen_trade']}")
       update_order_book()
       update_position()
       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
