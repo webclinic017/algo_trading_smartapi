@@ -53,7 +53,6 @@ if 'user_name' not in st.session_state:
   st.session_state['feed_token']=obj.feed_token
   st.session_state['userId']=obj.userId
   st.session_state['api_key']=apikey
-
 obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
                  refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
 
@@ -292,9 +291,9 @@ def trade_near_options(time_frame):
   option_list=get_all_near_option(nf_ltp,bnf_ltp,sensex_ltp)
   near_option_datatable.dataframe(option_list,hide_index=True)
   for symbol in ['NIFTY','BANKNIFTY','SENSEX']:
-    if ((symbol=="NIFTY" and st.session_state['nf_trade']!="-") or 
-        (symbol=="BANKNIFTY" and st.session_state['bnf_trade']!="-") or 
-        (symbol=="SENSEX" and st.session_state['sen_trade']!="-")):
+    if ((symbol=="NIFTY" and st.session_state['nf_trade']=="-") or 
+        (symbol=="BANKNIFTY" and st.session_state['bnf_trade']=="-") or 
+        (symbol=="SENSEX" and st.session_state['sen_trade']=="-")):
       for i in range(0,len(option_list)):
         if option_list['name'].iloc[i]==symbol:
           symbol_name=option_list['symbol'].iloc[i]
