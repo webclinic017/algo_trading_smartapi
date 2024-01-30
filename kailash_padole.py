@@ -898,6 +898,7 @@ def update_position():
       position=pd.DataFrame(position)
       position=position[['tradingsymbol','netqty','totalbuyavgprice','totalsellavgprice','realised', 'unrealised', 'ltp']]
       position_datatable.dataframe(position,hide_index=True)
+      position['realised']=position['realised'].astype(float).round(2)
       pnl=position['realised'].sum()
       position_updated.text(f"Position Ganesh: {now_time} {pnl}")
   except Exception as e:
