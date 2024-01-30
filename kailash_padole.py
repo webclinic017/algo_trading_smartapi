@@ -920,7 +920,7 @@ with tab0:
         bnf_pe=st.button(label="BNF PE")
         close_all=st.button("Close All")
         restart=st.button("Restart")
-        algo_state=st.checkbox("Run Algo")
+        algo_state=st.checkbox("Run Algo",value=True)
     with col2:
         log_holder=st.empty()
 with tab1:
