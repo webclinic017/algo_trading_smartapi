@@ -376,6 +376,16 @@ def trade_near_options(time_frame):
           elif opt_data['ST_10_2 Trade'].values[-1]=="Buy": indicator=indicator +" ST_10_2"
           strategy=indicator + " (" +str(sl)+":"+str(target)+')'
           buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
+          information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+                'Symbol':symbol_name,
+                'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
+                'Indicator':opt_data['Indicator'].values[-1],
+                'Trade':opt_data['Trade'].values[-1],
+                'Trade End':opt_data['Trade End'].values[-1],
+                'Supertrend':opt_data['Supertrend'].values[-1],
+                'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
+                'RSI':opt_data['RSI'].values[-1]}
+          st.session_state['options_trade_list'].append(information)
           break
         print(df[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','Supertrend_10_1','RSI','Indicator']].to_string(index=False))
 
