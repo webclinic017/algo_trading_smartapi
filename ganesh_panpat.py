@@ -1092,3 +1092,5 @@ print_ltp()
 get_open_position()
 get_order_book()
 get_todays_trade()
+if nf_ce:
+  index_trade("5m")
