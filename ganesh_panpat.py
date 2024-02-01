@@ -327,6 +327,7 @@ def get_ltp_token(tokenlist):
     return ltp_df
 
 def get_near_options(symbol,index_ltp,symbol_expiry):
+  token_df=st.session_state['opt_list']
   ltp=index_ltp*100
   a=token_df[(token_df['name'] == symbol) & (token_df['expiry']==symbol_expiry) & (token_df['strike']<=ltp) &
             (token_df['symbol'].str.endswith('PE'))].sort_values(by=['strike'], ascending=False).head(2)
@@ -339,9 +340,9 @@ def get_near_options(symbol,index_ltp,symbol_expiry):
   return df
 
 def get_all_near_option(nf_ltp,bnf_ltp,sensex_ltp):
-  nf_df=get_near_options("NIFTY",nf_ltp,nf_expiry_day)
-  bnf_df=get_near_options("BANKNIFTY",bnf_ltp,bnf_expiry_day)
-  sensex_df=get_near_options("SENSEX",sensex_ltp,sensex_expiry_day)
+  nf_df=get_near_options("NIFTY",nf_ltp,st.session_state['nf_expiry_day'])
+  bnf_df=get_near_options("BANKNIFTY",bnf_ltp,st.session_state['bnf_expiry_day'])
+  sensex_df=get_near_options("SENSEX",sensex_ltp,st.session_state['sensex_expiry_day'])
   df = pd.DataFrame()
   df = pd.concat([nf_df,bnf_df,sensex_df])
   return df
@@ -353,9 +354,9 @@ def trade_near_options(time_frame):
     if (symbol=="NIFTY" and nf_5m_trade=="-") or (symbol=="BANKNIFTY" and bnf_5m_trade=="-") or (symbol=="SENSEX" and sensex_5m_trade=="-"):
       print(f'Near Option {symbol}')
       index_ltp=get_ltp_price(symbol)
-      if symbol=="NIFTY":symbol_expiry=nf_expiry_day
-      elif symbol=="BANKNIFTY":symbol_expiry=bnf_expiry_day
-      elif symbol=="SENSEX":symbol_expiry=sensex_expiry_day
+      if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
+      elif symbol=="BANKNIFTY":symbol_expiry=st.session_state['bnf_expiry_day']
+      elif symbol=="SENSEX":symbol_expiry=st.session_state['sensex_expiry_day']
       else:symbol_expiry="-"
       option_list=get_near_options(symbol,index_ltp,symbol_expiry)
       for i in range(0,len(option_list)):
@@ -379,6 +380,7 @@ def trade_near_options(time_frame):
         print(df[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','Supertrend_10_1','RSI','Indicator']].to_string(index=False))
 
 def getTokenInfo(symbol, exch_seg ='NFO',instrumenttype='OPTIDX',strike_price = 0,pe_ce = 'CE',expiry_day = None):
+  token_df=st.session_state['opt_list']
   if exch_seg == 'NSE' or exch_seg == 'BSE': return token_df[(token_df['exch_seg'] == exch_seg) & (token_df['name'] == symbol)]
   elif (instrumenttype == 'FUTSTK') or (instrumenttype == 'FUTIDX'):
     return token_df[(token_df['instrumenttype'] == instrumenttype) & (token_df['name'] == symbol)].sort_values(by=['expiry'], ascending=True)
