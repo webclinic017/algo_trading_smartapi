@@ -1114,6 +1114,7 @@ if algo_state:
   loop_code()
 if nf_ce:
   index_trade("5m")
+  trade_near_options(5)
   log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
 print_ltp()
 get_open_position()
