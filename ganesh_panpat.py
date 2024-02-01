@@ -787,7 +787,7 @@ def index_trade(interval):
         sensex_5m_trade=trade
         sensex_5m_trade_end=trade_end
     trade=str(fut_data['Trade'].values[-1])
-  information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+    information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
                 'Symbol':symbol,
                 'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
                 'Indicator':fut_data['Indicator'].values[-1],
@@ -796,7 +796,7 @@ def index_trade(interval):
                 'Supertrend':fut_data['Supertrend'].values[-1],
                 'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],
                 'RSI':fut_data['RSI'].values[-1]}
-  st.session_state['options_trade_list'].append(information)
+    st.session_state['options_trade_list'].append(information)
 
 def print_ltp():
   try:
