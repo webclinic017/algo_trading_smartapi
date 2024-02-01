@@ -47,6 +47,7 @@ sensex_5m_trade="-"
 nf_5m_trade_end="-"
 bnf_5m_trade_end="-"
 sensex_5m_trade_end="-"
+st.session_state['options_trade_list']=[]
 
 #Telegram Msg
 def telegram_bot_sendtext(bot_message):
@@ -785,8 +786,17 @@ def index_trade(interval):
       elif symbol=="SENSEX":
         sensex_5m_trade=trade
         sensex_5m_trade_end=trade_end
-    df = pd.concat([df,fut_data.tail(1)])
-  print(df[['Datetime','Symbol','Close','Trade','Trade End','Supertrend','Supertrend_10_2','Supertrend_10_1','RSI','Indicator']].to_string(index=False))
+    trade=str(fut_data['Trade'].values[-1])
+  information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+                'Symbol':symbol,
+                'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
+                'Indicator':fut_data['Indicator'].values[-1],
+                'Trade':fut_data['Trade'].values[-1],
+                'Trade End':fut_data['Trade End'].values[-1],
+                'Supertrend':fut_data['Supertrend'].values[-1],
+                'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],
+                'RSI':fut_data['RSI'].values[-1]}
+  st.session_state['options_trade_list'].append(information)
 
 def print_ltp():
   try:
@@ -997,6 +1007,7 @@ def day_end_trade(todays_trade_log):
 
 def sub_loop_code(now_time):
   if (now_time.minute%5==0 and five_m_timeframe=='Yes'):
+    st.session_state['options_trade_list']=[]
     index_trade("5m")
     if near_options_trade=="Yes":trade_near_options(5)
     close_options_position()
@@ -1094,3 +1105,4 @@ get_order_book()
 get_todays_trade()
 if nf_ce:
   index_trade("5m")
+  log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
