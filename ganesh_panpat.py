@@ -1102,10 +1102,10 @@ with tab5:
 
 if algo_state:
   loop_code()
+if nf_ce:
+  index_trade("5m")
+  log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
 print_ltp()
 get_open_position()
 get_order_book()
 get_todays_trade()
-if nf_ce:
-  index_trade("5m")
-  log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
