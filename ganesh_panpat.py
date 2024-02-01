@@ -1014,6 +1014,7 @@ def sub_loop_code(now_time):
   if (now_time.minute%15==0 and fifteen_m_timeframe=='Yes'): index_trade("15m")
   if (now_time.minute%3==0 and three_m_timeframe=='Yes'): index_trade("3m")
   if (now_time.minute%1==0 and one_m_timeframe=='Yes'): index_trade("1m")
+  log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
 
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
