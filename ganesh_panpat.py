@@ -469,7 +469,7 @@ def angel_data(token,interval,exch_seg,fromdate,todate):
 #Historical Data
 def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_type="NORMAL"):
   try:
-    symbol_i="-"
+    symbol_i="--"
     if (symbol=="^NSEI" or symbol=="NIFTY") : symbol_i,token,exch_seg="^NSEI",99926000,"NSE"
     elif (symbol=="^NSEBANK" or symbol=="BANKNIFTY") : symbol_i,token,exch_seg="^NSEBANK",99926009,"NSE"
     elif (symbol=="^BSESN" or symbol=="SENSEX") : symbol_i,token,exch_seg="^BSESN",99919000,"BSE"
@@ -486,8 +486,8 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
         if(i.isdigit()): odd_interval+=i
       delta_time=int(odd_interval)
       odd_interval+='m'
-    if (symbol_i[0]=="^"):
-      df=yfna_data(symbol_i,yf_interval,str(period)+"d")
+    #if (symbol_i[0]=="^"):
+    #  df=yfna_data(symbol_i,yf_interval,str(period)+"d")
     if isinstance(df, str):
       to_date= datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       from_date = to_date - datetime.timedelta(days=period)
