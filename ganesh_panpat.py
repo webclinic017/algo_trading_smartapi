@@ -190,7 +190,6 @@ def place_gtt_order(token,symbol,exch_seg,producttype,buy_sell,price,qty):
     print("GTT Rule creation failed",e)
 
 def get_open_position():
-  global pnl,position,open_position
   position=obj.position()['data']
   if position!=None:
     position=pd.DataFrame(position)
@@ -203,7 +202,7 @@ def get_open_position():
                                   "totalsellvalue","cfbuyavgprice","cfsellavgprice","totalbuyavgprice","totalsellavgprice","netprice",'realised', 'unrealised','ltp'])
   pnl=float(position['realised'].sum())+float(position['unrealised'].sum())
   open_position = position[(position['netqty'] > '0') & (position['instrumenttype'] == 'OPTIDX')]
-  position=position[['tradingsymbol','netqty','totalbuyavgprice','totalsellavgprice','realised', 'unrealised', 'ltp']]
+  position=position[['tradingsymbol','netqty','instrumenttype','totalbuyavgprice','totalsellavgprice','realised', 'unrealised', 'ltp']]
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
   position_updated.text(f"Position : {now_time}")
   position_datatable.dataframe(position,hide_index=True)
