@@ -1113,8 +1113,8 @@ if nf_ce:
   log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data("BANKNIFTY",indexLtp=46050)
   buy_option(ce_strike_symbol,'Test Buy','5m')
-  trade_near_options(5)
-  log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+  buy_option(pe_strike_symbol,'Test Buy','5m')
+
 print_ltp()
 get_open_position()
 get_order_book()
