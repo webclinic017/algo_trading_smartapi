@@ -56,7 +56,7 @@ def telegram_bot_sendtext(bot_message):
   BOT_CHAT_ONE_MINUTE = '-1001542241163'
   #BOT_CHAT_ONE_MINUTE='-882387563'
   import requests
-  bot_message=user+':\n'+bot_message
+  bot_message=st.session_state['user_name']+':\n'+bot_message
   matches = ["Candle"]
   if any(x in bot_message for x in matches): check_msg=True
   else: check_msg=False
@@ -685,7 +685,7 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
     option_token=symbol['token']
     option_symbol=symbol['symbol']
     exch_seg=symbol['exch_seg']
-    lotsize=int(symbol['lotsize'])*lots_to_trade
+    lotsize=int(symbol['lotsize'])*st.session_state['lots_to_trade']
     try:
       if "(" in indicator_strategy and ")" in indicator_strategy:
         stop_loss=(indicator_strategy.split('('))[1].split(':')[0]
@@ -712,7 +712,7 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
     tm=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
     order_price=ltp_price if trade_price=='-' else trade_price
     if trade_price!='-':
-      if target_order_type=="Target":
+      if st.session_state['target_order_type']=="Target":
         place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='LIMIT',price=target_price,
                     variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=str(orderId)+" Target order Placed")
       else:
