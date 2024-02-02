@@ -1111,6 +1111,8 @@ if algo_state:
 if nf_ce:
   index_trade("5m")
   log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data("BANKNIFTY",indexLtp=46050)
+  buy_option(ce_strike_symbol,'Test Buy','5m')
   trade_near_options(5)
   log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
 print_ltp()
