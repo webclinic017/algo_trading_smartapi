@@ -206,9 +206,6 @@ def get_open_position():
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
   position_updated.text(f"Position : {now_time}")
   position_datatable.dataframe(position,hide_index=True)
-  if len(position)!=0:
-    print(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0))
-    print(position[['tradingsymbol','netqty','totalbuyavgprice','totalsellavgprice','realised', 'unrealised', 'ltp']].to_string(index=False))
   return position,open_position
 
 def update_price_orderbook_old(df):
