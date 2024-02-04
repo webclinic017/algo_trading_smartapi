@@ -66,14 +66,7 @@ def telegram_bot_sendtext(bot_message):
   #BOT_CHAT_ONE_MINUTE='-882387563'
   import requests
   bot_message=user+':\n'+bot_message
-  matches = ["Candle"]
-  if any(x in bot_message for x in matches): check_msg=True
-  else: check_msg=False
-  if check_msg==True:
-    send_text = 'https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage?chat_id=' + BOT_CHAT_ONE_MINUTE + \
-              '&parse_mode=HTML&text=' + bot_message
-  else:
-    send_text = 'https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage?chat_id=' + BOT_CHAT_ID + \
+  send_text = 'https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage?chat_id=' + BOT_CHAT_ID + \
                 '&parse_mode=HTML&text=' + bot_message
   response = requests.get(send_text)
 
