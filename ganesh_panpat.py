@@ -53,6 +53,7 @@ if 'user_name' not in st.session_state:
   st.session_state['feed_token']=obj.feed_token
   st.session_state['userId']=obj.userId
   st.session_state['api_key']=apikey
+  logger.info('Login Sucess')
 
 obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
                  refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
