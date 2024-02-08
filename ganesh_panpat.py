@@ -713,7 +713,6 @@ def trade_near_options(time_frame):
 def index_trade(symbol,interval):
   fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
   trade=str(fut_data['Trade'].values[-1])
-  trade="Buy"
   if trade!="-":
     indicator_strategy=fut_data['Indicator'].values[-1]
     indexLtp=fut_data['Close'].values[-1]
