@@ -129,7 +129,7 @@ def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NO
     print(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} Ordertag: {ordertag} Price: {price}')
     return orderId
   except Exception as e:
-    print(f"error in place_order Order placement failed: {e}")
+    logger.error(f"error in place_order Order placement failed: {e}")
     orderId='Order placement failed'
     return orderId
 
@@ -159,7 +159,7 @@ def cancel_all_order(symbol):
       for i in range(0,len(orderlist)):
         cancel_order(orderlist.iloc[i]['orderid'],orderlist.iloc[i]['variety'])
   except Exception as e:
-    print("Error cancel_all_order",e)
+    logger.error(f"Error cancel_all_order {e}")
 
 #gtt rule creation
 def place_gtt_order(token,symbol,exch_seg,producttype,buy_sell,price,qty):
@@ -169,7 +169,7 @@ def place_gtt_order(token,symbol,exch_seg,producttype,buy_sell,price,qty):
     rule_id=obj.gttCreateRule(gttCreateParams)
     print("The GTT rule id is: {}".format(rule_id))
   except Exception as e:
-    print("GTT Rule creation failed",e)
+    logger.error(f"GTT Rule creation failed {e}")
 
 def get_ltp_price(symbol="-",token="-",exch_seg='-'):
   symbol_i="-"
@@ -199,7 +199,7 @@ def print_ltp():
     print_sting=print_sting.replace("Nifty Bank","BankNifty")
     return print_sting
   except Exception as e:
-    print(f"Error in print_ltp {e}")
+    logger.error(f"Error in print_ltp {e}")
     return None
 
 
@@ -257,7 +257,7 @@ def get_order_book():
           'strikeprice','optiontype', 'expirydate', 'lotsize', 'cancelsize', 'averageprice','filledshares', 'unfilledshares', 'orderid', 'text',
           'status','orderstatus', 'updatetime', 'exchtime', 'exchorderupdatetime','fillid', 'filltime', 'parentorderid', 'uniqueorderid'])
     pending_orders=orderbook
-    print("Error in get_order_book",e)
+    logger.error(f"Error in get_order_book {e}")
   st.session_state['orderbook']=orderbook
   st.session_state['pendingorder']=pending_orders
   n_orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']]
@@ -280,11 +280,11 @@ def yfna_data(symbol,interval,period):
     df['Datetime'] = pd.to_datetime(df['Datetime']).dt.time
     df=df[['Date','Datetime','Open','High','Low','Close','Volume']]
     if isinstance(df, str) or (isinstance(df, pd.DataFrame)==True and len(df)==0):
-      print("Yahoo Data Not Found "+symbol)
+      logger.error(f"Yahoo Data Not Found {symbol}")
       return "No data found, symbol may be delisted"
     return df
   except:
-    print("Yahoo Data Not Found " +symbol)
+    logger.error(f"Yahoo Data Not Found {symbol}")
     return "No data found, symbol may be delisted"
 
 #Angel Historical Data
@@ -303,7 +303,7 @@ def angel_data(token,interval,exch_seg,fromdate,todate):
     df=df[['Date','Datetime','Open','High','Low','Close','Volume']]
     return df
   except Exception as e:
-    print(f"Angel Data Not Found {token} error {e}")
+    logger.error(f"Angel Data Not Found {token} error {e}")
     return "Angel Data Not Found, symbol may be delisted"
 
 #Historical Data
@@ -359,7 +359,7 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     df=df.round(2)
     return df
   except Exception as e:
-    print("get_historical_data",e)
+    logger.error(f"get_historical_data {e}")
 
 #update Buy and Sell trade info
 def get_trade_info(df):
@@ -519,7 +519,7 @@ def calculate_indicator(df):
     df=get_trade_info(df)
     return df
   except Exception as e:
-    print("Error in calculate Indicator",e)
+    logger.error(f"Error in calculate Indicator {e}")
     return df
 
 
@@ -616,7 +616,7 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
     print(buy_msg)
     telegram_bot_sendtext(buy_msg)
   except Exception as e:
-    print('Error in buy_option:',e)
+    logger.error(f"Error in buy_option: {e}")
 
 #Exit Position
 def exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='',producttype='CARRYFORWARD'):
@@ -627,7 +627,7 @@ def exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='
     sell_msg=f"Exit Alert In Option: {tradingsymbol} LTP:{ltp_price} SL:{sl} Ordertag {ordertag}"
     telegram_bot_sendtext(sell_msg)
   except Exception as e:
-    print('Error in exit_position:',e)
+    logger.error(f"Error in exit_position: {e}")
 
 def close_options_position(position,nf_5m_trade_end="-",bnf_5m_trade_end="-",sensex_5m_trade_end="-"):
   for i in range(0,len(position)):
@@ -650,7 +650,7 @@ def close_options_position(position,nf_5m_trade_end="-",bnf_5m_trade_end="-",sen
           else:
             print(f"No Open Position for : {tradingsymbol}")
     except Exception as e:
-      print('Error in Close index trade:',e)
+      logger.error(f"Error in Close index trade: {e}")
 
 def get_near_options(symbol,index_ltp,symbol_expiry):
   token_df=st.session_state['opt_list']
@@ -766,7 +766,7 @@ def trail_sl():
         ordertag='Trail SL to ' + sl_type +":"+str(int(sl))
         exit_position(symboltoken,tradingsymbol,exch_seg,qty,sl,sl,ordertag=ordertag,producttype='CARRYFORWARD')
       except Exception as e:
-        print(f'Error in {trail_sl}')
+        logger.error(f'Error in trail_sl')
 
 def sub_loop_code(now_time):
   if (now_time.minute%5==0 and five_m_timeframe=='Yes'):
@@ -803,7 +803,7 @@ def loop_code():
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
     except Exception as e:
-      print(f"error {e}")
+      logger.error(f"error {e}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
 
