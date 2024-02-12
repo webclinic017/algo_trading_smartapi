@@ -61,17 +61,11 @@ def telegram_bot_sendtext(bot_message):
                 '&parse_mode=HTML&text=' + bot_message
   response = requests.get(send_text)
 
-#Login Details
-def get_user_pwd(user):
-  global username,pwd,apikey,token
-  if user=='Ganesh': username = 'G93179'; pwd = '4789'; apikey = 'CjOKjC5g'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
-  elif user=='Kalyani': username = 'K205244'; pwd = '4789'; apikey = 'lzC7yJmt'; token='YDV6CJI6BEU3GWON7GZTZNU3RM'
-  elif user=="Akshay": username='A325394'; pwd='1443'; apikey='OeSllszj'; token='G4OKBQKHXPS67EN2WMVP3TZ7X4'
-  elif user=="Kailash": username='K80392'; pwd='5769'; apikey='A7Q0LWtF'; token='GEVK2DBIADONB3YRYKOALABXR4'
-  return username,pwd,apikey,token,user
-
-#Angel Login
-username,pwd,apikey,token,user=get_user_pwd("Ganesh")
+username=st.secrets["username"]
+pwd=st.secrets["pwd"]
+apikey=st.secrets["apikey"]
+token=st.secrets["token"]
+user=st.secrets["user"]
 
 obj=SmartConnect(api_key=apikey)
 if 'user_name' not in st.session_state:
