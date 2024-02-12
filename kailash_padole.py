@@ -426,10 +426,10 @@ def get_trade_info(df):
       EMA_5_7_Trade=df['EMA_5_7 Trade'][i];EMA_High_Low=df['EMA_High_Low Trade'][i]
 
       if time_frame=="5m" or time_frame=="FIVE_MINUTE" or time_frame=="5min":
-        if ST_10_1=="Buyy" or ST_10_2=="Buy" or ST=="Buy":
+        if ST_10_1=="Buy" or ST_10_2=="Buyy" or ST=="Buyy":
           df['Trade'][i]="Buy"
           df['Trade End'][i]="Buy"
-        if ST_10_1=="Selll" or ST_10_2=="Sell" or ST=="Sell":
+        if ST_10_1=="Sell" or ST_10_2=="Selll" or ST=="Selll":
           df['Trade'][i]="Sell"
           df['Trade End'][i]="Buy"
     except Exception as e:
@@ -770,7 +770,7 @@ def sub_loop_code(now_time):
     bnf_data,bnf_5m_trade,bnf_5m_trade_end=index_trade("BANKNIFTY","5m")
     sensex_data,sensex_5m_trade,sensex_5m_trade_end=index_trade("SENSEX","5m")
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    if near_options_trade=="Yes":trade_near_options('5m')
+    #if near_options_trade=="Yes":trade_near_options('5m')
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     return nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end
   else:
@@ -843,8 +843,8 @@ with tab4:
                   'MA Trade','EMA Trade','EMA_5_7 Trade','MA 21 Trade','HMA Trade','RSI_60 Trade','EMA_High_Low Trade','Two Candle Theory']
   with ind_col1:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX'],['NIFTY','BANKNIFTY','SENSEX'])
-    time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M', 'OPT:5M'])
-    five_buy_indicator = st.multiselect('Five Minute Indicator',indicator_list,['St Trade', 'ST_10_2 Trade', 'ST_10_1 Trade'])
+    time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M'])
+    five_buy_indicator = st.multiselect('Five Minute Indicator',indicator_list,['ST_10_1 Trade'])
     option_buy_indicator = st.multiselect('Option Indicator',indicator_list,['St Trade', 'ST_10_2 Trade'])
     #three_buy_indicator = st.multiselect('Three Minute Indicator',indicator_list,[])
     #one_buy_indicator = st.multiselect('One Minute Indicator',indicator_list,[])
