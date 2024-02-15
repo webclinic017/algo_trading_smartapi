@@ -626,32 +626,32 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
     stop_loss=int(float(ltp_price*0.7))
     target_price=int(float(ltp_price*1.5))
     sl_type='30%'
-    try:
-      if "(" in indicator_strategy and ")" in indicator_strategy:
-        stop_loss=(indicator_strategy.split('('))[1].split(':')[0]
-        target_price=(indicator_strategy.split(stop_loss+':'))[1].split(')')[0]
-        stop_loss=int(float(stop_loss))
-        target_price=int(float(target_price))
-        sl_type='OPT Indicator'
-      else:
-        old_data=get_historical_data(symbol=option_symbol,interval='5m',token=option_token,exch_seg=exch_seg,candle_type="NORMAL")
-        close_price=float(old_data['Close'].iloc[-1])
-        if float(old_data['Supertrend'].iloc[-1])<close_price*0.8:
-          stop_loss=int(float(old_data['Supertrend'].iloc[-1]))
-          sl_type='ST'
-        elif float(old_data['Supertrend_10_2'].iloc[-1])<close_price*0.8:
-          stop_loss=int(float(old_data['Supertrend_10_2'].iloc[-1]))
-          sl_type='ST_10_2'
-        else:
-          stop_loss=int(float(close_price-(float(old_data['Atr'].iloc[-1])*3)))
-        indicator_strategy=indicator_strategy+ " (" +str(stop_loss)+":"+str(target_price)+')'
-    except Exception as e: pass
     orderbook=obj.orderBook()['data']
     orderbook=pd.DataFrame(orderbook)
     orders= orderbook[(orderbook['orderid'] == orderId)]
     orders_status=orders.iloc[0]['orderstatus']
     trade_price=orders.iloc[0]['averageprice']
     if orders_status== 'complete':
+      try:
+        if "(" in indicator_strategy and ")" in indicator_strategy:
+          stop_loss=(indicator_strategy.split('('))[1].split(':')[0]
+          target_price=(indicator_strategy.split(stop_loss+':'))[1].split(')')[0]
+          stop_loss=int(float(stop_loss))
+          target_price=int(float(target_price))
+          sl_type='OPT Indicator'
+        else:
+          old_data=get_historical_data(symbol=option_symbol,interval='5m',token=option_token,exch_seg=exch_seg,candle_type="NORMAL")
+          close_price=float(old_data['Close'].iloc[-1])
+          if float(old_data['Supertrend'].iloc[-1])<close_price*0.8:
+            stop_loss=int(float(old_data['Supertrend'].iloc[-1]))
+            sl_type='ST'
+          elif float(old_data['Supertrend_10_2'].iloc[-1])<close_price*0.8:
+            stop_loss=int(float(old_data['Supertrend_10_2'].iloc[-1]))
+            sl_type='ST_10_2'
+          else:
+            stop_loss=int(float(close_price-(float(old_data['Atr'].iloc[-1])*3)))
+          indicator_strategy=indicator_strategy+ " (" +str(stop_loss)+":"+str(target_price)+')'
+      except Exception as e: pass
       if target_order_type=="Target":
         place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='LIMIT',price=target_price,
                     variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=str(orderId)+" Target order Placed")
@@ -754,7 +754,6 @@ def trade_near_options(time_frame):
 def index_trade(symbol,interval):
   fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
   trade=str(fut_data['Trade'].values[-1])
-  trade="Buy"
   if trade!="-":
     indicator_strategy=fut_data['Indicator'].values[-1]
     indexLtp=fut_data['Close'].values[-1]
