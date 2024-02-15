@@ -722,10 +722,10 @@ def trade_near_options(time_frame):
     option_list=get_near_options(symbol,index_ltp,symbol_expiry)
     for i in range(0,len(option_list)):
       symbol_name=option_list['symbol'].iloc[i]
-      logger.info(symbol_name)
       token_symbol=option_list['token'].iloc[i]
       exch_seg=option_list['exch_seg'].iloc[i]
       opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
+      logger.info(opt_data.iloc[-1])
       information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
                 'Symbol':symbol_name,
                 'Datetime':str(opt_data['Datetime'].values[-1]),
