@@ -92,8 +92,8 @@ if 'five_p_login' not in st.session_state:
         "PASSWORD":"CH552StL6Np",
         "USER_KEY":"EWZRvRh5TTs6uaJcfngDwx1u3VMZ3EaQ",
         "ENCRYPTION_KEY":"gdH8fPb3H3oOAh8nYAA8GdmNtCpsMHVFdPfcyaxNiWiKoz1WSkbRSqoffmF6yIje"}
-    client = FivePaisaClient(cred=cred)
-    client.get_totp_session('53079505',pyotp.TOTP('GUZTANZZGUYDKXZVKBDUWRKZ').now(),'478963')
+    #client = FivePaisaClient(cred=cred)
+    #client.get_totp_session('53079505',pyotp.TOTP('GUZTANZZGUYDKXZVKBDUWRKZ').now(),'478963')
     st.session_state['five_p_login']='Five paisa Login'
   except Exception as e:pass
 
