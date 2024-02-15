@@ -6,3 +6,4 @@ yfinance
 pyotp
 streamlit_autorefresh
 logzero
+py5paisa
