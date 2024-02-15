@@ -727,7 +727,8 @@ def trade_near_options(time_frame):
       opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
       information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
                 'Symbol':symbol_name,
-                'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
+                'Datetime':str(opt_data['Datetime'].values[-1]),
+                'Close':opt_data['Close'].values[-1],
                 'Indicator':opt_data['Indicator'].values[-1],
                 'Trade':opt_data['Trade'].values[-1],
                 'Trade End':opt_data['Trade End'].values[-1],
