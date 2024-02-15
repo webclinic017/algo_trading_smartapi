@@ -922,12 +922,4 @@ position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
-if nf_ce:
-  st.session_state['options_trade_list']=[]
-  if "NIFTY" in index_list: nf_data,nf_5m_trade,nf_5m_trade_end=index_trade("NIFTY","5m")
-  if "BANKNIFTY" in index_list:bnf_data,bnf_5m_trade,bnf_5m_trade_end=index_trade("BANKNIFTY","5m")
-  if "SENSEX" in index_list:sensex_data,sensex_5m_trade,sensex_5m_trade_end=index_trade("SENSEX","5m")
-  log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-  trade_near_options('5m')
-  log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
   
