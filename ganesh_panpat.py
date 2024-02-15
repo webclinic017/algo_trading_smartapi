@@ -711,7 +711,7 @@ def get_near_options(symbol,index_ltp,symbol_expiry):
   df=pd.concat([a,b])
   df.sort_index(inplace=True)
   return df
-
+  
 def trade_near_options(time_frame):
   for symbol in ['NIFTY','BANKNIFTY','SENSEX']:
     index_ltp=get_ltp_price(symbol)
@@ -747,6 +747,7 @@ def trade_near_options(time_frame):
         strategy=indicator + " (" +str(sl)+":"+str(target)+')'
         buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
         break
+  log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
 
 def index_trade(symbol,interval):
   fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
