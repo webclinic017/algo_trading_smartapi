@@ -84,16 +84,18 @@ obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_sta
                  refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
 
 if 'five_p_login' not in st.session_state:
-  cred={
-      "APP_NAME":"5PGANESH",
-      "APP_SOURCE":"151",
-      "USER_ID":"jGpPvkKRRBu",
-      "PASSWORD":"CH552StL6Np",
-      "USER_KEY":"EWZRvRh5TTs6uaJcfngDwx1u3VMZ3EaQ",
-      "ENCRYPTION_KEY":"gdH8fPb3H3oOAh8nYAA8GdmNtCpsMHVFdPfcyaxNiWiKoz1WSkbRSqoffmF6yIje"}
-  client = FivePaisaClient(cred=cred)
-  client.get_totp_session('53079505',pyotp.TOTP('GUZTANZZGUYDKXZVKBDUWRKZ').now(),'478963')
-  st.session_state['five_p_login']='Five paisa Login'
+  try:
+    cred={
+        "APP_NAME":"5PGANESH",
+        "APP_SOURCE":"151",
+        "USER_ID":"jGpPvkKRRBu",
+        "PASSWORD":"CH552StL6Np",
+        "USER_KEY":"EWZRvRh5TTs6uaJcfngDwx1u3VMZ3EaQ",
+        "ENCRYPTION_KEY":"gdH8fPb3H3oOAh8nYAA8GdmNtCpsMHVFdPfcyaxNiWiKoz1WSkbRSqoffmF6yIje"}
+    client = FivePaisaClient(cred=cred)
+    client.get_totp_session('53079505',pyotp.TOTP('GUZTANZZGUYDKXZVKBDUWRKZ').now(),'478963')
+    st.session_state['five_p_login']='Five paisa Login'
+  except Exception as e:pass
 
 def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
