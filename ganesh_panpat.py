@@ -318,6 +318,7 @@ def angel_data(token,interval,exch_seg,period=5):
     res_json=obj.getCandleData(historicParam)
     df = pd.DataFrame(res_json['data'], columns=['timestamp','O','H','L','C','V'])
     df = df.rename(columns={'timestamp':'Datetime','O':'Open','H':'High','L':'Low','C':'Close','V':'Volume'})
+    df['Datetime'] = df['Datetime'].apply(lambda x: datetime.datetime.fromisoformat(x))
     df['Datetime'] = pd.to_datetime(df['Datetime'],format = '%Y-%m-%d %H:%M:%S')
     df['Datetime']=df['Datetime'].dt.tz_localize(None)
     df = df.set_index('Datetime')
