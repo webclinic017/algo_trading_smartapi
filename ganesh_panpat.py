@@ -389,7 +389,7 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
       return df
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
     last_candle=now.replace(second=0, microsecond=0)- datetime.timedelta(minutes=delta_time)
-    #df = df[(df.index <= last_candle)]
+    df = df[(df.index <= last_candle)]
     df['Time Frame']=odd_interval
     df.index.names = ['']
     df['VWAP']=pdta.vwap(high=df['High'],low=df['Low'],close=df['Close'],volume=df['Volume'])
@@ -925,6 +925,6 @@ if nf_ce:
   if "BANKNIFTY" in index_list:bnf_data,bnf_5m_trade,bnf_5m_trade_end=index_trade("BANKNIFTY","5m")
   if "SENSEX" in index_list:sensex_data,sensex_5m_trade,sensex_5m_trade_end=index_trade("SENSEX","5m")
   log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-  if 'OPT:5M' in time_frame_interval :trade_near_options('5m')
+  trade_near_options('5m')
   log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
   
