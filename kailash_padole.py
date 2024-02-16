@@ -842,7 +842,7 @@ def loop_code():
         nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end=sub_loop_code(now)
         position,open_position=get_open_position()
         orderbook,pending_orders=get_order_book()
-        if nf_5m_trade_end!="-" and bnf_5m_trade_end!="-" and sensex_5m_trade_end!="-":
+        if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
           close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
         #if now.minute%5==0: trail_sl()
       elif now > marketclose:closing_trade()
