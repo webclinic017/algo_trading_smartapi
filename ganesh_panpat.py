@@ -842,7 +842,7 @@ def loop_code():
         nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end=sub_loop_code(now)
         position,open_position=get_open_position()
         orderbook,pending_orders=get_order_book()
-        if nf_5m_trade_end!="-" and bnf_5m_trade_end!="-" and sensex_5m_trade_end!="-":
+        if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
           close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
         #if now.minute%5==0: trail_sl()
       elif now > marketclose:closing_trade()
@@ -899,7 +899,7 @@ with tab4:
     #three_buy_indicator = st.multiselect('Three Minute Indicator',indicator_list,[])
     #one_buy_indicator = st.multiselect('One Minute Indicator',indicator_list,[])
   with ind_col2:
-    target_order_type = st.selectbox('Target Order',('Target', 'Stop_Loss', 'NA'),2)
+    target_order_type = st.selectbox('Target Order',('Target', 'Stop_Loss', 'NA'),1)
     target_type = st.selectbox('Target Type',('Points', 'Per Cent','Indicator'),2)
     if target_type=="Indicator":
         sl_point=st.number_input(label="SL",min_value=10, max_value=100, value=10, step=None)
