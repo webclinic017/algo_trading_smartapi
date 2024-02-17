@@ -944,8 +944,22 @@ with tab5:
   token_df=st.empty()
   token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
 
-if algo_state:
-  loop_code()
+if algo_state: loop_code()
+
+if nf_ce:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp='-')
+  buy_option(ce_strike_symbol,'Manual Buy','5m')
+if nf_pe:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp='-')
+  buy_option(pe_strike_symbol,'Manual Buy','5m')
+if bnf_ce:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('BANKNIFTY',indexLtp='-')
+  buy_option(ce_strike_symbol,'Manual Buy','5m')
+if bnf_pe:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('BANKNIFTY',indexLtp='-')
+  buy_option(pe_strike_symbol,'Manual Buy','5m')
+if close_all: closing_trade()
+  
 position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
