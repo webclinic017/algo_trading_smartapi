@@ -957,3 +957,9 @@ if nf_ce:
 if nf_pe:
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp='-')
   buy_option(pe_strike_symbol,'Manual Buy','5m')
+if bnf_ce:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('BANKNIFTY',indexLtp='-')
+  buy_option(ce_strike_symbol,'Manual Buy','5m')
+if bnf_pe:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('BANKNIFTY',indexLtp='-')
+  buy_option(pe_strike_symbol,'Manual Buy','5m')
