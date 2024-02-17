@@ -950,4 +950,8 @@ position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
+
+if nf_ce:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp='-')
+  buy_option(ce_strike_symbol,'Manual Buy','5m')
   
