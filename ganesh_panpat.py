@@ -954,4 +954,6 @@ last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.d
 if nf_ce:
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp='-')
   buy_option(ce_strike_symbol,'Manual Buy','5m')
-  
+if nf_pe:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp='-')
+  buy_option(pe_strike_symbol,'Manual Buy','5m')
