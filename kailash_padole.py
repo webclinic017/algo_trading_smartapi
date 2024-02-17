@@ -840,6 +840,7 @@ def recheck_login():
       logger.info('Login Sucess')
       obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
                      refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
+  except:pass
       
 def sub_loop_code(now_time):
   nf_5m_trade_end="-";bnf_5m_trade_end="-";sensex_5m_trade_end="-"
