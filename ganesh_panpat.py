@@ -959,6 +959,8 @@ if bnf_ce:
 if bnf_pe:
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('BANKNIFTY',indexLtp='-')
   buy_option(pe_strike_symbol,'Manual Buy','5m')
+if close_all:
+  closing_trade()
 
 position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
