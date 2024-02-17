@@ -814,6 +814,33 @@ def trail_sl():
       except Exception as e:
         print(f'Error in {trail_sl}')
 
+def recheck_login():
+  try:
+    loginstatus=False
+    loginstatus=obj.rmsLimit()['status']
+    if loginstatus==False:
+      username=st.secrets["username"]
+      pwd=st.secrets["pwd"]
+      apikey=st.secrets["apikey"]
+      token=st.secrets["token"]
+      user=st.secrets["user"]
+      obj=SmartConnect(api_key=apikey)
+      data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
+      refreshToken= data['data']['refreshToken']
+      feedToken=obj.getfeedToken()
+      userProfile= obj.getProfile(refreshToken)
+      aa= userProfile.get('data')
+      st.session_state['user_name']=aa.get('name').title()
+      st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
+      st.session_state['access_token']=obj.access_token
+      st.session_state['refresh_token']=obj.refresh_token
+      st.session_state['feed_token']=obj.feed_token
+      st.session_state['userId']=obj.userId
+      st.session_state['api_key']=apikey
+      logger.info('Login Sucess')
+      obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
+                     refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
+      
 def sub_loop_code(now_time):
   nf_5m_trade_end="-";bnf_5m_trade_end="-";sensex_5m_trade_end="-"
   if (now_time.minute%5==0 and 'IDX:5M' in time_frame_interval ):
@@ -847,6 +874,7 @@ def loop_code():
         #if now.minute%5==0: trail_sl()
       elif now > marketclose:closing_trade()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
+      recheck_login()
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
     except Exception as e:
