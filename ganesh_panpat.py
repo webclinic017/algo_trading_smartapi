@@ -819,6 +819,11 @@ def recheck_login():
     loginstatus=False
     loginstatus=obj.rmsLimit()['status']
     if loginstatus==False:
+      username=st.secrets["username"]
+      pwd=st.secrets["pwd"]
+      apikey=st.secrets["apikey"]
+      token=st.secrets["token"]
+      user=st.secrets["user"]
       obj=SmartConnect(api_key=apikey)
       data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
       refreshToken= data['data']['refreshToken']
@@ -835,7 +840,7 @@ def recheck_login():
       logger.info('Login Sucess')
       obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
                      refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
-
+      
 def sub_loop_code(now_time):
   nf_5m_trade_end="-";bnf_5m_trade_end="-";sensex_5m_trade_end="-"
   if (now_time.minute%5==0 and 'IDX:5M' in time_frame_interval ):
@@ -885,7 +890,7 @@ last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']}")
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-tab0, tab1, tab2, tab3, tab4,tab5= st.tabs(["Log","Order Book", "Position","Open Order", "Settings","Token List"])
+tab0, tab1, tab2, tab3, tab4,tab5,tab6= st.tabs(["Log","Order Book", "Position","Open Order", "Settings","Token List",'Backtest'])
 with tab0:
   col1,col2=st.columns([1,9])
   with col1:
