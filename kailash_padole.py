@@ -243,7 +243,7 @@ def get_open_position():
   st.session_state['open_position']=open_position
   position_table=position[['tradingsymbol','netqty','totalbuyavgprice','totalsellavgprice','realised', 'unrealised', 'ltp']]
   position_datatable.dataframe(position_table,hide_index=True)
-  position_updated.text(f"Position : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)} PNL :{pnl}")
+  position_updated.text(f"Position : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)} PNL : {pnl}")
   return position,open_position
 
 #Get Order Book
