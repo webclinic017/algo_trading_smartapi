@@ -679,17 +679,17 @@ def exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='
 def cancel_index_order(nf_5m_trade_end="-",bnf_5m_trade_end="-",sensex_5m_trade_end="-"):
   if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
     orderbook,pending_orders=get_order_book()
-    for i in range(0,len(orderbook)):
+    for i in range(0,len(pending_orders)):
       try:
-        tradingsymbol=orderbook.loc[i]['tradingsymbol']
+        tradingsymbol=pending_orders.loc[i]['tradingsymbol']
         if ((tradingsymbol[-2:]=='CE' and tradingsymbol.startswith("NIFTY") and nf_5m_trade_end=="Sell") or
             (tradingsymbol[-2:]=='CE' and tradingsymbol.startswith("BANKNIFTY") and bnf_5m_trade_end=="Sell") or
             (tradingsymbol[-2:]=='CE' and tradingsymbol.startswith("SENSEX") and sensex_5m_trade_end=="Sell") or
             (tradingsymbol[-2:]=='PE' and tradingsymbol.startswith("NIFTY") and nf_5m_trade_end=="Buy") or
             (tradingsymbol[-2:]=='PE' and tradingsymbol.startswith("BANKNIFTY") and bnf_5m_trade_end=="Buy") or
             (tradingsymbol[-2:]=='PE' and tradingsymbol.startswith("SENSEX") and sensex_5m_trade_end=="Buy")):
-            orderID=orderbook.loc[i]['orderid']
-            variety=orderbook.loc[i]['variety']
+            orderID=pending_orders.loc[i]['orderid']
+            variety=pending_orders.loc[i]['variety']
             cancel_order(orderID,variety)
       except:pass
         
