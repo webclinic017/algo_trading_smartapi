@@ -655,7 +655,7 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
       if target_order_type=="Target":
         place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='LIMIT',price=target_price,
                     variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=str(orderId)+" Target order Placed")
-      elif target_order_type=="Stop_Loss":
+      else:
         place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='STOPLOSS_LIMIT',price=stop_loss,
                     variety='STOPLOSS',exch_seg=exch_seg,producttype='CARRYFORWARD',triggerprice=stop_loss,squareoff=stop_loss,
                     stoploss=stop_loss, ordertag=str(orderId)+" Stop Loss order Placed")
@@ -966,4 +966,3 @@ position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
-st.write(target_order_type)
