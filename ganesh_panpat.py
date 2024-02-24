@@ -955,7 +955,6 @@ if algo_state:
   loop_code()
 
 if nf_ce:
-  trail_sl()
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp='-')
   buy_option(ce_strike_symbol,'Manual Buy','5m')
 if nf_pe:
