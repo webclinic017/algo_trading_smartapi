@@ -787,32 +787,40 @@ def closing_trade():
   close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
 
 def trail_sl():
-  if isinstance(open_position,str)==True or len(open_position)==0: pass
-  else:
-    for i in range(0,len(open_position)):
+  for attempt in range(3):
+    try:
+      orderbook=obj.orderBook()['data']
+      if orderbook!=None: break
+    except: pass
+  if orderbook!=None: #or isinstance(orderbook,NoneType)!=True
+    orderbook= pd.DataFrame.from_dict(orderbook)
+    for i in range(0,len(orderbook)):
       try:
-        tradingsymbol=open_position.loc[i]['tradingsymbol']
-        symboltoken=open_position.loc[i]['symboltoken']
-        qty=open_position['netqty'][i]
-        exch_seg=open_position['exchange'][i]
-        ltp_price=float(open_position['ltp'][i])
-        producttype=open_position['producttype'][i]
-        old_data=get_historical_data(symbol=tradingsymbol,interval="5m",token=symboltoken,exch_seg=exch_seg,candle_type="NORMAL")
-        st_10_2=float(old_data['Supertrend_10_2'].iloc[-1])
-        st_7_3=float(old_data['Supertrend'].iloc[-1])
-        st_10_1=float(old_data['Supertrend_10_1'].iloc[-1])
-        sl=int(float(ltp_price)*0.8)
-        sl_type="20"
-        if st_7_3 < ltp_price:
-          sl_type="ST_7_3"
-          sl=st_7_3
-        if st_10_2 < ltp_price:
-          sl_type="ST_10_2"
-          sl=st_10_2
-        ordertag='Trail SL to ' + sl_type +":"+str(int(sl))
-        exit_position(symboltoken,tradingsymbol,exch_seg,qty,sl,sl,ordertag=ordertag,producttype='CARRYFORWARD')
-      except Exception as e:
-        print(f'Error in {trail_sl}')
+        if orderbook['transactiontype'].iloc[i]=="SELL":
+          order_price=orderbook['price'].iloc[i]
+          new_sl=order_price
+          symbol=orderbook['tradingsymbol'].iloc[i]
+          token=orderbook['symboltoken'].iloc[i]
+          exch_seg=orderbook['exchange'].iloc[i]
+          ltp_price=get_ltp_price(symbol=symbol,token=token,exch_seg=exch_seg)
+          if ltp_price>order_price:
+            old_data=get_historical_data(symbol=symbol,interval="5m",token=token,exch_seg=exch_seg,candle_type="NORMAL")
+            atr=ltp_price-(float(old_data['Atr'].iloc[-1])*2)
+            st_10_2=float(old_data['Supertrend_10_2'].iloc[-1])
+            st_7_3=float(old_data['Supertrend'].iloc[-1])
+            st_10_1=float(old_data['Supertrend_10_1'].iloc[-1])
+            if st_7_3 > new_sl and st_7_3 < ltp_price: new_sl=int(st_7_3)
+            if st_10_2 > new_sl and st_10_2 < ltp_price: new_sl=int(st_10_2)
+            if atr > new_sl and atr < ltp_price : new_sl=int(atr)
+            transactiontype=orderbook['transactiontype'].iloc[i]
+            variety=orderbook['variety'].iloc[i]
+            orderid=orderbook['orderid'].iloc[i]
+            ordertype=orderbook['ordertype'].iloc[i]
+            producttype=orderbook['producttype'].iloc[i]
+            quantity=orderbook['quantity'].iloc[i]
+            modify_order(variety,orderid,ordertype,producttype,new_sl,quantity,symbol,token,exch_seg,new_sl,new_sl,new_sl)
+      except: pass
+
 
 def recheck_login():
   try:
@@ -872,7 +880,7 @@ def loop_code():
         orderbook,pending_orders=get_order_book()
         if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
           close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
-        #if now.minute%5==0: trail_sl()
+        if now.minute%5==0: trail_sl()
       elif now > marketclose:closing_trade()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       recheck_login()
