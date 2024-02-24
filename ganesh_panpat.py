@@ -737,7 +737,7 @@ def trade_near_options(time_frame):
                 'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
                 'RSI':opt_data['RSI'].values[-1]}
       st.session_state['options_trade_list'].append(information)
-      if (opt_data['ST_7_3 Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy" or opt_data['ST_10_1 Trade'].values[-1]=="Buy" ):
+      if (opt_data['ST_7_3 Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy"):
         strike_symbol=option_list.iloc[i]
         if opt_data['ST_7_3 Trade'].values[-1]=="Buy": sl= int(opt_data['Supertrend'].values[-1])
         elif opt_data['ST_10_2 Trade'].values[-1]=="Buy": sl= int(opt_data['Supertrend_10_2'].values[-1])
@@ -966,4 +966,4 @@ position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
-st.write(option_buy_indicator)
+st.write(target_order_type)
