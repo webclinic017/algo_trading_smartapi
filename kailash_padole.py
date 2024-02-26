@@ -840,33 +840,41 @@ def trail_sl():
       except: pass
 
 
+def angel_login():
+  username=st.secrets["username"]
+  pwd=st.secrets["pwd"]
+  apikey=st.secrets["apikey"]
+  token=st.secrets["token"]
+  user=st.secrets["user"]
+  obj=SmartConnect(api_key=apikey)
+  data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
+  refreshToken= data['data']['refreshToken']
+  feedToken=obj.getfeedToken()
+  userProfile= obj.getProfile(refreshToken)
+  aa= userProfile.get('data')
+  st.session_state['user_name']=aa.get('name').title()
+  st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
+  st.session_state['access_token']=obj.access_token
+  st.session_state['refresh_token']=obj.refresh_token
+  st.session_state['feed_token']=obj.feed_token
+  st.session_state['userId']=obj.userId
+  st.session_state['api_key']=apikey
+  logger.info('Login Sucess')
+  obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
+                 refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
 def recheck_login():
   try:
-    loginstatus=False
-    loginstatus=obj.rmsLimit()['status']
-    if loginstatus==False:
-      username=st.secrets["username"]
-      pwd=st.secrets["pwd"]
-      apikey=st.secrets["apikey"]
-      token=st.secrets["token"]
-      user=st.secrets["user"]
-      obj=SmartConnect(api_key=apikey)
-      data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
-      refreshToken= data['data']['refreshToken']
-      feedToken=obj.getfeedToken()
-      userProfile= obj.getProfile(refreshToken)
-      aa= userProfile.get('data')
-      st.session_state['user_name']=aa.get('name').title()
-      st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
-      st.session_state['access_token']=obj.access_token
-      st.session_state['refresh_token']=obj.refresh_token
-      st.session_state['feed_token']=obj.feed_token
-      st.session_state['userId']=obj.userId
-      st.session_state['api_key']=apikey
-      logger.info('Login Sucess')
-      obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
-                     refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
-  except:pass
+    need_relogin=True
+    rms_status=obj.rmsLimit()
+    if 'status' in rms_status:
+      if rms_status['status']== True:
+        need_relogin=False
+        print('Already Login')
+    if need_relogin==True:
+      print('Need to Login')
+      angel_login()
+  except :
+    angel_login()
       
 def sub_loop_code(now_time):
   nf_5m_trade_end="-";bnf_5m_trade_end="-";sensex_5m_trade_end="-"
