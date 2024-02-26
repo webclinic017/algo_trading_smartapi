@@ -908,8 +908,9 @@ def loop_code():
           close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
         if now.minute%5==0: trail_sl()
       elif now > marketclose:closing_trade()
-      recheck_login()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
+      recheck_login()
+      last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
     except Exception as e:
