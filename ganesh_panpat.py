@@ -999,4 +999,4 @@ if close_all:
 position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
+last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}  Recheck : {st.session_state['recheck']}")
