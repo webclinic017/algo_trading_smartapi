@@ -63,7 +63,7 @@ pwd=st.secrets["pwd"]
 apikey=st.secrets["apikey"]
 token=st.secrets["token"]
 user=st.secrets["user"]
-
+st.session_state['recheck']="-"
 #Angel Login
 obj=SmartConnect(api_key=apikey)
 if 'user_name' not in st.session_state:
@@ -209,6 +209,7 @@ def print_ltp():
   try:
     data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={"NSE": ["99926000","99926009"],"BSE": ['99919000'], "NFO": []})['data']['fetched'])
     data['change']=data['ltp']-data['close']
+    data=data.sort_values(by = ['tradingSymbol'], ascending = [True], na_position = 'first')
     print_sting=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
     for i in range(0,len(data)):print_sting=f"{print_sting} {data.iloc[i]['tradingSymbol']} {int(data.iloc[i]['ltp'])}({int(data.iloc[i]['change'])})"
     print_sting=print_sting.replace("Nifty 50","Nifty")
@@ -839,7 +840,6 @@ def trail_sl():
             modify_order(variety,orderid,ordertype,producttype,new_sl,quantity,symbol,token,exch_seg,new_sl,new_sl,new_sl)
       except: pass
 
-
 def angel_login():
   username=st.secrets["username"]
   pwd=st.secrets["pwd"]
@@ -870,12 +870,13 @@ def recheck_login():
       if rms_status['status']== True:
         need_relogin=False
         print('Already Login')
+        st.session_state['recheck']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
     if need_relogin==True:
       print('Need to Login')
       angel_login()
   except :
     angel_login()
-      
+
 def sub_loop_code(now_time):
   nf_5m_trade_end="-";bnf_5m_trade_end="-";sensex_5m_trade_end="-"
   if (now_time.minute%5==0 and 'IDX:5M' in time_frame_interval ):
@@ -899,7 +900,7 @@ def loop_code():
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     try:
-      last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
+      last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']}")
       if now > marketopen and now < marketclose:
         nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end=sub_loop_code(now)
         position,open_position=get_open_position()
@@ -907,15 +908,20 @@ def loop_code():
         if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
           close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
         if now.minute%5==0: trail_sl()
-      elif now > marketclose:closing_trade()
+      elif now > marketclose:
+        last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} Intraday Closed...")
+        closing_trade()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       recheck_login()
+      last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
     except Exception as e:
       print(f"error {e}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
+  last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} Market Closed...")
+      
 
 #loop_code()
       
@@ -925,7 +931,7 @@ last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']}")
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-tab0, tab1, tab2, tab3, tab4,tab5= st.tabs(["Log","Order Book", "Position","Open Order", "Settings","Token List"])
+tab0, tab1, tab2, tab3, tab4,tab5,tab6= st.tabs(["Log","Order Book", "Position","Open Order", "Settings","Token List",'Backtest'])
 with tab0:
   col1,col2=st.columns([1,9])
   with col1:
@@ -957,7 +963,7 @@ with tab4:
   with ind_col1:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX'],['NIFTY','BANKNIFTY','SENSEX'])
     time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M'])
-    five_buy_indicator = st.multiselect('Five Minute Indicator',indicator_list,['ST_10_1 Trade'])
+    five_buy_indicator = st.multiselect('Five Minute Indicator',indicator_list,['St Trade', 'ST_10_2 Trade', 'ST_10_1 Trade'])
     option_buy_indicator = st.multiselect('Option Indicator',indicator_list,['St Trade', 'ST_10_2 Trade'])
     #three_buy_indicator = st.multiselect('Three Minute Indicator',indicator_list,[])
     #one_buy_indicator = st.multiselect('One Minute Indicator',indicator_list,[])
@@ -978,7 +984,8 @@ with tab5:
   token_df=st.empty()
   token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
 
-if algo_state: loop_code()
+if algo_state:
+  loop_code()
 
 if nf_ce:
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp='-')
@@ -992,9 +999,10 @@ if bnf_ce:
 if bnf_pe:
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('BANKNIFTY',indexLtp='-')
   buy_option(pe_strike_symbol,'Manual Buy','5m')
-if close_all: closing_trade()
-  
+if close_all:
+  closing_trade()
+
 position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
+last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}  Recheck : {st.session_state['recheck']}")
