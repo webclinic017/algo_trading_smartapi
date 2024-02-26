@@ -63,7 +63,7 @@ pwd=st.secrets["pwd"]
 apikey=st.secrets["apikey"]
 token=st.secrets["token"]
 user=st.secrets["user"]
-
+st.session_state['recheck']="-"
 #Angel Login
 obj=SmartConnect(api_key=apikey)
 if 'user_name' not in st.session_state:
@@ -869,6 +869,7 @@ def recheck_login():
       if rms_status['status']== True:
         need_relogin=False
         print('Already Login')
+        st.session_state['recheck']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
     if need_relogin==True:
       print('Need to Login')
       angel_login()
@@ -898,7 +899,7 @@ def loop_code():
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     try:
-      last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
+      last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']}")
       if now > marketopen and now < marketclose:
         nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end=sub_loop_code(now)
         position,open_position=get_open_position()
