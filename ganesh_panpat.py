@@ -843,7 +843,7 @@ def recheck_login():
   try:
     loginstatus=False
     loginstatus=obj.rmsLimit()['status']
-    if loginstatus==False:
+    if loginstatus=='False':
       username=st.secrets["username"]
       pwd=st.secrets["pwd"]
       apikey=st.secrets["apikey"]
