@@ -209,6 +209,7 @@ def print_ltp():
   try:
     data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={"NSE": ["99926000","99926009"],"BSE": ['99919000'], "NFO": []})['data']['fetched'])
     data['change']=data['ltp']-data['close']
+    data=data.sort_values(by = ['tradingSymbol'], ascending = [False], na_position = 'first')
     print_sting=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
     for i in range(0,len(data)):print_sting=f"{print_sting} {data.iloc[i]['tradingSymbol']} {int(data.iloc[i]['ltp'])}({int(data.iloc[i]['change'])})"
     print_sting=print_sting.replace("Nifty 50","Nifty")
