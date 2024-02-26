@@ -63,7 +63,7 @@ pwd=st.secrets["pwd"]
 apikey=st.secrets["apikey"]
 token=st.secrets["token"]
 user=st.secrets["user"]
-
+st.session_state['recheck']="-"
 #Angel Login
 obj=SmartConnect(api_key=apikey)
 if 'user_name' not in st.session_state:
@@ -209,6 +209,7 @@ def print_ltp():
   try:
     data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={"NSE": ["99926000","99926009"],"BSE": ['99919000'], "NFO": []})['data']['fetched'])
     data['change']=data['ltp']-data['close']
+    data=data.sort_values(by = ['tradingSymbol'], ascending = [True], na_position = 'first')
     print_sting=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
     for i in range(0,len(data)):print_sting=f"{print_sting} {data.iloc[i]['tradingSymbol']} {int(data.iloc[i]['ltp'])}({int(data.iloc[i]['change'])})"
     print_sting=print_sting.replace("Nifty 50","Nifty")
@@ -679,17 +680,17 @@ def exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='
 def cancel_index_order(nf_5m_trade_end="-",bnf_5m_trade_end="-",sensex_5m_trade_end="-"):
   if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
     orderbook,pending_orders=get_order_book()
-    for i in range(0,len(orderbook)):
+    for i in range(0,len(pending_orders)):
       try:
-        tradingsymbol=orderbook.loc[i]['tradingsymbol']
+        tradingsymbol=pending_orders.loc[i]['tradingsymbol']
         if ((tradingsymbol[-2:]=='CE' and tradingsymbol.startswith("NIFTY") and nf_5m_trade_end=="Sell") or
             (tradingsymbol[-2:]=='CE' and tradingsymbol.startswith("BANKNIFTY") and bnf_5m_trade_end=="Sell") or
             (tradingsymbol[-2:]=='CE' and tradingsymbol.startswith("SENSEX") and sensex_5m_trade_end=="Sell") or
             (tradingsymbol[-2:]=='PE' and tradingsymbol.startswith("NIFTY") and nf_5m_trade_end=="Buy") or
             (tradingsymbol[-2:]=='PE' and tradingsymbol.startswith("BANKNIFTY") and bnf_5m_trade_end=="Buy") or
             (tradingsymbol[-2:]=='PE' and tradingsymbol.startswith("SENSEX") and sensex_5m_trade_end=="Buy")):
-            orderID=orderbook.loc[i]['orderid']
-            variety=orderbook.loc[i]['variety']
+            orderID=pending_orders.loc[i]['orderid']
+            variety=pending_orders.loc[i]['variety']
             cancel_order(orderID,variety)
       except:pass
         
@@ -839,34 +840,43 @@ def trail_sl():
             modify_order(variety,orderid,ordertype,producttype,new_sl,quantity,symbol,token,exch_seg,new_sl,new_sl,new_sl)
       except: pass
 
+def angel_login():
+  username=st.secrets["username"]
+  pwd=st.secrets["pwd"]
+  apikey=st.secrets["apikey"]
+  token=st.secrets["token"]
+  user=st.secrets["user"]
+  obj=SmartConnect(api_key=apikey)
+  data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
+  refreshToken= data['data']['refreshToken']
+  feedToken=obj.getfeedToken()
+  userProfile= obj.getProfile(refreshToken)
+  aa= userProfile.get('data')
+  st.session_state['user_name']=aa.get('name').title()
+  st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
+  st.session_state['access_token']=obj.access_token
+  st.session_state['refresh_token']=obj.refresh_token
+  st.session_state['feed_token']=obj.feed_token
+  st.session_state['userId']=obj.userId
+  st.session_state['api_key']=apikey
+  logger.info('Login Sucess')
+  obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
+                 refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
 def recheck_login():
   try:
-    loginstatus=False
-    loginstatus=obj.rmsLimit()['status']
-    if loginstatus==False:
-      username=st.secrets["username"]
-      pwd=st.secrets["pwd"]
-      apikey=st.secrets["apikey"]
-      token=st.secrets["token"]
-      user=st.secrets["user"]
-      obj=SmartConnect(api_key=apikey)
-      data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
-      refreshToken= data['data']['refreshToken']
-      feedToken=obj.getfeedToken()
-      userProfile= obj.getProfile(refreshToken)
-      aa= userProfile.get('data')
-      st.session_state['user_name']=aa.get('name').title()
-      st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
-      st.session_state['access_token']=obj.access_token
-      st.session_state['refresh_token']=obj.refresh_token
-      st.session_state['feed_token']=obj.feed_token
-      st.session_state['userId']=obj.userId
-      st.session_state['api_key']=apikey
-      logger.info('Login Sucess')
-      obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
-                     refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
-  except:pass
-      
+    need_relogin=True
+    rms_status=obj.rmsLimit()
+    if 'status' in rms_status:
+      if rms_status['status']== True:
+        need_relogin=False
+        print('Already Login')
+        st.session_state['recheck']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
+    if need_relogin==True:
+      print('Need to Login')
+      angel_login()
+  except :
+    angel_login()
+
 def sub_loop_code(now_time):
   nf_5m_trade_end="-";bnf_5m_trade_end="-";sensex_5m_trade_end="-"
   if (now_time.minute%5==0 and 'IDX:5M' in time_frame_interval ):
@@ -890,7 +900,7 @@ def loop_code():
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     try:
-      last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
+      last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']}")
       if now > marketopen and now < marketclose:
         nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end=sub_loop_code(now)
         position,open_position=get_open_position()
@@ -898,15 +908,20 @@ def loop_code():
         if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
           close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
         if now.minute%5==0: trail_sl()
-      elif now > marketclose:closing_trade()
+      elif now > marketclose:
+        last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} Intraday Closed...")
+        closing_trade()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       recheck_login()
+      last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
     except Exception as e:
       print(f"error {e}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
+  last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} Market Closed...")
+      
 
 #loop_code()
       
@@ -990,4 +1005,4 @@ if close_all:
 position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
+last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}  Recheck : {st.session_state['recheck']}")
