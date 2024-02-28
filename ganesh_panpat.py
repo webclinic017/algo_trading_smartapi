@@ -993,7 +993,7 @@ with tab5:
   token_df=st.empty()
   token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
 with tab6:
-  bt_from,bt_to,bt_btn=st.column([1,1,1])
+  bt_from,bt_to,bt_btn=st.column(3)
   with bt_from:
     today = datetime.datetime.now()
     next_year = today.year + 1
