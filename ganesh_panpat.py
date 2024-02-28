@@ -995,7 +995,7 @@ with tab5:
 with tab6:
   today = datetime.datetime.now()
   from_date = st.date_input("From Date", datetime.date(today.year, today.month, today.day))
-  to_date = st.date_input("From Date", datetime.date(today.year, today.month, today.day))
+  to_date = st.date_input("To Date", datetime.date(today.year, today.month, today.day))
   backtest_df=st.empty()
   
 if algo_state:
