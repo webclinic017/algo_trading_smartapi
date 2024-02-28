@@ -994,16 +994,7 @@ with tab5:
   token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
 with tab6:
   today = datetime.datetime.now()
-  next_year = today.year + 1
-  jan_1 = datetime.date(next_year, 1, 1)
-  dec_31 = datetime.date(next_year, 12, 31)
-
-  d = st.date_input(
-    "Select your vacation for next year",
-    (jan_1, datetime.date(next_year, 1, 7)),
-    jan_1,
-    dec_31,
-    format="MM.DD.YYYY",)
+  d = st.date_input("From Data", datetime.date(today.year(), today.month(), today.day()))
   #backtest_df=st.empty()
   
 if algo_state:
