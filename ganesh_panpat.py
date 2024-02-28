@@ -1119,6 +1119,7 @@ def update_target_profit(df):
 
 if run_btn:
   dat=(datetime.datetime.now(tz=gettz('Asia/Kolkata'))- datetime.timedelta(days=0)).strftime("%m/%d/%y")
+  df=get_historical_trade(dat)
   df=update_options_price(df)
   df=update_target_profit(df)
   df=df[['Date','Datetime','Options','Indicator','qty','Buy Time','Buy','Target','Trade Exit','End Time','Win/Loss','Profit','High','Low','Close','30% Profit','ETE']]
