@@ -994,8 +994,9 @@ with tab5:
   token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
 with tab6:
   today = datetime.datetime.now()
-  d = st.date_input("From Data", datetime.date(today.year(), today.month(), today.day()))
-  #backtest_df=st.empty()
+  from_date = st.date_input("From Date", datetime.date(today.year, today.month, today.day))
+  to_date = st.date_input("From Date", datetime.date(today.year, today.month, today.day))
+  backtest_df=st.empty()
   
 if algo_state:
   loop_code()
