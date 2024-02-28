@@ -1065,6 +1065,7 @@ def get_historical_trade(dat):
       if i.hour>= 15: df.drop(i, inplace=True)
     except Exception as e:
       print(e)
+  return df
 
 def update_options_price(df):
   opt_symbol_list=df['token'].unique()
@@ -1120,7 +1121,10 @@ def update_target_profit(df):
 if run_btn:
   dat=(datetime.datetime.now(tz=gettz('Asia/Kolkata'))- datetime.timedelta(days=0)).strftime("%m/%d/%y")
   df=get_historical_trade(dat)
-  df=update_options_price(df)
-  df=update_target_profit(df)
-  df=df[['Date','Datetime','Options','Indicator','qty','Buy Time','Buy','Target','Trade Exit','End Time','Win/Loss','Profit','High','Low','Close','30% Profit','ETE']]
+  #print(df)
+  #df=update_options_price(df)
+  #df=update_target_profit(df)
+  #df=df[['Date','Datetime','Options','Indicator','qty','Buy Time','Buy','Target','Trade Exit','End Time','Win/Loss','Profit','High','Low','Close','30% Profit','ETE']]
+  df=df[['Date','Datetime','Options','Indicator','qty','Buy Time','End Time']]
   backtest_df.dataframe(df,hide_index=True)
+
