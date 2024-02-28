@@ -992,7 +992,12 @@ with tab4:
 with tab5:
   token_df=st.empty()
   token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
-
+with tab6:
+  bt_from,bt_to,bt_btn=st.column(3)
+  with bt_from:
+    start_date = st.date_input("When's your birthday", datetime.date()
+  backtest_df=st.empty()
+  
 if algo_state:
   loop_code()
 
