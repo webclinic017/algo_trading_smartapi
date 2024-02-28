@@ -770,6 +770,29 @@ def trade_near_options(time_frame):
         break
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
 
+def future_trade():
+  for symbol in fut_list:
+    token_details=token_df[(token_df['instrumenttype'] == 'FUTCOM') & (token_df['name'] == symbol)].sort_values(by=['expiry'], ascending=True).iloc[0]
+    fut_data=get_historical_data(symbol=token_details['symbol'],interval='5m',token=token_details['token'],exch_seg=token_details['exch_seg'],candle_type="NORMAL")
+    trade=str(fut_data['Trade'].values[-1])
+    if trade!="-":
+      indicator_strategy=fut_data['Indicator'].values[-1]
+      indexLtp=fut_data['Close'].values[-1]
+      interval_yf=fut_data['Time Frame'].values[-1]
+      if trade=="Buy" : buy_option(token_details,indicator_strategy,'5m')
+      elif trade=="Sell" : buy_option(token_details,indicator_strategy,'5m')
+    trade_end=str(fut_data['Trade End'].values[-1])
+    information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+              'Symbol':symbol,
+              'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
+              'Indicator':fut_data['Indicator'].values[-1],
+              'Trade':fut_data['Trade'].values[-1],
+              'Trade End':fut_data['Trade End'].values[-1],
+              'Supertrend':fut_data['Supertrend'].values[-1],
+              'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],
+              'RSI':fut_data['RSI'].values[-1]}
+    st.session_state['options_trade_list'].append(information)
+  
 def index_trade(symbol,interval):
   fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
   trade=str(fut_data['Trade'].values[-1])
@@ -886,6 +909,7 @@ def sub_loop_code(now_time):
     if "SENSEX" in index_list:sensex_data,sensex_5m_trade,sensex_5m_trade_end=index_trade("SENSEX","5m")
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if 'OPT:5M' in time_frame_interval :trade_near_options('5m')
+    fut_trade()
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     return nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end
   else:
@@ -962,6 +986,7 @@ with tab4:
                   'MA Trade','EMA Trade','EMA_5_7 Trade','MA 21 Trade','HMA Trade','RSI_60 Trade','EMA_High_Low Trade','Two Candle Theory']
   with ind_col1:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX'],['NIFTY','BANKNIFTY','SENSEX'])
+    fut_list=st.multiselect('Select Future',['SILVERMIC','SILVER'],['SILVERMIC'])
     time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M', 'OPT:5M'])
     five_buy_indicator = st.multiselect('Five Minute Indicator',indicator_list,['St Trade', 'ST_10_2 Trade', 'ST_10_1 Trade'])
     option_buy_indicator = st.multiselect('Option Indicator',indicator_list,['St Trade', 'ST_10_2 Trade'])
