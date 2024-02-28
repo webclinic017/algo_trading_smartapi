@@ -805,9 +805,9 @@ def trail_sl():
           if ltp_price>order_price:
             old_data=get_historical_data(symbol=symbol,interval="5m",token=token,exch_seg=exch_seg,candle_type="NORMAL")
             atr=ltp_price-(float(old_data['Atr'].iloc[-1])*2)
-            st_10_2=float(old_data['Supertrend_10_2'].iloc[-1])
-            st_7_3=float(old_data['Supertrend'].iloc[-1])
-            st_10_1=float(old_data['Supertrend_10_1'].iloc[-1])
+            st_10_2=float(old_data['Supertrend_10_2'].iloc[-1])*0.95
+            st_7_3=float(old_data['Supertrend'].iloc[-1])*0.95
+            st_10_1=float(old_data['Supertrend_10_1'].iloc[-1])*0.95
             if ltp_price*0.85 > new_sl and ltp_price*0.85 < ltp_price: new_sl=int(ltp_price*0.85)
             if st_7_3 > new_sl and st_7_3 < ltp_price: new_sl=int(st_7_3)
             if st_10_2 > new_sl and st_10_2 < ltp_price: new_sl=int(st_10_2)
