@@ -995,7 +995,7 @@ with tab5:
 with tab6:
   bt_from,bt_to,bt_btn=st.column(3)
   with bt_from:
-    start_date = st.date_input("When's your birthday", datetime.date()
+    start_date = st.date_input("When's your birthday", datetime.date())
   backtest_df=st.empty()
   
 if algo_state:
