@@ -1123,8 +1123,3 @@ if run_btn:
   df=update_target_profit(df)
   df=df[['Date','Datetime','Options','Indicator','qty','Buy Time','Buy','Target','Trade Exit','End Time','Win/Loss','Profit','High','Low','Close','30% Profit','ETE']]
   backtest_df.dataframe(df,hide_index=True)
-
-  df['Buy']="-";df['Target']="-";df['Win/Loss']="-";df['Profit']="-";df['High']="-";df['Low']="-";df['Close']="-";df['30% Profit']="-";df['ETE']="-"
-  df=df[['Date','Datetime','Options','token','Indicator','qty','Buy Time','Buy','Target','Trade Exit','End Time','Win/Loss','Profit','High','Low','Close','30% Profit','ETE']]
-  return df
-  
