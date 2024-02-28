@@ -513,6 +513,8 @@ def get_trade_info(df):
   df['Indicator'] = df['Indicator'].str.replace(' RSI_60:-','')
   df['Indicator'] = df['Indicator'].str.replace(':Buy',',')
   df['Indicator'] = df['Indicator'].str.replace(':Sell',',')
+  df['Indicator'] = df['Indicator'].str.replace('IDX - 5m','-')
+  df['Indicator'] = df['Indicator'].str.replace('OPT - 5m','-')
   df['Indicator'] = df['Indicator'].str.replace('3m Two Candle Theory:','2 Candle Theory:')
   df["Indicator"] = df["Indicator"].str[:-1]
   return df
