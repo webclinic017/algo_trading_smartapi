@@ -994,7 +994,7 @@ with tab5:
   token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
 with tab6:
   today = datetime.datetime.now()
-  bt_col1,bt_col2,bt_col3=st.column()
+  bt_col1,bt_col2,bt_col3=st.column(2)
   with bt_col1:
     from_date = st.date_input("From Date", datetime.date(today.year, today.month, today.day))
   to_date = st.date_input("To Date", datetime.date(today.year, today.month, today.day))
