@@ -1007,7 +1007,7 @@ with tab6:
         dec_31,
         format="MM.DD.YYYY",
     )
-  backtest_df=st.empty()
+  #backtest_df=st.empty()
   
 if algo_state:
   loop_code()
