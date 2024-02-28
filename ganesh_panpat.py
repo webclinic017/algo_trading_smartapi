@@ -772,6 +772,7 @@ def trade_near_options(time_frame):
 
 def future_trade():
   for symbol in fut_list:
+    token_df
     token_details=token_df[(token_df['instrumenttype'] == 'FUTCOM') & (token_df['name'] == symbol)].sort_values(by=['expiry'], ascending=True).iloc[0]
     fut_data=get_historical_data(symbol=token_details['symbol'],interval='5m',token=token_details['token'],exch_seg=token_details['exch_seg'],candle_type="NORMAL")
     trade=str(fut_data['Trade'].values[-1])
@@ -909,7 +910,7 @@ def sub_loop_code(now_time):
     if "SENSEX" in index_list:sensex_data,sensex_5m_trade,sensex_5m_trade_end=index_trade("SENSEX","5m")
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if 'OPT:5M' in time_frame_interval :trade_near_options('5m')
-    fut_trade()
+    #fut_trade()
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     return nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end
   else:
