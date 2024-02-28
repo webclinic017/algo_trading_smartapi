@@ -64,6 +64,7 @@ apikey=st.secrets["apikey"]
 token=st.secrets["token"]
 user=st.secrets["user"]
 st.session_state['recheck']="-"
+st.session_state['market_open']="Open"
 #Angel Login
 obj=SmartConnect(api_key=apikey)
 if 'user_name' not in st.session_state:
@@ -927,7 +928,7 @@ def loop_code():
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     try:
-      last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']}")
+      last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
       if now > marketopen and now < marketclose:
         nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end=sub_loop_code(now)
         position,open_position=get_open_position()
@@ -936,7 +937,8 @@ def loop_code():
           close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
         if now.minute%5==0: trail_sl()
       elif now > marketclose:
-        last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} Intraday Closed...")
+        st.session_state['market_open']="Intraday Closed..."
+        last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
         closing_trade()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       recheck_login()
