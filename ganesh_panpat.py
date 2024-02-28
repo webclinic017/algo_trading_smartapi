@@ -999,6 +999,8 @@ with tab6:
     from_date = st.date_input("From Date", datetime.date(today.year, today.month, today.day))
   with bt_col2:
     to_date = st.date_input("To Date", datetime.date(today.year, today.month, today.day))
+  with bt_col3:
+    run_btn=st.button(label="Run")
   backtest_df=st.empty()
   
 if algo_state:
