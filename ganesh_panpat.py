@@ -627,7 +627,7 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
       telegram_bot_sendtext(buy_msg)
       return
     ltp_price=round(float(get_ltp_price(symbol=option_symbol,token=option_token,exch_seg=exch_seg)),2)
-    stop_loss=int(float(ltp_price*(1-(sl_point/100)))
+    stop_loss=int(float(ltp_price*(1-(sl_point/100))))
     target_price=int(float(ltp_price*(1+(target_point/100))))
     orderbook=obj.orderBook()['data']
     orderbook=pd.DataFrame(orderbook)
