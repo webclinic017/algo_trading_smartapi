@@ -1066,7 +1066,7 @@ def get_historical_trade(dat):
     except Exception as e:
       print(e)
 
-  def update_options_price(df):
+def update_options_price(df):
   opt_symbol_list=df['token'].unique()
   optiols_ohlc_data=pd.DataFrame()
   for i in opt_symbol_list:
@@ -1099,7 +1099,7 @@ def get_historical_trade(dat):
       print(e)
   return df
 
-  def update_target_profit(df):
+def update_target_profit(df):
   for i in range(0,len(df)):
     try:
       df['Target'].iloc[i]=int(float(df['Buy'].iloc[i])+(1000/float(df['qty'].iloc[i])))
