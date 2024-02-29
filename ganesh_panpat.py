@@ -472,18 +472,17 @@ def get_trade_info(df):
       RSI_60=df['RSI_60 Trade'][i]; ST_10_1=df['ST_10_1 Trade'][i]
       Two_Candle_Theory=df['Two Candle Theory'][i]; HMA_Trade=df['HMA Trade'][i]
       EMA_5_7_Trade=df['EMA_5_7 Trade'][i];EMA_High_Low=df['EMA_High_Low Trade'][i]
-
-      if time_frame=="5m" or time_frame=="FIVE_MINUTE" or time_frame=="5min":
-        if ((ST_10_1=="Buy" and 'ST_10_1 Trade' in five_buy_indicator) or 
-            (ST_10_2=="Buy" and 'ST_10_2 Trade' in five_buy_indicator) or 
-            (ST=="Buy" and 'St Trade' in five_buy_indicator)):
-          df['Trade'][i]="Buy"
-          df['Trade End'][i]="Buy"
-        if ((ST_10_1=="Sell" and 'ST_10_1 Trade' in five_buy_indicator) or 
+      
+      if ((ST_10_1=="Buy" and 'ST_10_1 Trade' in five_buy_indicator) or 
+          (ST_10_2=="Buy" and 'ST_10_2 Trade' in five_buy_indicator) or 
+          (ST=="Buy" and 'St Trade' in five_buy_indicator)):
+            df['Trade'][i]="Buy"
+            df['Trade End'][i]="Buy"
+      elif ((ST_10_1=="Sell" and 'ST_10_1 Trade' in five_buy_indicator) or 
             (ST_10_2=="Sell" and 'ST_10_2 Trade' in five_buy_indicator) or 
             (ST=="Sell" and 'St Trade' in five_buy_indicator)):
-          df['Trade'][i]="Sell"
-          df['Trade End'][i]="Sell"
+              df['Trade'][i]="Sell"
+              df['Trade End'][i]="Sell"
     except Exception as e:
       pass
   df['ADX']=df['ADX'].round(decimals = 2)
@@ -894,9 +893,14 @@ def sub_loop_code(now_time):
     if 'OPT:5M' in time_frame_interval :trade_near_options('5m')
     #fut_trade()
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    return nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end
+  elif (now_time.minute%15==0 and 'IDX:15M' in time_frame_interval ):
+    if "NIFTY" in index_list: nf_data,nf_15m_trade,nf_15m_trade_end=index_trade("NIFTY","15m")
+    if "BANKNIFTY" in index_list:bnf_data,bnf_15m_trade,bnf_15m_trade_end=index_trade("BANKNIFTY","15m")
+    if "SENSEX" in index_list:sensex_data,sensex_15m_trade,sensex_15m_trade_end=index_trade("SENSEX","15m")
+    log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
   else:
-    return "-","-","-"
+    pass
+  return nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end
 
 def loop_code():
   global nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end
@@ -971,7 +975,7 @@ with tab4:
   with ind_col1:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX'],['NIFTY','BANKNIFTY','SENSEX'])
     fut_list=st.multiselect('Select Future',['SILVERMIC','SILVER'],['SILVERMIC'])
-    time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M', 'OPT:5M'])
+    time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M',IDX:15M','OPT:5M'])
     five_buy_indicator = st.multiselect('Five Minute Indicator',indicator_list,['St Trade', 'ST_10_2 Trade'])
     option_buy_indicator = st.multiselect('Option Indicator',indicator_list,['St Trade', 'ST_10_2 Trade'])
     #three_buy_indicator = st.multiselect('Three Minute Indicator',indicator_list,[])
