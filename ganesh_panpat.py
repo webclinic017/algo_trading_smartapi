@@ -533,8 +533,6 @@ def get_trade_info(df):
   df['Indicator'] = df['Indicator'].str.replace(' RSI_60:-','')
   df['Indicator'] = df['Indicator'].str.replace(':Buy',',')
   df['Indicator'] = df['Indicator'].str.replace(':Sell',',')
-  df['Indicator'] = df['Indicator'].str.replace('IDX - 5m','-')
-  df['Indicator'] = df['Indicator'].str.replace('OPT - 5m','-')
   df['Indicator'] = df['Indicator'].str.replace('3m Two Candle Theory:','2 Candle Theory:')
   df["Indicator"] = df["Indicator"].str[:-1]
   return df
@@ -762,7 +760,7 @@ def trade_near_options(time_frame):
         if opt_data['ST_7_3 Trade'].values[-1]=="Buy": sl= int(opt_data['Supertrend'].values[-1])
         elif opt_data['ST_10_2 Trade'].values[-1]=="Buy": sl= int(opt_data['Supertrend_10_2'].values[-1])
         else: sl=int(opt_data['Close'].values[-1]*0.7)
-        target=int(int(opt_data['Close'].values[-1])+((int(opt_data['Close'].values[-1])-sl)*2))
+        target=int(opt_data['Close'].values[-1]+(opt_data['Close'].values[-1]-sl)*2)
         indicator ="OPT "+str(time_frame)+":"
         if opt_data['ST_7_3 Trade'].values[-1]=="Buy": indicator=indicator + " ST_7_3"
         elif opt_data['ST_10_2 Trade'].values[-1]=="Buy": indicator=indicator +" ST_10_2"
