@@ -248,6 +248,25 @@ def get_open_position():
   position_updated.text(f"Position : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)} PNL : {pnl}")
   return position,open_position
 
+def update_price_orderbook(df):
+  for j in range(0,len(df)):
+    try:
+      if df['price'].iloc[j]==0:
+        text=df['text'].iloc[j]
+        ordertag=df['ordertag'].iloc[j]+" "
+        if 'You require Rs. ' in text and ' funds to execute this order.' in text and type(text)==str :
+          abc='-'
+          abc=(text.split('You require Rs. '))[1].split(' funds to execute this order.')[0]
+          if abc!='-' and int(float(abc)) <= 50000:
+            df['price'].iloc[j]=(round(float(abc)/float(df['quantity'].iloc[j]),2))
+        if df['price'].iloc[j]==0 and "LTP: " in ordertag:
+          abc='-'
+          abc=(ordertag.split('LTP: '))[1].split(' ')[0]
+          df['price'].iloc[j]=float(abc)
+    except Exception as e:
+      pass
+  return df
+  
 #Get Order Book
 def get_order_book():
   global orderbook,pending_orders
@@ -261,6 +280,7 @@ def get_order_book():
       orderbook= pd.DataFrame.from_dict(orderbook)
       orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
       orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
+      orderbook=update_price_orderbook(orderbook)
       pending_orders = orderbook[((orderbook['orderstatus'] != 'complete') & (orderbook['orderstatus'] != 'cancelled') &
                               (orderbook['orderstatus'] != 'rejected') & (orderbook['orderstatus'] != 'AMO CANCELLED'))]
       pending_orders = pending_orders[(pending_orders['instrumenttype'] == 'OPTIDX')]
