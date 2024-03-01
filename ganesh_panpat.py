@@ -851,16 +851,17 @@ def trail_sl():
             st_10_2=float(old_data['Supertrend_10_2'].iloc[-1])
             st_7_3=float(old_data['Supertrend'].iloc[-1])
             st_10_1=float(old_data['Supertrend_10_1'].iloc[-1])
-            if st_7_3 > new_sl and st_7_3 < ltp_price: new_sl=int(st_7_3)
-            if st_10_2 > new_sl and st_10_2 < ltp_price: new_sl=int(st_10_2)
+            #if st_7_3 > new_sl and st_7_3 < ltp_price: new_sl=int(st_7_3)
+            #if st_10_2 > new_sl and st_10_2 < ltp_price: new_sl=int(st_10_2)
             if atr > new_sl and atr < ltp_price : new_sl=int(atr)
-            transactiontype=orderbook['transactiontype'].iloc[i]
-            variety=orderbook['variety'].iloc[i]
-            orderid=orderbook['orderid'].iloc[i]
-            ordertype=orderbook['ordertype'].iloc[i]
-            producttype=orderbook['producttype'].iloc[i]
-            quantity=orderbook['quantity'].iloc[i]
-            modify_order(variety,orderid,ordertype,producttype,new_sl,quantity,symbol,token,exch_seg,new_sl,new_sl,new_sl)
+            if new_sl > order_price:
+              transactiontype=orderbook['transactiontype'].iloc[i]
+              variety=orderbook['variety'].iloc[i]
+              orderid=orderbook['orderid'].iloc[i]
+              ordertype=orderbook['ordertype'].iloc[i]
+              producttype=orderbook['producttype'].iloc[i]
+              quantity=orderbook['quantity'].iloc[i]
+              modify_order(variety,orderid,ordertype,producttype,new_sl,quantity,symbol,token,exch_seg,new_sl,new_sl,new_sl)
       except: pass
 
 def angel_login():
@@ -924,6 +925,7 @@ def loop_code():
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
   marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
   day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
+  comm_day_end = now.replace(hour=23, minute=30, second=0, microsecond=0)
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     try:
