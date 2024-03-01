@@ -63,9 +63,35 @@ pwd=st.secrets["pwd"]
 apikey=st.secrets["apikey"]
 token=st.secrets["token"]
 user=st.secrets["user"]
+
 st.session_state['recheck']="-"
 st.session_state['market_open']="Open"
+st.session_state['options_trade_list']=[]
 #Angel Login
+def angel_login():
+  username=st.secrets["username"]
+  pwd=st.secrets["pwd"]
+  apikey=st.secrets["apikey"]
+  token=st.secrets["token"]
+  user=st.secrets["user"]
+  user="Ganesh"; username = 'G93179'; pwd = '4789'; apikey = 'CjOKjC5g'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
+  obj=SmartConnect(api_key=apikey)
+  data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
+  refreshToken= data['data']['refreshToken']
+  feedToken=obj.getfeedToken()
+  userProfile= obj.getProfile(refreshToken)
+  aa= userProfile.get('data')
+  st.session_state['user_name']=aa.get('name').title()
+  st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
+  st.session_state['access_token']=obj.access_token
+  st.session_state['refresh_token']=obj.refresh_token
+  st.session_state['feed_token']=obj.feed_token
+  st.session_state['userId']=obj.userId
+  st.session_state['api_key']=apikey
+  logger.info('Login Sucess')
+  obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
+                 refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
+  
 obj=SmartConnect(api_key=apikey)
 if 'user_name' not in st.session_state:
   data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
@@ -516,8 +542,8 @@ def get_trade_info(df):
   df['Atr']= df['Atr'].astype(str)
   df['RSI']=df['RSI'].round(decimals = 2)
   df['RSI']= df['RSI'].astype(str)
-  if Symbol=="^NSEBANK" or Symbol=="BANKNIFTY" or Symbol=="^NSEI" or Symbol=="NIFTY" or Symbol=="SENSEX" or Symbol=="^BSESN":
-    symbol_type="IDX"
+  if Symbol=="^NSEBANK" or Symbol=="BANKNIFTY" or Symbol=="^NSEI" or Symbol=="NIFTY" or Symbol=="SENSEX" or Symbol=="^BSESN": symbol_type="IDX"
+  elif "FUT" in Symbol: symbol_type= "FUT"
   else: symbol_type= "OPT"
   df['Indicator']=(symbol_type+" "+df['Trade']+" "+df['Time Frame']+":"+" ST_7_3:"+df['ST_7_3 Trade']+
                    " ST_10_2:"+df['ST_10_2 Trade']+ " ST_10_1:"+df['ST_10_1 Trade'])
@@ -656,7 +682,7 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
     orders= orderbook[(orderbook['orderid'] == orderId)]
     orders_status=orders.iloc[0]['orderstatus']
     trade_price=orders.iloc[0]['averageprice']
-    if orders_status== 'complete':
+    if orders_status== 'complete' and "FUT" not in option_symbol:
       if target_order_type=="Target":
         place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='LIMIT',price=target_price,
                     variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=str(orderId)+" Target order Placed")
@@ -774,13 +800,18 @@ def trade_near_options(time_frame):
         break
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
 
+def is_within_20_minute_gap(target_time):
+    current_time = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(tzinfo=None,microsecond=0)
+    time_difference = target_time - current_time
+    return abs(time_difference) <= datetime.timedelta(minutes=20)
+
 def future_trade():
   token_df=st.session_state['fut_list']
   for symbol in fut_list:
     token_details=token_df[(token_df['name'] == symbol)].sort_values(by=['expiry'], ascending=True).iloc[0]
     fut_data=get_historical_data(symbol=token_details['symbol'],interval='5m',token=token_details['token'],exch_seg=token_details['exch_seg'],candle_type="NORMAL")
     trade=str(fut_data['Trade'].values[-1])
-    if trade!="-":
+    if trade!="-" and is_within_20_minute_gap(fut_data.iloc[-1].name):
       indicator_strategy=fut_data['Indicator'].values[-1]
       indexLtp=fut_data['Close'].values[-1]
       interval_yf=fut_data['Time Frame'].values[-1]
@@ -870,28 +901,7 @@ def trail_sl():
               modify_order(variety,orderid,ordertype,producttype,new_sl,quantity,symbol,token,exch_seg,new_sl,new_sl,new_sl)
       except: pass
 
-def angel_login():
-  username=st.secrets["username"]
-  pwd=st.secrets["pwd"]
-  apikey=st.secrets["apikey"]
-  token=st.secrets["token"]
-  user=st.secrets["user"]
-  obj=SmartConnect(api_key=apikey)
-  data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
-  refreshToken= data['data']['refreshToken']
-  feedToken=obj.getfeedToken()
-  userProfile= obj.getProfile(refreshToken)
-  aa= userProfile.get('data')
-  st.session_state['user_name']=aa.get('name').title()
-  st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
-  st.session_state['access_token']=obj.access_token
-  st.session_state['refresh_token']=obj.refresh_token
-  st.session_state['feed_token']=obj.feed_token
-  st.session_state['userId']=obj.userId
-  st.session_state['api_key']=apikey
-  logger.info('Login Sucess')
-  obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
-                 refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
+
 def recheck_login():
   try:
     need_relogin=True
@@ -932,7 +942,7 @@ def loop_code():
   marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
   day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
   comm_day_end = now.replace(hour=23, minute=30, second=0, microsecond=0)
-  while now < day_end:
+  while now < comm_day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     try:
       last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
