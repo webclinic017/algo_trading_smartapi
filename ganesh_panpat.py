@@ -119,6 +119,11 @@ def get_token_df():
                    (token_df['name'] == 'FINNIFTY') & (token_df['expiry'] == fnnf_expiry_day) |
                    (token_df['name'] == 'SENSEX') & (token_df['expiry'] == sensex_expiry_day))]
   st.session_state['opt_list']=opt_list
+  fut_token=token_df[(token_df['instrumenttype'] == 'FUTIDX') | (token_df['instrumenttype'] == 'FUTCOM')]
+  fut_list=['BANKNIFTY','NIFTY','SILVERMIC','SILVER']
+  fut_token = fut_token[fut_token['name'].isin(fut_list)]
+  fut_token = fut_token.sort_values(by = ['name', 'expiry'], ascending = [True, True], na_position = 'first')
+  st.session_state['fut_list']=fut_token
 
 if 'bnf_expiry_day' not in st.session_state:get_token_df()
 
@@ -771,8 +776,8 @@ def trade_near_options(time_frame):
 
 def future_trade():
   for symbol in fut_list:
-    token_df
-    token_details=token_df[(token_df['instrumenttype'] == 'FUTCOM') & (token_df['name'] == symbol)].sort_values(by=['expiry'], ascending=True).iloc[0]
+    token_df=st.session_state['fut_token']
+    token_details=token_df[(token_df['name'] == symbol)].sort_values(by=['expiry'], ascending=True).iloc[0]
     fut_data=get_historical_data(symbol=token_details['symbol'],interval='5m',token=token_details['token'],exch_seg=token_details['exch_seg'],candle_type="NORMAL")
     trade=str(fut_data['Trade'].values[-1])
     if trade!="-":
@@ -941,6 +946,7 @@ def loop_code():
         st.session_state['market_open']="Intraday Closed..."
         last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
         closing_trade()
+      if now > marketopen and now <comm_day_end and now.minute%5==0:future_trade()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       recheck_login()
       last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']}")
