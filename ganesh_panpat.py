@@ -778,6 +778,7 @@ def future_trade():
   for symbol in fut_list:
     token_df=st.session_state['fut_token']
     token_details=token_df[(token_df['name'] == symbol)].sort_values(by=['expiry'], ascending=True).iloc[0]
+    logger.info(token_details['symbol'])
     fut_data=get_historical_data(symbol=token_details['symbol'],interval='5m',token=token_details['token'],exch_seg=token_details['exch_seg'],candle_type="NORMAL")
     trade=str(fut_data['Trade'].values[-1])
     if trade!="-":
