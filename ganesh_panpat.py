@@ -775,8 +775,8 @@ def trade_near_options(time_frame):
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
 
 def future_trade():
+  token_df=st.session_state['fut_list']
   for symbol in fut_list:
-    token_df=st.session_state['fut_token']
     token_details=token_df[(token_df['name'] == symbol)].sort_values(by=['expiry'], ascending=True).iloc[0]
     logger.info(token_details['symbol'])
     fut_data=get_historical_data(symbol=token_details['symbol'],interval='5m',token=token_details['token'],exch_seg=token_details['exch_seg'],candle_type="NORMAL")
@@ -968,7 +968,7 @@ last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']}")
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-tab0, tab1, tab2, tab3, tab4,tab5,tab6= st.tabs(["Log","Order Book", "Position","Open Order", "Settings","Token List",'Backtest'])
+tab0, tab1, tab2, tab3, tab4,tab5,tab6, tab7= st.tabs(["Log","Order Book", "Position","Open Order", "Settings","Token List",'Backtest'])
 with tab0:
   col1,col2=st.columns([1,9])
   with col1:
@@ -1022,6 +1022,9 @@ with tab5:
   token_df=st.empty()
   token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
 with tab6:
+  fut_token_df=st.empty()
+  fut_token_df=st.dataframe(st.session_state['fut_list'],hide_index=True)
+with tab7:
   today = datetime.datetime.now()
   bt_col1,bt_col2,bt_col3=st.columns([1,1,1])
   with bt_col1:
