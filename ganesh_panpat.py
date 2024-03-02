@@ -790,7 +790,7 @@ def trade_near_options(time_frame):
         strike_symbol=option_list.iloc[i]
         stop_loss=int(float(opt_data['Close'].values[-1]*(1-(sl_point/100))))
         target_price=int(float(opt_data['Close'].values[-1]*(1+(target_point/100))))
-        indicator ="OPT "+str(time_frame)+":"
+        indicator =opt_data['Indicator'].values[-1]+":"
         strategy=indicator + " (" +str(stop_loss)+":"+str(target_price)+')'
         buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
         break
