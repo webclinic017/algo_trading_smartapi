@@ -788,14 +788,10 @@ def trade_near_options(time_frame):
       st.session_state['options_trade_list'].append(information)
       if (opt_data['ST_7_3 Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy"):
         strike_symbol=option_list.iloc[i]
-        if opt_data['ST_7_3 Trade'].values[-1]=="Buy": sl= int(opt_data['Supertrend'].values[-1])
-        elif opt_data['ST_10_2 Trade'].values[-1]=="Buy": sl= int(opt_data['Supertrend_10_2'].values[-1])
-        else: sl=int(opt_data['Close'].values[-1]*0.7)
-        target=int(opt_data['Close'].values[-1]+(opt_data['Close'].values[-1]-sl)*2)
+        stop_loss=int(float(opt_data['Close'].values[-1]*(1-(sl_point/100))))
+        target_price=int(float(opt_data['Close'].values[-1]*(1+(target_point/100))))
         indicator ="OPT "+str(time_frame)+":"
-        if opt_data['ST_7_3 Trade'].values[-1]=="Buy": indicator=indicator + " ST_7_3"
-        elif opt_data['ST_10_2 Trade'].values[-1]=="Buy": indicator=indicator +" ST_10_2"
-        strategy=indicator + " (" +str(sl)+":"+str(target)+')'
+        strategy=indicator + " (" +str(stop_loss)+":"+str(target_price)+')'
         buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
         break
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
