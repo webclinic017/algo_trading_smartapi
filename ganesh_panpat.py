@@ -425,8 +425,8 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
         if(i.isdigit()): odd_interval+=i
       delta_time=int(odd_interval)
       odd_interval+='m'
-    if (symbol_i[0]=="^"):df=yfna_data(symbol_i,yf_interval,period)
     if isinstance(df, str):df=angel_data(token,agl_interval,exch_seg,period)
+    if (symbol_i[0]=="^" and isinstance(df, str)):df=yfna_data(symbol_i,yf_interval,period)
     if isinstance(df, str):df=five_paisa_data(token,interval,exch_seg,period=period)
     if odd_candle ==True:
       df=df.groupby(pd.Grouper(freq=odd_interval+'in')).agg({"Date":"first","Datetime":"first","Open": "first", "High": "max",
