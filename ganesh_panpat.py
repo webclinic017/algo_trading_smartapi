@@ -1019,10 +1019,10 @@ with tab4:
         target_point=st.number_input(label="Target",min_value=5, max_value=100, value=50, step=None)
   with ind_col3:
     lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
-    market_open = st.time_input('Start Time', datetime.time(9, 20))
-    intraday_close = st.time_input('Intraday Close', datetime.time(14, 50))
-    market_close = st.time_input('Market Close', datetime.time(15, 30))
-    comm_close = st.time_input('Commodity Close', datetime.time(23, 30))
+    #market_open = st.time_input('Start Time', datetime.time(9, 20))
+    #intraday_close = st.time_input('Intraday Close', datetime.time(14, 50))
+    #market_close = st.time_input('Market Close', datetime.time(15, 30))
+    #comm_close = st.time_input('Commodity Close', datetime.time(23, 30))
   with ind_col4:
     st.date_input("BNF Exp",st.session_state['bnf_expiry_day'])
     st.date_input("NF Exp",st.session_state['nf_expiry_day'])
