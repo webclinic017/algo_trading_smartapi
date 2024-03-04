@@ -466,7 +466,7 @@ def get_trade_info(df):
   elif df['Time Frame'][0]=="1m" or df['Time Frame'][0]=="ONE MINUTE" or df['Time Frame'][0]=="1min": df['Time Frame']="1m";time_frame="1m"
   time_frame=df['Time Frame'][0]
   Symbol=df['Symbol'][0]
-  for i in range(0,len(df)):
+  for i in range(len(df)-5,len(df)):
     try:
       #df['Date'][i]=df['Datetime'][i].strftime('%Y.%m.%d')
       if df['Close'][i-1]<=df['Supertrend'][i-1] and df['Close'][i]> df['Supertrend'][i]: df['ST_7_3 Trade'][i]="Buy"
@@ -1019,6 +1019,10 @@ with tab4:
         target_point=st.number_input(label="Target",min_value=5, max_value=100, value=50, step=None)
   with ind_col3:
     lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
+    market_open = st.time_input('Start Time', datetime.time(9, 20))
+    intraday_close = st.time_input('Intraday Close', datetime.time(14, 50))
+    market_close = st.time_input('Market Close', datetime.time(15, 30))
+    comm_close = st.time_input('Commodity Close', datetime.time(23, 30))
   with ind_col4:
     st.date_input("BNF Exp",st.session_state['bnf_expiry_day'])
     st.date_input("NF Exp",st.session_state['nf_expiry_day'])
