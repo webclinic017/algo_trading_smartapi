@@ -957,7 +957,7 @@ def loop_code():
       if now > marketopen and now <comm_day_end and now.minute%5==0:future_trade()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       recheck_login()
-      last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']}")
+      last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
     except Exception as e:
