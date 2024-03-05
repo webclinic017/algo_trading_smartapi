@@ -472,50 +472,51 @@ def get_trade_info(df):
       if df['Close'][i-1]<=df['Supertrend'][i-1] and df['Close'][i]> df['Supertrend'][i]: df['ST_7_3 Trade'][i]="Buy"
       elif df['Close'][i-1]>=df['Supertrend'][i-1] and df['Close'][i]< df['Supertrend'][i]: df['ST_7_3 Trade'][i]="Sell"
 
-      if df['MACD'][i]>df['MACD signal'][i] and df['MACD'][i-1]< df['MACD signal'][i-1]: df['MACD Trade'][i]="Buy"
-      elif df['MACD'][i]<df['MACD signal'][i] and df['MACD'][i-1]> df['MACD signal'][i-1]: df['MACD Trade'][i]="Sell"
-
-      if df['Close'][i-1]<=df['PSAR'][i-1] and df['Close'][i]> df['PSAR'][i]: df['PSAR Trade'][i]="Buy"
-      elif df['Close'][i-1]>=df['PSAR'][i-1] and df['Close'][i]< df['PSAR'][i]: df['PSAR Trade'][i]="Sell"
-
-      if df['PLUS_DI'][i-1]<=df['MINUS_DI'][i-1] and df['PLUS_DI'][i]> df['MINUS_DI'][i]: df['DI Trade'][i]="Buy"
-      elif df['PLUS_DI'][i-1]>=df['MINUS_DI'][i-1] and df['PLUS_DI'][i]< df['MINUS_DI'][i]: df['DI Trade'][i]="Sell"
-
-      if df['MA_50'][i-1]<=df['MA_200'][i-1] and df['MA_50'][i]> df['MA_200'][i]: df['MA Trade'][i]="Buy"
-      elif df['MA_50'][i-1]>=df['MA_200'][i-1] and df['MA_50'][i]< df['MA_200'][i]: df['MA Trade'][i]="Sell"
-
-      if df['EMA_12'][i-1]<=df['EMA_26'][i-1] and df['EMA_12'][i]> df['EMA_26'][i]: df['EMA Trade'][i]="Buy"
-      elif df['EMA_12'][i-1]>=df['EMA_26'][i-1] and df['EMA_12'][i]< df['EMA_26'][i]: df['EMA Trade'][i]="Sell"
-
-      if df['EMA_5'][i-1]<=df['EMA_7'][i-1] and df['EMA_5'][i]> df['EMA_7'][i]: df['EMA_5_7 Trade'][i]="Buy"
-      elif df['EMA_5'][i-1]>=df['EMA_7'][i-1] and df['EMA_5'][i]< df['EMA_7'][i]: df['EMA_5_7 Trade'][i]="Sell"
-
-      if df['Close'][i-1]< df['MA_21'][i-1] and df['Close'][i]> df['MA_21'][i]: df['MA 21 Trade'][i]="Buy"
-      elif df['Close'][i-1]> df['MA_21'][i-1] and df['Close'][i]< df['MA_21'][i]: df['MA 21 Trade'][i]="Sell"
-
       if df['Close'][i-1]< df['Supertrend_10_2'][i-1] and df['Close'][i]> df['Supertrend_10_2'][i]: df['ST_10_2 Trade'][i]="Buy"
       elif df['Close'][i-1]> df['Supertrend_10_2'][i-1] and df['Close'][i]< df['Supertrend_10_2'][i]: df['ST_10_2 Trade'][i]="Sell"
 
       if df['Close'][i-1]< df['Supertrend_10_1'][i-1] and df['Close'][i]> df['Supertrend_10_1'][i]: df['ST_10_1 Trade'][i]="Buy"
       elif df['Close'][i-1]> df['Supertrend_10_1'][i-1] and df['Close'][i]< df['Supertrend_10_1'][i]: df['ST_10_1 Trade'][i]="Sell"
 
-      if df['HMA_21'][i-1]< df['HMA_55'][i-1] and df['HMA_21'][i]> df['HMA_55'][i]: df['HMA Trade'][i]="Buy"
-      elif df['HMA_21'][i-1]> df['HMA_55'][i-1] and df['HMA_21'][i]< df['HMA_55'][i]: df['HMA Trade'][i]="Sell"
+      #if df['MACD'][i]>df['MACD signal'][i] and df['MACD'][i-1]< df['MACD signal'][i-1]: df['MACD Trade'][i]="Buy"
+      #elif df['MACD'][i]<df['MACD signal'][i] and df['MACD'][i-1]> df['MACD signal'][i-1]: df['MACD Trade'][i]="Sell"
 
-      if int(df['RSI'][i])>=60 and int(df['RSI'][i-1]) < 60 : df['RSI_60 Trade'][i]="Buy"
+      #if df['Close'][i-1]<=df['PSAR'][i-1] and df['Close'][i]> df['PSAR'][i]: df['PSAR Trade'][i]="Buy"
+      #elif df['Close'][i-1]>=df['PSAR'][i-1] and df['Close'][i]< df['PSAR'][i]: df['PSAR Trade'][i]="Sell"
 
-      if int(df['RSI'][i])>=60 or int(df['RSI'][i])<=40:
-        if df['Close'][i-1]<df['EMA_High'][i-1] and df['Close'][i] > df['EMA_High'][i]: df['EMA_High_Low Trade'][i]="Buy"
-        if df['Close'][i-1]>df['EMA_Low'][i-1] and df['Close'][i]<df['EMA_Low'][i]: df['EMA_High_Low Trade'][i]="Sell"
+      #if df['PLUS_DI'][i-1]<=df['MINUS_DI'][i-1] and df['PLUS_DI'][i]> df['MINUS_DI'][i]: df['DI Trade'][i]="Buy"
+      #elif df['PLUS_DI'][i-1]>=df['MINUS_DI'][i-1] and df['PLUS_DI'][i]< df['MINUS_DI'][i]: df['DI Trade'][i]="Sell"
 
-      if (df['Close'][i-1]<df['Open'][i-1] and df['Close'][i]< df['Open'][i] and
-        df['Close'][i]< df['Supertrend_10_2'][i] and df['RSI'][i]<=40 and df['VWAP'][i]>df['Close'][i] and
-        df['Close'][i]<df['WMA_20'][i] and df['Volume'][i]>1000):
-        df['Two Candle Theory'][i]='Sell'
-      elif (df['Close'][i-1] > df['Open'][i-1] and df['Close'][i] > df['Open'][i] and
-        df['Close'][i] > df['Supertrend_10_2'][i] and df['RSI'][i] >= 50 and df['VWAP'][i]<df['Close'][i] and
-        df['Close'][i]>df['WMA_20'][i] and df['Volume'][i]>1000):
-        df['Two Candle Theory'][i]='Buy'
+      #if df['MA_50'][i-1]<=df['MA_200'][i-1] and df['MA_50'][i]> df['MA_200'][i]: df['MA Trade'][i]="Buy"
+      #elif df['MA_50'][i-1]>=df['MA_200'][i-1] and df['MA_50'][i]< df['MA_200'][i]: df['MA Trade'][i]="Sell"
+
+      #if df['EMA_12'][i-1]<=df['EMA_26'][i-1] and df['EMA_12'][i]> df['EMA_26'][i]: df['EMA Trade'][i]="Buy"
+      #elif df['EMA_12'][i-1]>=df['EMA_26'][i-1] and df['EMA_12'][i]< df['EMA_26'][i]: df['EMA Trade'][i]="Sell"
+
+      #if df['EMA_5'][i-1]<=df['EMA_7'][i-1] and df['EMA_5'][i]> df['EMA_7'][i]: df['EMA_5_7 Trade'][i]="Buy"
+      #elif df['EMA_5'][i-1]>=df['EMA_7'][i-1] and df['EMA_5'][i]< df['EMA_7'][i]: df['EMA_5_7 Trade'][i]="Sell"
+
+      #if df['Close'][i-1]< df['MA_21'][i-1] and df['Close'][i]> df['MA_21'][i]: df['MA 21 Trade'][i]="Buy"
+      #elif df['Close'][i-1]> df['MA_21'][i-1] and df['Close'][i]< df['MA_21'][i]: df['MA 21 Trade'][i]="Sell"
+
+      
+      #if df['HMA_21'][i-1]< df['HMA_55'][i-1] and df['HMA_21'][i]> df['HMA_55'][i]: df['HMA Trade'][i]="Buy"
+      #elif df['HMA_21'][i-1]> df['HMA_55'][i-1] and df['HMA_21'][i]< df['HMA_55'][i]: df['HMA Trade'][i]="Sell"
+
+      #if int(df['RSI'][i])>=60 and int(df['RSI'][i-1]) < 60 : df['RSI_60 Trade'][i]="Buy"
+
+      #if int(df['RSI'][i])>=60 or int(df['RSI'][i])<=40:
+      #  if df['Close'][i-1]<df['EMA_High'][i-1] and df['Close'][i] > df['EMA_High'][i]: df['EMA_High_Low Trade'][i]="Buy"
+      #  if df['Close'][i-1]>df['EMA_Low'][i-1] and df['Close'][i]<df['EMA_Low'][i]: df['EMA_High_Low Trade'][i]="Sell"
+
+      #if (df['Close'][i-1]<df['Open'][i-1] and df['Close'][i]< df['Open'][i] and
+      #  df['Close'][i]< df['Supertrend_10_2'][i] and df['RSI'][i]<=40 and df['VWAP'][i]>df['Close'][i] and
+      #  df['Close'][i]<df['WMA_20'][i] and df['Volume'][i]>1000):
+      #  df['Two Candle Theory'][i]='Sell'
+      #elif (df['Close'][i-1] > df['Open'][i-1] and df['Close'][i] > df['Open'][i] and
+      #  df['Close'][i] > df['Supertrend_10_2'][i] and df['RSI'][i] >= 50 and df['VWAP'][i]<df['Close'][i] and
+      #  df['Close'][i]>df['WMA_20'][i] and df['Volume'][i]>1000):
+      #  df['Two Candle Theory'][i]='Buy'
 
       RSI=df['RSI'][i];          ST=df['ST_7_3 Trade'][i]
       MACD=df['MACD Trade'][i];  EMA=df['EMA Trade'][i]
@@ -536,8 +537,8 @@ def get_trade_info(df):
               df['Trade End'][i]="Sell"
     except Exception as e:
       pass
-  df['ADX']=df['ADX'].round(decimals = 2)
-  df['ADX']= df['ADX'].astype(str)
+  #df['ADX']=df['ADX'].round(decimals = 2)
+  #df['ADX']= df['ADX'].astype(str)
   df['Atr']=df['Atr'].round(decimals = 2)
   df['Atr']= df['Atr'].astype(str)
   df['RSI']=df['RSI'].round(decimals = 2)
@@ -572,46 +573,46 @@ def get_trade_info(df):
 def calculate_indicator(df):
   try:
     df['RSI']=pdta.rsi(df['Close'],timeperiod=14)
-    df['UBB']=pdta.bbands(df['Close'],length=20, std=2, ddof=0)['BBU_20_2.0']
-    df['MBB']=pdta.bbands(df['Close'],length=20, std=2, ddof=0)['BBM_20_2.0']
-    df['LBB']=pdta.bbands(df['Close'],length=20, std=2, ddof=0)['BBL_20_2.0']
-    df['MACD']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACD_12_26_9']
-    df['MACD signal']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACDs_12_26_9']
-    df['Macdhist']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACDh_12_26_9']
     df['Supertrend']=pdta.supertrend(high=df['High'],low=df['Low'],close=df['Close'],length=7,multiplier=3)['SUPERT_7_3.0']
     df['Supertrend_10_2']=pdta.supertrend(high=df['High'],low=df['Low'],close=df['Close'],length=10,multiplier=2)['SUPERT_10_2.0']
     df['Supertrend_10_1']=pdta.supertrend(high=df['High'],low=df['Low'],close=df['Close'],length=10,multiplier=1)['SUPERT_10_1.0']
-    df['Supertrend_10_4']=pdta.supertrend(high=df['High'],low=df['Low'],close=df['Close'],length=10,multiplier=4)['SUPERT_10_4.0']
-    df['Supertrend_10_8']=pdta.supertrend(high=df['High'],low=df['Low'],close=df['Close'],length=10,multiplier=8)['SUPERT_10_8.0']
-    df['PSAR']=pdta.psar(high=df['High'],low=df['Low'],acceleration=0.02, maximum=0.2)['PSARl_0.02_0.2']
-    df['ADX']=pdta.adx(df['High'],df['Low'],df['Close'],14)['ADX_14']
-    df['MINUS_DI']=pdta.adx(df['High'],df['Low'],df['Close'],14)['DMN_14']
-    df['PLUS_DI']=pdta.adx(df['High'],df['Low'],df['Close'],14)['DMP_14']
-    df['MA_200']=df['Close'].rolling(200).mean()
-    df['MA_50']=df['Close'].rolling(50).mean()
-    df['EMA_12']=pdta.ema(df['Close'],length=12)
-    df['EMA_26']=pdta.ema(df['Close'],length=26)
-    df['EMA_13']=pdta.ema(df['Close'],length=13)
-    df['EMA_5']=pdta.ema(df['Close'],length=5)
-    df['EMA_7']=pdta.ema(df['Close'],length=7)
-    df['MA_1']=df['Close'].rolling(1).mean()
-    df['MA_2']=df['Close'].rolling(2).mean()
-    df['MA_3']=df['Close'].rolling(3).mean()
-    df['MA_4']=df['Close'].rolling(4).mean()
-    df['MA_5']=df['Close'].rolling(5).mean()
-    df['MA_6']=df['Close'].rolling(6).mean()
-    df['MA_7']=df['Close'].rolling(7).mean()
-    df['MA_8']=df['Close'].rolling(8).mean()
-    df['MA_9']=df['Close'].rolling(9).mean()
-    df['MA_10']=df['Close'].rolling(10).mean()
-    df['MA_21']=pdta.ema(df['Close'],length=21)
-    df['WMA_20']=pdta.wma(df['Close'],length=20)
     df['Atr']=pdta.atr(high=df['High'], low=df['Low'], close=df['Close'], length=14)
-    df['HMA_21']=pdta.hma(df['Close'],length=21)
-    df['HMA_55']=pdta.hma(df['Close'],length=55)
-    df['RSI_MA']=df['RSI'].rolling(14).mean()
-    df['EMA_High']=pdta.ema(df['High'],length=21)
-    df['EMA_Low']=pdta.ema(df['Low'],length=21)
+    #df['UBB']=pdta.bbands(df['Close'],length=20, std=2, ddof=0)['BBU_20_2.0']
+    #df['MBB']=pdta.bbands(df['Close'],length=20, std=2, ddof=0)['BBM_20_2.0']
+    #df['LBB']=pdta.bbands(df['Close'],length=20, std=2, ddof=0)['BBL_20_2.0']
+    #df['MACD']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACD_12_26_9']
+    #df['MACD signal']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACDs_12_26_9']
+    #df['Macdhist']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACDh_12_26_9']
+    #df['Supertrend_10_4']=pdta.supertrend(high=df['High'],low=df['Low'],close=df['Close'],length=10,multiplier=4)['SUPERT_10_4.0']
+    #df['Supertrend_10_8']=pdta.supertrend(high=df['High'],low=df['Low'],close=df['Close'],length=10,multiplier=8)['SUPERT_10_8.0']
+    #df['PSAR']=pdta.psar(high=df['High'],low=df['Low'],acceleration=0.02, maximum=0.2)['PSARl_0.02_0.2']
+    #df['ADX']=pdta.adx(df['High'],df['Low'],df['Close'],14)['ADX_14']
+    #df['MINUS_DI']=pdta.adx(df['High'],df['Low'],df['Close'],14)['DMN_14']
+    #df['PLUS_DI']=pdta.adx(df['High'],df['Low'],df['Close'],14)['DMP_14']
+    #df['MA_200']=df['Close'].rolling(200).mean()
+    #df['MA_50']=df['Close'].rolling(50).mean()
+    #df['EMA_12']=pdta.ema(df['Close'],length=12)
+    #df['EMA_26']=pdta.ema(df['Close'],length=26)
+    #df['EMA_13']=pdta.ema(df['Close'],length=13)
+    #df['EMA_5']=pdta.ema(df['Close'],length=5)
+    #df['EMA_7']=pdta.ema(df['Close'],length=7)
+    #df['MA_1']=df['Close'].rolling(1).mean()
+    #df['MA_2']=df['Close'].rolling(2).mean()
+    #df['MA_3']=df['Close'].rolling(3).mean()
+    #df['MA_4']=df['Close'].rolling(4).mean()
+    #df['MA_5']=df['Close'].rolling(5).mean()
+    #df['MA_6']=df['Close'].rolling(6).mean()
+    #df['MA_7']=df['Close'].rolling(7).mean()
+    #df['MA_8']=df['Close'].rolling(8).mean()
+    #df['MA_9']=df['Close'].rolling(9).mean()
+    #df['MA_10']=df['Close'].rolling(10).mean()
+    #df['MA_21']=pdta.ema(df['Close'],length=21)
+    #df['WMA_20']=pdta.wma(df['Close'],length=20)
+    #df['HMA_21']=pdta.hma(df['Close'],length=21)
+    #df['HMA_55']=pdta.hma(df['Close'],length=55)
+    #df['RSI_MA']=df['RSI'].rolling(14).mean()
+    #df['EMA_High']=pdta.ema(df['High'],length=21)
+    #df['EMA_Low']=pdta.ema(df['Low'],length=21)
     #df = df.round(decimals=2)
     df=get_trade_info(df)
     return df
