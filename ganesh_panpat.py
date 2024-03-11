@@ -67,6 +67,9 @@ user=st.secrets["user"]
 st.session_state['recheck']="-"
 st.session_state['market_open']="Open"
 st.session_state['options_trade_list']=[]
+st.session_state['NIFTY_Trade']="-"
+st.session_state['BANKNIFTY_Trade']="-"
+st.session_state['SENSEX_Trade']="-"
 #Angel Login
 def angel_login():
   username=st.secrets["username"]
@@ -765,36 +768,38 @@ def get_near_options(symbol,index_ltp,symbol_expiry):
   
 def trade_near_options(time_frame):
   for symbol in ['NIFTY','BANKNIFTY','SENSEX']:
-    index_ltp=get_ltp_price(symbol)
-    if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
-    elif symbol=="BANKNIFTY":symbol_expiry=st.session_state['bnf_expiry_day']
-    elif symbol=="SENSEX":symbol_expiry=st.session_state['sensex_expiry_day']
-    else:symbol_expiry="-"
-    option_list=get_near_options(symbol,index_ltp,symbol_expiry)
-    for i in range(0,len(option_list)):
-      symbol_name=option_list['symbol'].iloc[i]
-      token_symbol=option_list['token'].iloc[i]
-      exch_seg=option_list['exch_seg'].iloc[i]
-      opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
-      information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
-                'Symbol':symbol_name,
-                'Datetime':str(opt_data['Datetime'].values[-1]),
-                'Close':opt_data['Close'].values[-1],
-                'Indicator':opt_data['Indicator'].values[-1],
-                'Trade':opt_data['Trade'].values[-1],
-                'Trade End':opt_data['Trade End'].values[-1],
-                'Supertrend':opt_data['Supertrend'].values[-1],
-                'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
-                'RSI':opt_data['RSI'].values[-1]}
-      st.session_state['options_trade_list'].append(information)
-      if (opt_data['ST_7_3 Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy"):
-        strike_symbol=option_list.iloc[i]
-        stop_loss=int(float(opt_data['Close'].values[-1]*(1-(sl_point/100))))
-        target_price=int(float(opt_data['Close'].values[-1]*(1+(target_point/100))))
-        indicator =opt_data['Indicator'].values[-1]+":"
-        strategy=indicator + " (" +str(stop_loss)+":"+str(target_price)+')'
-        buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
-        break
+    if st.session_state[symbol+'_Trade']=="-"
+      index_ltp=get_ltp_price(symbol)
+      if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
+      elif symbol=="BANKNIFTY":symbol_expiry=st.session_state['bnf_expiry_day']
+      elif symbol=="SENSEX":symbol_expiry=st.session_state['sensex_expiry_day']
+      else:symbol_expiry="-"
+      option_list=get_near_options(symbol,index_ltp,symbol_expiry)
+      for i in range(0,len(option_list)):
+        symbol_name=option_list['symbol'].iloc[i]
+        token_symbol=option_list['token'].iloc[i]
+        exch_seg=option_list['exch_seg'].iloc[i]
+        opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
+        information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+                  'Symbol':symbol_name,
+                  'Datetime':str(opt_data['Datetime'].values[-1]),
+                  'Close':opt_data['Close'].values[-1],
+                  'Indicator':opt_data['Indicator'].values[-1],
+                  'Trade':opt_data['Trade'].values[-1],
+                  'Trade End':opt_data['Trade End'].values[-1],
+                  'Supertrend':opt_data['Supertrend'].values[-1],
+                  'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
+                  'RSI':opt_data['RSI'].values[-1]}
+        st.session_state['options_trade_list'].append(information)
+        st.session_state[symbol+'_Trade']=opt_data['Trade'].values[-1]
+        if (opt_data['ST_7_3 Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy"):
+          strike_symbol=option_list.iloc[i]
+          stop_loss=int(float(opt_data['Close'].values[-1]*(1-(sl_point/100))))
+          target_price=int(float(opt_data['Close'].values[-1]*(1+(target_point/100))))
+          indicator =opt_data['Indicator'].values[-1]+":"
+          strategy=indicator + " (" +str(stop_loss)+":"+str(target_price)+')'
+          buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
+          break
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
 
 def is_within_20_minute_gap(target_time):
@@ -848,6 +853,7 @@ def index_trade(symbol,interval):
               'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],
               'RSI':fut_data['RSI'].values[-1]}
   st.session_state['options_trade_list'].append(information)
+  st.session_state[symbol +"_Trade"]=trade
   return fut_data.tail(1),trade,trade_end
 
 def closing_trade():
