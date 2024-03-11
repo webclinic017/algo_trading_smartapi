@@ -768,7 +768,7 @@ def get_near_options(symbol,index_ltp,symbol_expiry):
   
 def trade_near_options(time_frame):
   for symbol in ['NIFTY','BANKNIFTY','SENSEX']:
-    if st.session_state[symbol+'_Trade']=="-"
+    if st.session_state[symbol+'_Trade']=="-":
       index_ltp=get_ltp_price(symbol)
       if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
       elif symbol=="BANKNIFTY":symbol_expiry=st.session_state['bnf_expiry_day']
