@@ -825,27 +825,29 @@ def is_within_20_minute_gap(target_time):
 def future_trade():
   token_df=st.session_state['fut_list']
   for symbol in fut_list:
-    token_details=token_df[(token_df['name'] == symbol)].sort_values(by=['expiry'], ascending=True).iloc[0]
-    fut_data=get_historical_data(symbol=token_details['symbol'],interval='5m',token=token_details['token'],exch_seg=token_details['exch_seg'],candle_type="NORMAL")
-    trade=str(fut_data['Trade'].values[-1])
-    if trade!="-" and is_within_20_minute_gap(fut_data.iloc[-1].name):
-      indicator_strategy=fut_data['Indicator'].values[-1]
-      indexLtp=fut_data['Close'].values[-1]
-      interval_yf=fut_data['Time Frame'].values[-1]
-      if trade=="Buy" : buy_option(token_details,indicator_strategy,'5m')
-      elif trade=="Sell" : buy_option(token_details,indicator_strategy,'5m')
-    trade_end=str(fut_data['Trade End'].values[-1])
-    information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
-              'Symbol':symbol,
-              'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
-              'Indicator':fut_data['Indicator'].values[-1],
-              'Trade':fut_data['Trade'].values[-1],
-              'Trade End':fut_data['Trade End'].values[-1],
-              'Supertrend':fut_data['Supertrend'].values[-1],
-              'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],
-              'RSI':fut_data['RSI'].values[-1]}
-    st.session_state['options_trade_list'].append(information)
-    log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+    fut_token_details=token_df[(token_df['name'] == symbol)].sort_values(by=['expiry'], ascending=True)
+    for i in range(0,len(fut_token_details)):
+      token_details=fut_token_details.iloc[i]
+      fut_data=get_historical_data(symbol=token_details['symbol'],interval='5m',token=token_details['token'],exch_seg=token_details['exch_seg'],candle_type="NORMAL")
+      trade=str(fut_data['Trade'].values[-1])
+      if trade!="-" and is_within_20_minute_gap(fut_data.iloc[-1].name):
+        indicator_strategy=fut_data['Indicator'].values[-1]
+        indexLtp=fut_data['Close'].values[-1]
+        interval_yf=fut_data['Time Frame'].values[-1]
+        if trade=="Buy" : buy_option(token_details,indicator_strategy,'5m')
+        elif trade=="Sell" : buy_option(token_details,indicator_strategy,'5m')
+      trade_end=str(fut_data['Trade End'].values[-1])
+      information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+                'Symbol':symbol,
+                'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
+                'Indicator':fut_data['Indicator'].values[-1],
+                'Trade':fut_data['Trade'].values[-1],
+                'Trade End':fut_data['Trade End'].values[-1],
+                'Supertrend':fut_data['Supertrend'].values[-1],
+                'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],
+                'RSI':fut_data['RSI'].values[-1]}
+      st.session_state['options_trade_list'].append(information)
+      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
   
 def index_trade(symbol,interval):
   fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
