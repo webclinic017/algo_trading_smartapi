@@ -282,6 +282,20 @@ def get_open_position():
   position_updated.text(f"Position : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)} PNL : {pnl}")
   return position,open_position
 
+def orderbook_ltp(orderbook):
+  try:
+    nfo_df = orderbook[orderbook['exchange'] =="NFO"]
+    nfo_list = nfo_df['symboltoken'].unique().tolist()
+    bfo_df = orderbook[orderbook['exchange'] =="BFO"]
+    bfo_list = bfo_df['symboltoken'].unique().tolist()
+    ltp_df=pd.DataFrame(obj.getMarketData(mode="LTP",exchangeTokens={ "NSE": ["99926000","99926009"], "NFO": nfo_list,"BFO":bfo_list})['data']['fetched'])
+    ltp_df=ltp_df[['symbolToken','ltp']]
+    orderbook = pd.merge(orderbook, ltp_df, left_on='symboltoken', right_on='symbolToken', how='inner')
+    return orderbook
+  except Exception as e:
+    orderbook['ltp']="-"
+    return orderbook
+    
 def update_price_orderbook(df):
   for j in range(0,len(df)):
     try:
@@ -315,6 +329,7 @@ def get_order_book():
       orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
       orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
       orderbook=update_price_orderbook(orderbook)
+      orderbook=orderbook_ltp(orderbook)
       pending_orders = orderbook[((orderbook['orderstatus'] != 'complete') & (orderbook['orderstatus'] != 'cancelled') &
                               (orderbook['orderstatus'] != 'rejected') & (orderbook['orderstatus'] != 'AMO CANCELLED'))]
       pending_orders = pending_orders[(pending_orders['instrumenttype'] == 'OPTIDX')]
@@ -324,21 +339,21 @@ def get_order_book():
       orderbook= pd.DataFrame(columns = ['variety', 'ordertype', 'producttype', 'duration', 'price','triggerprice', 'quantity', 'disclosedquantity',
           'squareoff','stoploss', 'trailingstoploss', 'tradingsymbol', 'transactiontype','exchange', 'symboltoken', 'ordertag', 'instrumenttype',
           'strikeprice','optiontype', 'expirydate', 'lotsize', 'cancelsize', 'averageprice','filledshares', 'unfilledshares', 'orderid', 'text',
-          'status','orderstatus', 'updatetime', 'exchtime', 'exchorderupdatetime','fillid', 'filltime', 'parentorderid', 'uniqueorderid'])
+          'status','orderstatus', 'updatetime', 'exchtime', 'exchorderupdatetime','fillid', 'filltime', 'parentorderid', 'uniqueorderid','ltp'])
       pending_orders=orderbook
   except Exception as e:
     orderbook= pd.DataFrame(columns = ['variety', 'ordertype', 'producttype', 'duration', 'price','triggerprice', 'quantity', 'disclosedquantity',
           'squareoff','stoploss', 'trailingstoploss', 'tradingsymbol', 'transactiontype','exchange', 'symboltoken', 'ordertag', 'instrumenttype',
           'strikeprice','optiontype', 'expirydate', 'lotsize', 'cancelsize', 'averageprice','filledshares', 'unfilledshares', 'orderid', 'text',
-          'status','orderstatus', 'updatetime', 'exchtime', 'exchorderupdatetime','fillid', 'filltime', 'parentorderid', 'uniqueorderid'])
+          'status','orderstatus', 'updatetime', 'exchtime', 'exchorderupdatetime','fillid', 'filltime', 'parentorderid', 'uniqueorderid','ltp])
     pending_orders=orderbook
     print("Error in get_order_book",e)
   st.session_state['orderbook']=orderbook
   st.session_state['pendingorder']=pending_orders
-  n_orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']]
+  n_orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag','ltp']]
   order_datatable.dataframe(n_orderbook,hide_index=True)
   order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
-  n_pending_orders=pending_orders[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']]
+  n_pending_orders=pending_orders[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag','ltp']]
   open_order.dataframe(n_pending_orders,hide_index=True)
   open_order_updated.text(f"Pending Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
   return orderbook,pending_orders
