@@ -946,13 +946,13 @@ def sub_loop_code(now_time):
     if "SENSEX" in index_list:sensex_data,sensex_5m_trade,sensex_5m_trade_end=index_trade("SENSEX","5m")
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if 'OPT:5M' in time_frame_interval :trade_near_options('5m')
-    #fut_trade()
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
   if (now_time.minute%15==0 and 'IDX:15M' in time_frame_interval ):
     if "NIFTY" in index_list: nf_data,nf_15m_trade,nf_15m_trade_end=index_trade("NIFTY","15m")
     if "BANKNIFTY" in index_list:bnf_data,bnf_15m_trade,bnf_15m_trade_end=index_trade("BANKNIFTY","15m")
     if "SENSEX" in index_list:sensex_data,sensex_15m_trade,sensex_15m_trade_end=index_trade("SENSEX","15m")
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+  if now_time.minute%5==0:future_trade()
   return nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end
 
 def loop_code():
