@@ -825,6 +825,7 @@ def is_within_20_minute_gap(target_time):
 def future_trade():
   token_df=st.session_state['fut_list']
   for symbol in fut_list:
+    print(symbol)
     fut_token_details=token_df[(token_df['name'] == symbol)].sort_values(by=['expiry'], ascending=True)
     for i in range(0,len(fut_token_details)):
       token_details=fut_token_details.iloc[i]
