@@ -828,6 +828,7 @@ def future_trade():
     fut_token_details=token_df[(token_df['name'] == symbol)].sort_values(by=['expiry'], ascending=True)
     for i in range(0,len(fut_token_details)):
       token_details=fut_token_details.iloc[i]
+      print(token_details)
       fut_data=get_historical_data(symbol=token_details['symbol'],interval='5m',token=token_details['token'],exch_seg=token_details['exch_seg'],candle_type="NORMAL")
       trade=str(fut_data['Trade'].values[-1])
       if trade!="-" and is_within_20_minute_gap(fut_data.iloc[-1].name):
