@@ -826,7 +826,7 @@ def future_trade():
   token_df=st.session_state['fut_list']
   for symbol in fut_list:
     fut_token_details=token_df[(token_df['name'] == symbol)].sort_values(by=['expiry'], ascending=True)
-    for i in range(0,len(fut_token_details)):
+    for i in range(0,2):
       try:
         token_details=fut_token_details.iloc[i]
         fut_data=get_historical_data(symbol=token_details['symbol'],interval='5m',token=token_details['token'],exch_seg=token_details['exch_seg'],candle_type="NORMAL")
@@ -962,7 +962,7 @@ def loop_code():
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
   marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
   day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
-  comm_day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
+  comm_day_end = now.replace(hour=23, minute=30, second=0, microsecond=0)
   while now < comm_day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     try:
@@ -1086,8 +1086,7 @@ if bnf_pe:
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('BANKNIFTY',indexLtp='-')
   buy_option(pe_strike_symbol,'Manual Buy','5m')
 if close_all:
-  future_trade()
-  #closing_trade()
+  closing_trade()
 
 position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
