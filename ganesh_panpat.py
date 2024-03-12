@@ -849,7 +849,7 @@ def future_trade():
                   'RSI':fut_data['RSI'].values[-1]}
         st.session_state['options_trade_list'].append(information)
         log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-      except:pass
+      except Exception as e:pass
   
 def index_trade(symbol,interval):
   fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
@@ -1087,7 +1087,7 @@ if bnf_pe:
   buy_option(pe_strike_symbol,'Manual Buy','5m')
 if close_all:
   future_trade()
-  closing_trade()
+  #closing_trade()
 
 position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
