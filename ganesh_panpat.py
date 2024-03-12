@@ -952,7 +952,6 @@ def sub_loop_code(now_time):
     if "BANKNIFTY" in index_list:bnf_data,bnf_15m_trade,bnf_15m_trade_end=index_trade("BANKNIFTY","15m")
     if "SENSEX" in index_list:sensex_data,sensex_15m_trade,sensex_15m_trade_end=index_trade("SENSEX","15m")
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-  if now_time.minute%5==0:future_trade()
   return nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end
 
 def loop_code():
