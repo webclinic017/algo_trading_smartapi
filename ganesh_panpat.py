@@ -715,6 +715,40 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
   except Exception as e:
     print('Error in buy_option:',e)
 
+def sell_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"):
+  try:
+    option_token=symbol['token']
+    option_symbol=symbol['symbol']
+    exch_seg=symbol['exch_seg']
+    lotsize=int(symbol['lotsize'])*lots_to_trade
+    orderId=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='MARKET',price=0,
+                          variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
+    if str(orderId)=='Order placement failed':
+      buy_msg=(f'Order Failed Buy: {option_symbol} Indicator {indicator_strategy}')
+      telegram_bot_sendtext(buy_msg)
+      return
+    ltp_price=round(float(get_ltp_price(symbol=option_symbol,token=option_token,exch_seg=exch_seg)),2)
+    stop_loss=int(float(ltp_price*(1-(sl_point/100))))
+    target_price=int(float(ltp_price*(1+(target_point/100))))
+    orderbook=obj.orderBook()['data']
+    orderbook=pd.DataFrame(orderbook)
+    orders= orderbook[(orderbook['orderid'] == orderId)]
+    orders_status=orders.iloc[0]['orderstatus']
+    trade_price=orders.iloc[0]['averageprice']
+    if orders_status== 'complete' and "FUT" not in option_symbol:
+      if target_order_type=="Target":
+        place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='LIMIT',price=target_price,
+                    variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=str(orderId)+" Target order Placed")
+      else:
+        place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='STOPLOSS_LIMIT',price=stop_loss,
+                    variety='STOPLOSS',exch_seg=exch_seg,producttype='CARRYFORWARD',triggerprice=stop_loss,squareoff=stop_loss,
+                    stoploss=stop_loss, ordertag=str(orderId)+" Stop Loss order Placed")
+    buy_msg=(f'Buy: {option_symbol}\nPrice: {trade_price} LTP: {ltp_price}\n{indicator_strategy}\nTarget: {target_price} Stop Loss: {stop_loss}')
+    print(buy_msg)
+    telegram_bot_sendtext(buy_msg)
+  except Exception as e:
+    print('Error in buy_option:',e)
+    
 #Exit Position
 def exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='',producttype='CARRYFORWARD'):
   try:
@@ -836,7 +870,7 @@ def future_trade():
           indexLtp=fut_data['Close'].values[-1]
           interval_yf=fut_data['Time Frame'].values[-1]
           if trade=="Buy" : buy_option(token_details,indicator_strategy,'5m')
-          elif trade=="Sell" : buy_option(token_details,indicator_strategy,'5m')
+          elif trade=="Sell" : sell_option(token_details,indicator_strategy,'5m')
         trade_end=str(fut_data['Trade End'].values[-1])
         information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
                   'Symbol':token_details['symbol'],
