@@ -1019,6 +1019,8 @@ def loop_code():
         st.session_state['market_open']="Commodity Open..."
         st.session_state['options_trade_list']=[]
         future_trade()
+        position,open_position=get_open_position()
+        orderbook,pending_orders=get_order_book()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       recheck_login()
       last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
