@@ -1016,6 +1016,7 @@ def loop_code():
         last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
         closing_trade()
       elif now <comm_day_end and now.minute%5==0:
+        st.session_state['market_open']="Commodity Open..."
         st.session_state['options_trade_list']=[]
         future_trade()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
