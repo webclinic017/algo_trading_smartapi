@@ -567,7 +567,7 @@ def get_trade_info(df):
   elif "FUT" in Symbol: symbol_type= "FUT"
   else: symbol_type= "OPT"
   df['Indicator']=(symbol_type+" "+df['Trade']+" "+df['Time Frame']+":"+" ST_7_3:"+df['ST_7_3 Trade']+
-                   " ST_10_2:"+df['ST_10_2 Trade']+ " ST_10_1:"+df['ST_10_1 Trade'])
+                   " ST_10_2:"+df['ST_10_2 Trade']+ " ST_10_1:"+df['ST_10_1 Trade']+ " MACD:"+df['MACD Trade'])
   df['RSI']= df['RSI'].astype(float)
   df['Indicator'] = df['Indicator'].str.replace(' ST_7_3:-','')
   df['Indicator'] = df['Indicator'].str.replace(' EMA:-','')
@@ -990,6 +990,7 @@ def sub_loop_code(now_time):
     if "BANKNIFTY" in index_list:bnf_data,bnf_15m_trade,bnf_15m_trade_end=index_trade("BANKNIFTY","15m")
     if "SENSEX" in index_list:sensex_data,sensex_15m_trade,sensex_15m_trade_end=index_trade("SENSEX","15m")
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+  if (now_time.minute%5==0 and 'IDX:5M' in time_frame_interval ):future_trade()
   return nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end
 
 def loop_code():
@@ -1010,11 +1011,13 @@ def loop_code():
         if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
           close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
         if now.minute%5==0: trail_sl()
-      elif now > marketclose:
+      elif now > marketopen and now < day_end:
         st.session_state['market_open']="Intraday Closed..."
         last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
         closing_trade()
-      if now > marketopen and now <comm_day_end and now.minute%5==0:future_trade()
+      elif now <comm_day_end and now.minute%5==0:
+        st.session_state['options_trade_list']=[]
+        future_trade()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       recheck_login()
       last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
