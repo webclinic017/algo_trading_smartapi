@@ -496,8 +496,8 @@ def get_trade_info(df):
       if df['Close'][i-1]< df['Supertrend_10_1'][i-1] and df['Close'][i]> df['Supertrend_10_1'][i]: df['ST_10_1 Trade'][i]="Buy"
       elif df['Close'][i-1]> df['Supertrend_10_1'][i-1] and df['Close'][i]< df['Supertrend_10_1'][i]: df['ST_10_1 Trade'][i]="Sell"
 
-      #if df['MACD'][i]>df['MACD signal'][i] and df['MACD'][i-1]< df['MACD signal'][i-1]: df['MACD Trade'][i]="Buy"
-      #elif df['MACD'][i]<df['MACD signal'][i] and df['MACD'][i-1]> df['MACD signal'][i-1]: df['MACD Trade'][i]="Sell"
+      if df['MACD'][i]>df['MACD signal'][i] and df['MACD'][i-1]< df['MACD signal'][i-1]: df['MACD Trade'][i]="Buy"
+      elif df['MACD'][i]<df['MACD signal'][i] and df['MACD'][i-1]> df['MACD signal'][i-1]: df['MACD Trade'][i]="Sell"
 
       #if df['Close'][i-1]<=df['PSAR'][i-1] and df['Close'][i]> df['PSAR'][i]: df['PSAR Trade'][i]="Buy"
       #elif df['Close'][i-1]>=df['PSAR'][i-1] and df['Close'][i]< df['PSAR'][i]: df['PSAR Trade'][i]="Sell"
@@ -545,12 +545,14 @@ def get_trade_info(df):
       
       if ((ST_10_1=="Buy" and 'ST_10_1 Trade' in five_buy_indicator) or 
           (ST_10_2=="Buy" and 'ST_10_2 Trade' in five_buy_indicator) or 
-          (ST=="Buy" and 'St Trade' in five_buy_indicator)):
+          (ST=="Buy" and 'St Trade' in five_buy_indicator) or
+          (MACD=="Buy" and 'MACD Trade' in five_buy_indicator)):
             df['Trade'][i]="Buy"
             df['Trade End'][i]="Buy"
       elif ((ST_10_1=="Sell" and 'ST_10_1 Trade' in five_buy_indicator) or 
             (ST_10_2=="Sell" and 'ST_10_2 Trade' in five_buy_indicator) or 
-            (ST=="Sell" and 'St Trade' in five_buy_indicator)):
+            (ST=="Sell" and 'St Trade' in five_buy_indicator) or
+            (MACD=="Sell" and 'MACD Trade' in five_buy_indicator)):
               df['Trade'][i]="Sell"
               df['Trade End'][i]="Sell"
     except Exception as e:
@@ -598,9 +600,9 @@ def calculate_indicator(df):
     #df['UBB']=pdta.bbands(df['Close'],length=20, std=2, ddof=0)['BBU_20_2.0']
     #df['MBB']=pdta.bbands(df['Close'],length=20, std=2, ddof=0)['BBM_20_2.0']
     #df['LBB']=pdta.bbands(df['Close'],length=20, std=2, ddof=0)['BBL_20_2.0']
-    #df['MACD']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACD_12_26_9']
-    #df['MACD signal']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACDs_12_26_9']
-    #df['Macdhist']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACDh_12_26_9']
+    df['MACD']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACD_12_26_9']
+    df['MACD signal']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACDs_12_26_9']
+    df['Macdhist']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACDh_12_26_9']
     #df['Supertrend_10_4']=pdta.supertrend(high=df['High'],low=df['Low'],close=df['Close'],length=10,multiplier=4)['SUPERT_10_4.0']
     #df['Supertrend_10_8']=pdta.supertrend(high=df['High'],low=df['Low'],close=df['Close'],length=10,multiplier=8)['SUPERT_10_8.0']
     #df['PSAR']=pdta.psar(high=df['High'],low=df['Low'],acceleration=0.02, maximum=0.2)['PSARl_0.02_0.2']
@@ -1066,7 +1068,7 @@ with tab4:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX'],['NIFTY','BANKNIFTY','SENSEX'])
     fut_list=st.multiselect('Select Future',['SILVERMIC','SILVER'],['SILVERMIC'])
     time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M','IDX:15M','OPT:5M'])
-    five_buy_indicator = st.multiselect('Index Indicator',indicator_list,['St Trade', 'ST_10_2 Trade'])
+    five_buy_indicator = st.multiselect('Index Indicator',indicator_list,['St Trade', 'ST_10_2 Trade','MACD Trade'])
     option_buy_indicator = st.multiselect('Option Indicator',indicator_list,['St Trade', 'ST_10_2 Trade'])
     #three_buy_indicator = st.multiselect('Three Minute Indicator',indicator_list,[])
     #one_buy_indicator = st.multiselect('One Minute Indicator',indicator_list,[])
