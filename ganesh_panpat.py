@@ -1015,6 +1015,7 @@ def loop_code():
         future_trade()
       position,open_position=get_open_position()
       orderbook,pending_orders=get_order_book()
+      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
       if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
         close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
       if now.minute%5==0: trail_sl()
