@@ -1006,21 +1006,18 @@ def loop_code():
       last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
       if now > marketopen and now < marketclose:
         nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end=sub_loop_code(now)
-        position,open_position=get_open_position()
-        orderbook,pending_orders=get_order_book()
-        if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
-          close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
-        if now.minute%5==0: trail_sl()
-      elif now > marketopen and now < day_end:
+      elif now > marketclose and now < day_end:
         st.session_state['market_open']="Intraday Closed..."
-        last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
         closing_trade()
       elif now <comm_day_end and now.minute%5==0:
         st.session_state['market_open']="Commodity Open..."
         st.session_state['options_trade_list']=[]
         future_trade()
-        position,open_position=get_open_position()
-        orderbook,pending_orders=get_order_book()
+      position,open_position=get_open_position()
+      orderbook,pending_orders=get_order_book()
+      if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
+        close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
+      if now.minute%5==0: trail_sl()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       recheck_login()
       last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
