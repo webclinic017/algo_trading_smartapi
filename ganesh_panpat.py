@@ -1009,7 +1009,7 @@ def loop_code():
       elif now > marketclose and now < day_end:
         st.session_state['market_open']="Intraday Closed..."
         closing_trade()
-      elif now <comm_day_end and now.minute%5==0:
+      elif now > marketopen and  now <comm_day_end and now.minute%5==0:
         st.session_state['market_open']="Commodity Open..."
         st.session_state['options_trade_list']=[]
         future_trade()
