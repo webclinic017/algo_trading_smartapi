@@ -288,7 +288,9 @@ def orderbook_ltp(orderbook):
     nfo_list = nfo_df['symboltoken'].unique().tolist()
     bfo_df = orderbook[orderbook['exchange'] =="BFO"]
     bfo_list = bfo_df['symboltoken'].unique().tolist()
-    ltp_df=pd.DataFrame(obj.getMarketData(mode="LTP",exchangeTokens={ "NSE": ["99926000","99926009"], "NFO": nfo_list,"BFO":bfo_list})['data']['fetched'])
+    mcx_df = orderbook[orderbook['exchange'] =="MCX"]
+    mcx_list = mcx_df['symboltoken'].unique().tolist()
+    ltp_df=pd.DataFrame(obj.getMarketData(mode="LTP",exchangeTokens={ "NSE": ["99926000","99926009"], "NFO": nfo_list,"BFO":bfo_list,"MCX":mcx_list})['data']['fetched'])
     ltp_df=ltp_df[['symbolToken','ltp']]
     orderbook = pd.merge(orderbook, ltp_df, left_on='symboltoken', right_on='symbolToken', how='inner')
     return orderbook
