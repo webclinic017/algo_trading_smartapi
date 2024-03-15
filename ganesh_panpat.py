@@ -329,7 +329,7 @@ def get_order_book():
       orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
       orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
       orderbook=update_price_orderbook(orderbook)
-      orderbook=orderbook_ltp(orderbook)
+      #orderbook=orderbook_ltp(orderbook)
       pending_orders = orderbook[((orderbook['orderstatus'] != 'complete') & (orderbook['orderstatus'] != 'cancelled') &
                               (orderbook['orderstatus'] != 'rejected') & (orderbook['orderstatus'] != 'AMO CANCELLED'))]
       pending_orders = pending_orders[(pending_orders['instrumenttype'] == 'OPTIDX')]
