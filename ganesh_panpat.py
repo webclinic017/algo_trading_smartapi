@@ -1025,6 +1025,11 @@ def loop_code():
       recheck_login()
       last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
+      while now.second <50:
+        index_ltp_string.text(f"Index Ltp: {print_ltp()}")
+        now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
+        time.sleep(5)
+      now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
     except Exception as e:
       print(f"error {e}")
