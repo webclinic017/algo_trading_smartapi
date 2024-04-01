@@ -1063,7 +1063,7 @@ def loop_code():
         bnf_ltp=int(LIVE_FEED_JSON['99926009']['ltp'])
         silver_ltp=int(LIVE_FEED_JSON['256948']['ltp'])
         sensex_ltp=int(LIVE_FEED_JSON['99919000']['ltp'])
-        ltp_string=f"NIFTY:{nf_ltp}, BANKNIFTY:{bnf_ltp}, SENSEX:{sensex_ltp}, SILVER: {silver_ltp}")
+        ltp_string=f"NIFTY:{nf_ltp}, BANKNIFTY:{bnf_ltp}, SENSEX:{sensex_ltp}, SILVER: {silver_ltp}"
         index_ltp_string.text(f"Index Ltp: {ltp_string}")
         now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
         time.sleep(1)
