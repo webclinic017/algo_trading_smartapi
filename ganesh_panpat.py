@@ -11,6 +11,7 @@ st.markdown("""
 
 from SmartApi import SmartConnect
 from SmartApi import SmartWebSocket
+from SmartApi.smartWebSocketV2 import SmartWebSocketV2
 import threading; import pandas as pd
 import pandas_ta as pdta
 import json
@@ -30,7 +31,8 @@ import re
 pd.options.mode.chained_assignment = None
 warnings.filterwarnings('ignore')
 NoneType = type(None)
-
+CORRELATION_ID = 'Wdn749NDjMfh23'
+FEED_MODE = 1
 global index_trade_indicator,index_trade_end_indicator,option_indicator,option_trade_end_indicator
 global lots_to_trade,target_order_type,near_options_trade
 global bnf_5m_trade,nf_5m_trade,sensex_5m_trade,nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end
@@ -63,7 +65,7 @@ pwd=st.secrets["pwd"]
 apikey=st.secrets["apikey"]
 token=st.secrets["token"]
 user=st.secrets["user"]
-
+LIVE_FEED_JSON= {}
 st.session_state['recheck']="-"
 st.session_state['market_open']="Open"
 st.session_state['options_trade_list']=[]
@@ -94,6 +96,7 @@ def angel_login():
   logger.info('Login Sucess')
   obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
                  refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
+  sws = SmartWebSocketV2(st.session_state['access_token'], st.session_state['api_key'], user, st.session_state['feed_token'] ,max_retry_attempt=5)
   
 obj=SmartConnect(api_key=apikey)
 if 'user_name' not in st.session_state:
@@ -112,7 +115,36 @@ if 'user_name' not in st.session_state:
   logger.info('Login Sucess')
 obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
                  refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
-
+SMART_WEB = SmartWebSocketV2(st.session_state['access_token'], st.session_state['api_key'], user, st.session_state['feed_token'] ,max_retry_attempt=5)
+#websocket
+def on_data(wsapp, msg):
+    try:
+      LIVE_FEED_JSON[msg['token']] = {'ltp':msg['last_traded_price']/100}
+      st.sesstion_state['LIVE_FEED_JSON']=LIVE_FEED_JSON
+    except Exception as e: print(e)
+def on_error(wsapp, error):
+    logger.error(f"---------Connection Error {error}-----------")
+def on_close(wsapp):
+    logger.info("---------Connection Close-----------")
+def close_connection(wsapp):
+    wsapp.MAX_RETRY_ATTEMPT = 0
+    wsapp.close_connection()
+def subscribeSymbol(token_list,sws):
+    logger.info(f'Subscribe -------  {token_list}')
+    sws.subscribe(CORRELATION_ID, FEED_MODE, token_list)
+def connectFeed(sws,tokeList =None):
+    def on_open(wsapp):
+        logger.info("on open")
+        if tokeList==None:token_list = [{"exchangeType": 1,"tokens": ["99926000" ,"99926009"]},
+                                        {"exchangeType": 3,"tokens": ["99919000"]},
+                                        {"exchangeType": 5,"tokens": ["256948"]}]
+        sws.subscribe(CORRELATION_ID, FEED_MODE, token_list)
+    sws.on_open = on_open
+    sws.on_data = on_data
+    sws.on_error = on_error
+    sws.on_close = on_close
+    threading.Thread(target =sws.connect,daemon=True).start()
+connectFeed(SMART_WEB)
 if 'five_p_login' not in st.session_state:
   try:
     cred={
@@ -1026,9 +1058,15 @@ def loop_code():
       last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       while now.second <50:
-        index_ltp_string.text(f"Index Ltp: {print_ltp()}")
+        LIVE_FEED_JSON=st.sesstion_state['LIVE_FEED_JSON']
+        nf_ltp=int(LIVE_FEED_JSON['99926000']['ltp'])
+        bnf_ltp=int(LIVE_FEED_JSON['99926009']['ltp'])
+        silver_ltp=int(LIVE_FEED_JSON['256948']['ltp'])
+        sensex_ltp=int(LIVE_FEED_JSON['99919000']['ltp'])
+        ltp_string=f"NIFTY:{nf_ltp}, BANKNIFTY:{bnf_ltp}, SENSEX:{sensex_ltp}, SILVER: {silver_ltp}")
+        index_ltp_string.text(f"Index Ltp: {ltp_string}")
         now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-        time.sleep(5)
+        time.sleep(1)
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
     except Exception as e:
