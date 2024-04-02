@@ -1115,7 +1115,7 @@ with tab4:
                   'MA Trade','EMA Trade','EMA_5_7 Trade','MA 21 Trade','HMA Trade','RSI_60 Trade','EMA_High_Low Trade','Two Candle Theory']
   with ind_col1:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX'],['NIFTY','BANKNIFTY','SENSEX'])
-    fut_list=st.multiselect('Select Future',['SILVERMIC','SILVER'],['SILVERMIC'])
+    fut_list=st.multiselect('Select Future',['SILVERMIC','SILVER'],[])
     time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M','OPT:5M'])
     five_buy_indicator = st.multiselect('Index Indicator',indicator_list,['St Trade', 'ST_10_2 Trade','MACD Trade'])
     option_buy_indicator = st.multiselect('Option Indicator',indicator_list,['St Trade', 'ST_10_2 Trade'])
