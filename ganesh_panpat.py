@@ -1084,7 +1084,7 @@ last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']}")
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-tab0, tab1, tab2, tab3, tab4,tab5,tab6, tab7= st.tabs(["Log","Order Book", "Position","Open Order", "Settings","Token List","Future List",'Backtest'])
+tab0, tab1, tab2, todays_trade,tab3, tab4,tab5,tab6, tab7= st.tabs(["Log","Order Book", "Position","Todays Trade","Open Order", "Settings","Token List","Future List",'Backtest'])
 with tab0:
   col1,col2=st.columns([1,9])
   with col1:
