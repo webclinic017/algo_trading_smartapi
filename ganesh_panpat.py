@@ -944,7 +944,8 @@ def index_trade(symbol,interval):
   st.session_state['options_trade_list'].append(information)
   st.session_state[symbol +"_Trade"]=trade
   return fut_data.tail(1),trade,trade_end
-
+def get_todays_trade():
+  pass
 def closing_trade():
   position,open_position=get_open_position()
   orderbook,pending_orders=get_order_book()
@@ -1058,13 +1059,7 @@ def loop_code():
       last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       while now.second <50:
-        LIVE_FEED_JSON=st.sesstion_state['LIVE_FEED_JSON']
-        nf_ltp=int(LIVE_FEED_JSON['99926000']['ltp'])
-        bnf_ltp=int(LIVE_FEED_JSON['99926009']['ltp'])
-        silver_ltp=int(LIVE_FEED_JSON['256948']['ltp'])
-        sensex_ltp=int(LIVE_FEED_JSON['99919000']['ltp'])
-        ltp_string=f"NIFTY:{nf_ltp}, BANKNIFTY:{bnf_ltp}, SENSEX:{sensex_ltp}, SILVER: {silver_ltp}"
-        index_ltp_string.text(f"Index Ltp: {ltp_string}")
+        index_ltp_string.text(f"Index Ltp: {print_ltp()}")
         now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
         time.sleep(1)
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
