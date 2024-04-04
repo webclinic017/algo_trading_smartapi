@@ -1195,22 +1195,22 @@ with tab6:
 with tab7:
   download_btn=st.button(label="Download Weekly Data")
   if download_btn:
-  for i in ['^NSEI','^NSEBANK','^BSESN']:
-    if i=="^NSEI":
-      df,token_df_new=index_weekly_data("^NSEI",st.session_state['nf_expiry_day'])
-      st.session_state['NIFTY']=df
-      opt_df=pull_options_data(token_df_new)
-      st.session_state['NIFTY_Option']=opt_df
-    elif i=="^NSEBANK":
-      df,token_df_new=index_weekly_data("^NSEBANK",st.session_state['bnf_expiry_day'])
-      st.session_state['BANKNIFTY']=df
-      opt_df=pull_options_data(token_df_new)
-      st.session_state['BANKNIFTY_Option']=opt_df
-    elif i=="^BSESN":
-      df,token_df_new=index_weekly_data("^BSESN",st.session_state['sensex_expiry_day'])
-      st.session_state['SENSEX']=df
-      opt_df=pull_options_data(token_df_new)
-      st.session_state['SENSEX_Option']=opt_df
+    for i in ['^NSEI','^NSEBANK','^BSESN']:
+      if i=="^NSEI":
+        df,token_df_new=index_weekly_data("^NSEI",st.session_state['nf_expiry_day'])
+        st.session_state['NIFTY']=df
+        opt_df=pull_options_data(token_df_new)
+        st.session_state['NIFTY_Option']=opt_df
+      elif i=="^NSEBANK":
+        df,token_df_new=index_weekly_data("^NSEBANK",st.session_state['bnf_expiry_day'])
+        st.session_state['BANKNIFTY']=df
+        opt_df=pull_options_data(token_df_new)
+        st.session_state['BANKNIFTY_Option']=opt_df
+      elif i=="^BSESN":
+        df,token_df_new=index_weekly_data("^BSESN",st.session_state['sensex_expiry_day'])
+        st.session_state['SENSEX']=df
+        opt_df=pull_options_data(token_df_new)
+        st.session_state['SENSEX_Option']=opt_df
     if st.session_state['NIFTY']!=[]:
       fl_name="NIFTY_"+datetime.datetime.now(tz=gettz('Asia/Kolkata')).strftime("%m/%d/%y")+ ".csv"
       nifty=st.download_button(label="NIFTY",data=st.session_state['NIFTY'],file_name=fl_name,mime='text/csv',)
