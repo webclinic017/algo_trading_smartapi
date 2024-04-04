@@ -122,35 +122,6 @@ if 'user_name' not in st.session_state:
 obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
                  refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
 SMART_WEB = SmartWebSocketV2(st.session_state['access_token'], st.session_state['api_key'], user, st.session_state['feed_token'] ,max_retry_attempt=5)
-#websocket
-def on_data(wsapp, msg):
-    try:
-      LIVE_FEED_JSON[msg['token']] = {'ltp':msg['last_traded_price']/100}
-      st.session_state['LIVE_FEED_JSON']=LIVE_FEED_JSON
-    except Exception as e: print(e)
-def on_error(wsapp, error):
-    logger.error(f"---------Connection Error {error}-----------")
-def on_close(wsapp):
-    logger.info("---------Connection Close-----------")
-def close_connection(wsapp):
-    wsapp.MAX_RETRY_ATTEMPT = 0
-    wsapp.close_connection()
-def subscribeSymbol(token_list,sws):
-    logger.info(f'Subscribe -------  {token_list}')
-    sws.subscribe(CORRELATION_ID, FEED_MODE, token_list)
-def connectFeed(sws,tokeList =None):
-    def on_open(wsapp):
-        logger.info("on open")
-        if tokeList==None:token_list = [{"exchangeType": 1,"tokens": ["99926000" ,"99926009"]},
-                                        {"exchangeType": 3,"tokens": ["99919000"]},
-                                        {"exchangeType": 5,"tokens": ["256948"]}]
-        sws.subscribe(CORRELATION_ID, FEED_MODE, token_list)
-    sws.on_open = on_open
-    sws.on_data = on_data
-    sws.on_error = on_error
-    sws.on_close = on_close
-    threading.Thread(target =sws.connect,daemon=True).start()
-connectFeed(SMART_WEB)
 if 'five_p_login' not in st.session_state:
   try:
     cred={
