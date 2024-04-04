@@ -623,7 +623,7 @@ def get_trade_info(df):
   df['Indicator'] = df['Indicator'].str.replace(' EMA_H_L:-','')
   df['Indicator'] = df['Indicator'].str.replace(' Two Candle Theory:-','')
   df['Indicator'] = df['Indicator'].str.replace(' RSI_60:-','')
-  df['Indicator'] = df['Indicator'].str.replace(' TEMA_EMA_9 Trade:-','')
+  df['Indicator'] = df['Indicator'].str.replace(' TEMA_EMA_9:-','')
   df['Indicator'] = df['Indicator'].str.replace(':Buy',',')
   df['Indicator'] = df['Indicator'].str.replace(':Sell',',')
   df['Indicator'] = df['Indicator'].str.replace('3m Two Candle Theory:','2 Candle Theory:')
