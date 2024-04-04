@@ -49,12 +49,6 @@ nf_5m_trade_end="-"
 bnf_5m_trade_end="-"
 sensex_5m_trade_end="-"
 five_m_timeframe="Yes"
-if "NIFTY" not in st.session_state: st.session_state['NIFTY']=[]
-if "NIFTY_Option" not in st.session_state: st.session_state['NIFTY_Option']=[]
-if "BANKNIFTY" not in st.session_state: st.session_state['BANKNIFTY']=[]
-if "BANKNIFTY_Option" not in st.session_state: st.session_state['BANKNIFTY_Option']=[]
-if "SENSEX" not in st.session_state: st.session_state['SENSEX']=[]
-if "SENSEX_Option" not in st.session_state: st.session_state['SENSEX_Option']=[]
 
 #Telegram Msg
 def telegram_bot_sendtext(bot_message):
