@@ -1056,45 +1056,6 @@ def loop_code():
       time.sleep(60-now.second+1)
   last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} Market Closed...")
       
-
-#Download Data
-def pull_options_data(token_df_new):
-  df = pd.DataFrame()
-  to_date= datetime.datetime.now(tz=gettz('Asia/Kolkata'))+datetime.timedelta(days=1)
-  from_date = to_date - datetime.timedelta(days=8)
-  from_date_format = from_date.strftime("%Y-%m-%d %H:%M")
-  to_date_format = to_date.strftime("%Y-%m-%d %H:%M")
-  index_name=token_df_new['name'].values[0]
-  for i in range(len(token_df_new)):
-    try:
-      token=token_df_new['token'].values[i]
-      symbol=token_df_new['symbol'].values[i]
-      expiry_day=token_df_new['expiry'].values[i]
-      old_data=angel_data(token,'ONE_MINUTE','NFO',period=7)
-      old_data['Symbol']=symbol
-      old_data['Expiry']=expiry_day.strftime('%m/%d/%y')
-      old_data=old_data[['Symbol','Expiry','Date','Datetime','Open','High','Low','Close']]
-      df=pd.concat([df, old_data])
-    except Exception as e:
-      print('Error in Scan for:',symbol,e)
-  fl_name=index_name +" Options " +expiry_day.strftime('%Y_%m_%d')+ ".csv"
-  df=df.to_csv(fl_name,header=True, index=False)
-  return df
-def index_weekly_data(index_symbol,expiry_day):
-  df=get_historical_data(symbol=index_symbol,interval='1m',token="-",exch_seg="-")
-  df = df.round(decimals=2)
-  df['Expiry']=expiry_day.strftime('%m/%d/%y')
-  df['Symbol']=index_symbol
-  df=df[['Symbol','Expiry','Date','Datetime','Open','High','Low','Close']]
-  fl_name=index_symbol +"_"+expiry_day.strftime('%Y_%m_%d')+ ".csv"
-  df=df.to_csv(fl_name,header=True, index=False)
-  high=(df['High'].max()+300)*100
-  low=(df['Low'].min()-300)*100
-  token_df=st.session_state['opt_list']
-  token_df_new = token_df[(token_df['name'] == index_symbol) & (token_df['instrumenttype'] == 'OPTIDX') & (token_df['expiry'] == expiry_day)]
-  token_df_new = token_df_new[(token_df_new['strike'] >= low) & (token_df_new['strike'] <= high) ]
-  token_df_new.sort_values(by=['strike'], ascending = True, inplace=True)
-  return df,token_df_new
 #loop_code()
       
 #close of Main App
@@ -1103,7 +1064,7 @@ last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']}")
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-tab0, tab1, tab2, todays_trade,tab3, tab4,tab5,tab6, tab7= st.tabs(["Log","Order Book", "Position","Todays Trade","Open Order", "Settings","Token List","Future List",'Backtest'])
+tab0, tab1, tab2, todays_trade,tab3, tab4,tab5,tab6= st.tabs(["Log","Order Book", "Position","Todays Trade","Open Order", "Settings","Token List","Future List"])
 with tab0:
   col1,col2=st.columns([1,9])
   with col1:
@@ -1163,43 +1124,6 @@ with tab5:
 with tab6:
   fut_token_df=st.empty()
   fut_token_df=st.dataframe(st.session_state['fut_list'],hide_index=True)
-with tab7:
-  download_btn=st.button(label="Download Weekly Data")
-  if download_btn:
-    for i in ['^NSEI','^NSEBANK','^BSESN']:
-      if i=="^NSEI":
-        df,token_df_new=index_weekly_data("^NSEI",st.session_state['nf_expiry_day'])
-        st.session_state['NIFTY']=df
-        opt_df=pull_options_data(token_df_new)
-        st.session_state['NIFTY_Option']=opt_df
-      elif i=="^NSEBANK":
-        df,token_df_new=index_weekly_data("^NSEBANK",st.session_state['bnf_expiry_day'])
-        st.session_state['BANKNIFTY']=df
-        opt_df=pull_options_data(token_df_new)
-        st.session_state['BANKNIFTY_Option']=opt_df
-      elif i=="^BSESN":
-        df,token_df_new=index_weekly_data("^BSESN",st.session_state['sensex_expiry_day'])
-        st.session_state['SENSEX']=df
-        opt_df=pull_options_data(token_df_new)
-        st.session_state['SENSEX_Option']=opt_df
-    if st.session_state['NIFTY']!=[]:
-      fl_name="NIFTY_"+datetime.datetime.now(tz=gettz('Asia/Kolkata')).strftime("%m/%d/%y")+ ".csv"
-      nifty=st.download_button(label="NIFTY",data=st.session_state['NIFTY'],file_name=fl_name,mime='text/csv',)
-    if st.session_state['NIFTY_Option']!=[]:
-      fl_name="NIFTY_Option_"+datetime.datetime.now(tz=gettz('Asia/Kolkata')).strftime("%m/%d/%y")+ ".csv"
-      nifty=st.download_button(label="NIFTY Option",data=st.session_state['NIFTY'],file_name=fl_name,mime='text/csv',)
-    if st.session_state['BANKNIFTY']!=[]:
-      fl_name="BANKNIFTY_"+datetime.datetime.now(tz=gettz('Asia/Kolkata')).strftime("%m/%d/%y")+ ".csv"
-      banknifty=st.download_button(label="BANKNIFTY",data=st.session_state['BANKNIFTY'],file_name='BANKNIFTY.csv',mime='text/csv',)
-    if st.session_state['BANKNIFTY_Option']!=[]:
-      fl_name="BANKNIFTY_Option_"+datetime.datetime.now(tz=gettz('Asia/Kolkata')).strftime("%m/%d/%y")+ ".csv"
-      nifty=st.download_button(label="BANKNIFTY Option",data=st.session_state['BANKNIFTY_Option'],file_name='NIFTY.csv',mime='text/csv',)
-    if st.session_state['SENSEX']!=[]:
-      fl_name="SENSEX_"+datetime.datetime.now(tz=gettz('Asia/Kolkata')).strftime("%m/%d/%y")+ ".csv"
-      banknifty=st.download_button(label="SENSEX",data=st.session_state['SENSEX'],file_name='SENSEX.csv',mime='text/csv',)
-    if st.session_state['SENSEX_Option']!=[]:
-      fl_name="SENSEX_Option_"+datetime.datetime.now(tz=gettz('Asia/Kolkata')).strftime("%m/%d/%y")+ ".csv"
-      nifty=st.download_button(label="SENSEX Option",data=st.session_state['SENSEX_Option'],file_name='NIFTY.csv',mime='text/csv',)
   
 if algo_state:
   loop_code()
