@@ -126,7 +126,7 @@ SMART_WEB = SmartWebSocketV2(st.session_state['access_token'], st.session_state[
 def on_data(wsapp, msg):
     try:
       LIVE_FEED_JSON[msg['token']] = {'ltp':msg['last_traded_price']/100}
-      st.sesstion_state['LIVE_FEED_JSON']=LIVE_FEED_JSON
+      st.session_state['LIVE_FEED_JSON']=LIVE_FEED_JSON
     except Exception as e: print(e)
 def on_error(wsapp, error):
     logger.error(f"---------Connection Error {error}-----------")
