@@ -1120,6 +1120,8 @@ with tab6:
   fut_token_df=st.dataframe(st.session_state['fut_list'],hide_index=True)
 with back_test:
   hourly_scan=st.button("Hourly ST Scan")
+  daily_backtest=st.button("Todays Trade")
+  download_data=st.button("Download Historical Data")
 if algo_state:
   loop_code()
 
