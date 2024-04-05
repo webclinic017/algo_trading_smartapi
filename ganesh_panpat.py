@@ -183,13 +183,11 @@ def modify_order(variety,orderid,ordertype,producttype,price,quantity,tradingsym
                   "duration": "DAY","price": price,"quantity": quantity,"tradingsymbol":tradingsymbol,
                   "symboltoken":symboltoken,"exchange":exchange,"squareoff":squareoff,"stoploss": stoploss,"triggerprice":triggerprice}
   obj.modifyOrder(modifyparams)
-  print('Order modify')
 
 #Cancel Order
 def cancel_order(orderID,variety):
   obj.cancelOrder(orderID,variety=variety)
-  print('order cancelled',orderID)
-
+  
 #Cancel all order of symbol
 def cancel_all_order(symbol):
   try:
@@ -211,7 +209,6 @@ def place_gtt_order(token,symbol,exch_seg,producttype,buy_sell,price,qty):
     gttCreateParams={"tradingsymbol" : symbol,"symboltoken" : token, "exchange" : exch_seg,"producttype" : producttype,
                      "transactiontype" : buy_sell,"price" : price, "qty" : qty,"disclosedqty": qty,"triggerprice" : price,"timeperiod" : 365}
     rule_id=obj.gttCreateRule(gttCreateParams)
-    print("The GTT rule id is: {}".format(rule_id))
   except Exception as e:
     print("GTT Rule creation failed",e)
 
