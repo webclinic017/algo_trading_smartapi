@@ -1058,7 +1058,7 @@ last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']}")
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-tab0, tab1, tab2, todays_trade,tab3, tab4,tab5,tab6= st.tabs(["Log","Order Book", "Position","Todays Trade","Open Order", "Settings","Token List","Future List"])
+tab0, tab1, tab2, todays_trade,tab3, tab4,tab5,tab6,back_test= st.tabs(["Log","Order Book", "Position","Todays Trade","Open Order", "Settings","Token List","Future List","Back Test"])
 with tab0:
   col1,col2=st.columns([1,9])
   with col1:
@@ -1118,7 +1118,8 @@ with tab5:
 with tab6:
   fut_token_df=st.empty()
   fut_token_df=st.dataframe(st.session_state['fut_list'],hide_index=True)
-  
+with back_test:
+  hourly_scan=st.button("Hourly ST Scan")
 if algo_state:
   loop_code()
 
