@@ -54,6 +54,9 @@ st.session_state['pendingorder']=[]
 st.session_state['options_trade_list']=[]
 st.session_state['recheck']=''
 st.session_state['market_open']=''
+st.session_state['NIFTY_5m_Trade']='-'
+st.session_state['BANKNIFTY_5m_Trade']='-'
+st.session_state['SENSEX_5m_Trade']='-'
 
 #Telegram Msg
 def telegram_bot_sendtext(bot_message):
@@ -852,8 +855,7 @@ def index_trade(symbol,interval):
               'Indicator':fut_data['Indicator'].values[-1],'Trade':fut_data['Trade'].values[-1],'Trade End':fut_data['Trade End'].values[-1],
               'Supertrend':fut_data['Supertrend'].values[-1],'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],'RSI':fut_data['RSI'].values[-1]}
   st.session_state['options_trade_list'].append(information)
-  #st.session_state[symbol +"_Trade"]=trade
-  return fut_data.tail(1),trade,trade_end
+  st.session_state[symbol +"_Trade"]=trade_end
 
 def get_todays_trade():
   pass
@@ -927,21 +929,20 @@ def sub_loop_code(now_time):
     if "SENSEX" in index_list:sensex_data,sensex_15m_trade,sensex_15m_trade_end=index_trade("SENSEX","15m")
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
   if (now_time.minute%5==0 and 'IDX:5M' in time_frame_interval ):future_trade()
-  return nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end
 
 def loop_code():
   global nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
-  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
+  marketclose = now.replace(hour=20, minute=50, second=0, microsecond=0)
+  day_end = now.replace(hour=20, minute=30, second=0, microsecond=0)
   comm_day_end = now.replace(hour=23, minute=30, second=0, microsecond=0)
   while now < comm_day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     try:
       last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
       if now > marketopen and now < marketclose:
-        nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end=sub_loop_code(now)
+        sub_loop_code(now)
       elif now > marketclose and now < day_end:
         st.session_state['market_open']="Intraday Closed..."
         closing_trade()
@@ -952,8 +953,10 @@ def loop_code():
       position,open_position=get_open_position()
       orderbook,pending_orders=get_order_book()
       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-      if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
-        close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
+      if st.session_state['NIFTY_5m_Trade']!="-" or st.session_state['BANKNIFTY_5m_Trade']!="-" or st.session_state['SENSEX_5m_Trade']!="-":
+        close_options_position(position,nf_5m_trade_end=st.session_state['NIFTY_5m_Trade'],
+                               bnf_5m_trade_end=st.session_state['BANKNIFTY_5m_Trade'],
+                               sensex_5m_trade_end=st.session_state['SENSEX_5m_Trade'])
       if now.minute%5==0: trail_sl()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       recheck_login()
@@ -1038,3 +1041,21 @@ with back_test:
   download_data=st.button("Download Historical Data")
 if algo_state:
   loop_code()
+if nf_ce:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp='-')
+  buy_option(ce_strike_symbol,'Manual Buy','5m')
+if nf_pe:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp='-')
+  buy_option(pe_strike_symbol,'Manual Buy','5m')
+if bnf_ce:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('BANKNIFTY',indexLtp='-')
+  buy_option(ce_strike_symbol,'Manual Buy','5m')
+if bnf_pe:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('BANKNIFTY',indexLtp='-')
+  buy_option(pe_strike_symbol,'Manual Buy','5m')
+if close_all:
+  closing_trade()
+position,open_position=get_open_position()
+orderbook,pending_orders=get_order_book()
+index_ltp_string.text(f"Index Ltp: {print_ltp()}")
+last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}  Recheck : {st.session_state['recheck']}")
