@@ -107,7 +107,7 @@ if 'user_name' not in st.session_state:
   logger.info('Login Sucess')
 obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
                  refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
-SMART_WEB = SmartWebSocketV2(st.session_state['access_token'], st.session_state['api_key'], user, st.session_state['feed_token'] ,max_retry_attempt=5)
+#SMART_WEB = SmartWebSocketV2(st.session_state['access_token'], st.session_state['api_key'], user, st.session_state['feed_token'] ,max_retry_attempt=5)
 
 if 'five_p_login' not in st.session_state:
   try:
