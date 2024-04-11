@@ -54,28 +54,7 @@ pwd=st.secrets["pwd"]
 apikey=st.secrets["apikey"]
 token=st.secrets["token"]
 user=st.secrets["user"]
-st.session_state['login_time']=''
-st.session_state['access_token']=''
-st.session_state['refresh_token']=''
-st.session_state['feed_token']=''
-st.session_state['userId']=''
-st.session_state['api_key']=apikey
-st.session_state['bnf_expiry_day']=''
-st.session_state['nf_expiry_day']=''
-st.session_state['fnnf_expiry_day']=''
-st.session_state['sensex_expiry_day']=''
-st.session_state['opt_list']=[]
-st.session_state['fut_list']=[]
-st.session_state['position']=[]
-st.session_state['open_position']=[]
-st.session_state['orderbook']=[]
-st.session_state['pendingorder']=[]
-st.session_state['options_trade_list']=[]
-st.session_state['recheck']=''
-st.session_state['market_open']=''
-st.session_state['NIFTY_5m_Trade']='-'
-st.session_state['BANKNIFTY_5m_Trade']='-'
-st.session_state['SENSEX_5m_Trade']='-'
+
 
 
 #Telegram Msg
