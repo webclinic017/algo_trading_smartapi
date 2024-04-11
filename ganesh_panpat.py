@@ -852,7 +852,7 @@ def index_trade(symbol,interval):
               'Indicator':fut_data['Indicator'].values[-1],'Trade':fut_data['Trade'].values[-1],'Trade End':fut_data['Trade End'].values[-1],
               'Supertrend':fut_data['Supertrend'].values[-1],'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],'RSI':fut_data['RSI'].values[-1]}
   st.session_state['options_trade_list'].append(information)
-  'st.session_state[symbol +"_Trade"]=trade
+  #st.session_state[symbol +"_Trade"]=trade
   return fut_data.tail(1),trade,trade_end
 
 def get_todays_trade():
