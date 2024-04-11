@@ -44,6 +44,5 @@ def telegram_bot_sendtext(bot_message):
   send_text = 'https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage?chat_id=' + BOT_CHAT_ID + '&parse_mode=HTML&text=' + bot_message
   response = requests.get(send_text)
 
-telegram_bot_sendtext("HI")
 
 
