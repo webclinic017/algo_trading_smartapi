@@ -1027,8 +1027,8 @@ with tab4:
     st.date_input("FIN NF Exp",st.session_state['fnnf_expiry_day'])
     st.date_input("SENSEX Exp",st.session_state['sensex_expiry_day'])
   with tab5:
-  token_df=st.empty()
-  token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
+    token_df=st.empty()
+    token_df=st.dataframe(st.session_state['opt_list'],hide_index=True)
 with tab6:
   fut_token_df=st.empty()
   fut_token_df=st.dataframe(st.session_state['fut_list'],hide_index=True)
