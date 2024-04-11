@@ -972,3 +972,5 @@ def loop_code():
   last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} Market Closed...")
 
 st.header(f"Welcome {st.session_state['user_name']}")
+last_login=st.empty()
+last_login.text(f"Login: {st.session_state['login_time']}")
