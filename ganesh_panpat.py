@@ -411,7 +411,8 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     elif (interval=="1d" or interval=='ONE_DAY') : period,delta_time,agl_interval,yf_interval,odd_interval=100,5,"ONE_DAY","1d",'1d'
     else:
       period,delta_time,agl_interval,yf_interval,odd_candle=7,1,"ONE_MINUTE","1m",True
-      for i in interval: if(i.isdigit()): odd_interval+=i
+      for i in interval:
+        if(i.isdigit()): odd_interval+=i
       delta_time=int(odd_interval)
       odd_interval+='m'
     if isinstance(df, str):df=angel_data(token,agl_interval,exch_seg,period)
