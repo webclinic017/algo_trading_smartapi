@@ -974,3 +974,5 @@ def loop_code():
 st.header(f"Welcome {st.session_state['user_name']}")
 last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']}")
+index_ltp_string=st.empty()
+index_ltp_string.text(f"Index Ltp: {print_ltp()}")
