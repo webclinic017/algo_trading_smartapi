@@ -8,3 +8,4 @@ st.markdown("""
 #Define App
 st.session_state['user_name']="New User"
 st.header(f"Welcome {st.session_state['user_name']}")
+st.header(f"Hi {st.session_state['user_name']}")
