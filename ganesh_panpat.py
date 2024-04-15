@@ -49,13 +49,6 @@ nf_5m_trade_end="-"
 bnf_5m_trade_end="-"
 sensex_5m_trade_end="-"
 five_m_timeframe="Yes"
-username=st.secrets["username"]
-pwd=st.secrets["pwd"]
-apikey=st.secrets["apikey"]
-token=st.secrets["token"]
-user=st.secrets["user"]
-
-
 
 #Telegram Msg
 def telegram_bot_sendtext(bot_message):
@@ -86,7 +79,6 @@ def angel_login():
   apikey=st.secrets["apikey"]
   token=st.secrets["token"]
   user=st.secrets["user"]
-  user="Ganesh"; username = 'G93179'; pwd = '4789'; apikey = 'CjOKjC5g'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
   obj=SmartConnect(api_key=apikey)
   data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
   refreshToken= data['data']['refreshToken']
