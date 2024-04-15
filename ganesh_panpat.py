@@ -1006,8 +1006,8 @@ def loop_code():
   global nf_5m_trade_end,bnf_5m_trade_end,sensex_5m_trade_end
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
-  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
+  marketclose = now.replace(hour=21, minute=50, second=0, microsecond=0)
+  day_end = now.replace(hour=21, minute=30, second=0, microsecond=0)
   comm_day_end = now.replace(hour=23, minute=30, second=0, microsecond=0)
   while now < comm_day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
