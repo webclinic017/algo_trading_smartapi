@@ -1015,7 +1015,6 @@ def get_todays_trade():
     buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
     buy_df['Exit Time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(hour=15, minute=30, second=0, microsecond=0,tzinfo=None).time()
     buy_df['Status']="Pending"
-    todays_trade_datatable.dataframe(buy_df,hide_index=True)
     for i in ['Sell','Profit','Index SL','Time Frame','Target','Stop Loss','Profit %','Sell Indicator']:buy_df[i]='-'
     for i in range(0,len(buy_df)):
       symbol=buy_df['tradingsymbol'].iloc[i];  updatetime=buy_df['updatetime'].iloc[i];  orderid=buy_df['orderid'].iloc[i]
@@ -1054,7 +1053,7 @@ def get_todays_trade():
     buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
     buy_df=buy_df[['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp', 'Profit','Target',
        'Stop Loss', 'Profit %', 'Sell Indicator']]
-    print(buy_df)
+    todays_trade_datatable.dataframe(buy_df,hide_index=True)
     for i in range(0,len(df)):
       if df['Status'].iloc[i]=="Pending":
         symboltoken=df['symboltoken'].iloc[i]
