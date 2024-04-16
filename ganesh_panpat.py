@@ -1007,9 +1007,9 @@ def update_ltp_buy_df(buy_df):
       buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
   return buy_df
 
-def get_todays_trade(orderbook):
+def get_todays_trade():
   try:
-    #orderbook=update_price_orderbook(orderbook)
+    orderbook,pending_orders=get_order_book()
     sell_df=orderbook[(orderbook['transactiontype']=="SELL") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
     sell_df['Remark']='-'
     buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
@@ -1130,7 +1130,7 @@ def loop_code():
         future_trade()
       position,open_position=get_open_position()
       orderbook,pending_orders=get_order_book()
-      todays_trade=get_todays_trade(orderbook)
+      todays_trade=get_todays_trade()
       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
       if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
         close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
@@ -1244,9 +1244,10 @@ if bnf_pe:
   buy_option(pe_strike_symbol,'Manual Buy','5m')
 if close_all:
   closing_trade()
-
+if restart:
+  todays_trade=get_todays_trade()
 position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
-todays_trade=get_todays_trade(orderbook)
+todays_trade=get_todays_trade()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}  Recheck : {st.session_state['recheck']}")
