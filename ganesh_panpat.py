@@ -1251,6 +1251,6 @@ if restart:
   todays_trade=get_todays_trade()
 position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
-todays_trade=get_todays_trade()
+#todays_trade=get_todays_trade()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}  Recheck : {st.session_state['recheck']}")
