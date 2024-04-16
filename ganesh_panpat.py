@@ -1010,13 +1010,13 @@ def update_ltp_buy_df(buy_df):
 
 def get_todays_trade(orderbook):
   try:
-    orderbook=update_price_orderbook(orderbook)
+    #orderbook=update_price_orderbook(orderbook)
     sell_df=orderbook[(orderbook['transactiontype']=="SELL") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
     sell_df['Remark']='-'
     buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
     buy_df['Exit Time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(hour=15, minute=30, second=0, microsecond=0,tzinfo=None).time()
     buy_df['Status']="Pending"
-    for i in ['Sell','LTP','Profit','Index SL','Time Frame','Target','Stop Loss','Profit %','Sell Indicator']:buy_df[i]='-'
+    for i in ['Sell','Profit','Index SL','Time Frame','Target','Stop Loss','Profit %','Sell Indicator']:buy_df[i]='-'
     for i in range(0,len(buy_df)):
       symbol=buy_df['tradingsymbol'].iloc[i];  updatetime=buy_df['updatetime'].iloc[i];  orderid=buy_df['orderid'].iloc[i]
       if buy_df['Status'].iloc[i]=='Pending':
@@ -1042,17 +1042,17 @@ def get_todays_trade(orderbook):
             buy_df['Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[j]='Taken'
             break
     buy_df=update_target_sl(buy_df)
-    if len(buy_df)!=0: buy_df=update_ltp_buy_df(buy_df)
+    #if len(buy_df)!=0: buy_df=update_ltp_buy_df(buy_df)
     for i in range(0,len(buy_df)):
       if buy_df['Status'].iloc[i]!='Closed':
         #buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
-        buy_df['Profit'].iloc[i]=float((buy_df['LTP'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
-        buy_df['Profit %'].iloc[i]=((buy_df['LTP'].iloc[i]/buy_df['price'].iloc[i])-1)*100
+        buy_df['Profit'].iloc[i]=float((buy_df['ltp'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
+        buy_df['Profit %'].iloc[i]=((buy_df['ltp'].iloc[i]/buy_df['price'].iloc[i])-1)*100
       else:
         buy_df['Profit'].iloc[i]=float((buy_df['Sell'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
         buy_df['Profit %'].iloc[i]=((buy_df['Sell'].iloc[i]/buy_df['price'].iloc[i])-1)*100
     buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
-    buy_df=buy_df[['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'LTP', 'Profit','Target',
+    buy_df=buy_df[['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp', 'Profit','Target',
        'Stop Loss', 'Profit %', 'Sell Indicator']]
     for i in range(0,len(df)):
       if df['Status'].iloc[i]=="Pending":
@@ -1060,18 +1060,20 @@ def get_todays_trade(orderbook):
         tradingsymbol=df['tradingsymbol'].iloc[i]
         exch_seg=df['exchange'].iloc[i]
         qty=df['quantity'].iloc[i]
-        ltp_price=df['LTP'].iloc[i]
-        sl=df['LTP'].iloc[i]
+        ltp_price=df['ltp'].iloc[i]
+        sl=df['ltp'].iloc[i]
         if int(sl)==0:ltp_price=1;sl=1
-        if int(df['LTP'].iloc[i])< int(df['Stop Loss'].iloc[i]):
-          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='SL Hit:'+str(df['LTP'].iloc[i]),producttype='CARRYFORWARD')
-        elif int(df['LTP'].iloc[i])> int(df['Target'].iloc[i]):
-          print(f"Target Hit: {df['tradingsymbol'].iloc[i]} LTP:{df['LTP'].iloc[i]} Target :{df['Target'].iloc[i]}")
-          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Target Hit:'+str(df['LTP'].iloc[i]),producttype='CARRYFORWARD')
+        if int(df['ltp'].iloc[i])< int(df['Stop Loss'].iloc[i]):
+          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='SL Hit:'+str(df['ltp'].iloc[i]),producttype='CARRYFORWARD')
+        elif int(df['ltp'].iloc[i])> int(df['Target'].iloc[i]):
+          print(f"Target Hit: {df['tradingsymbol'].iloc[i]} LTP:{df['ltp'].iloc[i]} Target :{df['Target'].iloc[i]}")
+          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Target Hit:'+str(df['ltp'].iloc[i]),producttype='CARRYFORWARD')
   except:
-    buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'LTP',
+    buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp',
                                     'Profit','Target','Stop Loss', 'Profit %', 'Sell Indicator'])
   buy_df=buy_df.sort_values(by = ['Status', 'updatetime'], ascending = [False, True], na_position = 'first')
+  todays_trade.dataframe(buy_df,hide_index=True)
+  todays_trade_updated.text(f"Todays Trade : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
   return buy_df
   
 def recheck_login():
@@ -1130,8 +1132,6 @@ def loop_code():
       position,open_position=get_open_position()
       orderbook,pending_orders=get_order_book()
       todays_trade=get_todays_trade(orderbook)
-      todays_trade.dataframe(todays_trade,hide_index=True)
-      todays_trade_updated.text(f"Todays Trade : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
       if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
         close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
@@ -1248,5 +1248,6 @@ if close_all:
 
 position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
+todays_trade=get_todays_trade(orderbook)
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}  Recheck : {st.session_state['recheck']}")
