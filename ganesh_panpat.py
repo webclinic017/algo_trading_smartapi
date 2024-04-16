@@ -478,7 +478,7 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
 def get_trade_info(df):
   for i in ['ST_7_3 Trade','MACD Trade','PSAR Trade','DI Trade','MA Trade','EMA Trade','BB Trade','Trade','Trade End',
             'Rainbow MA','Rainbow Trade','MA 21 Trade','ST_10_2 Trade','Two Candle Theory','HMA Trade','VWAP Trade',
-            'EMA_5_7 Trade','ST_10_4_8 Trade','EMA_High_Low Trade','RSI MA Trade','RSI_60 Trade','ST_10_1 Trade']:df[i]='-'
+            'EMA_5_7 Trade','ST_10_4_8 Trade','EMA_High_Low Trade','RSI MA Trade','RSI_60 Trade','ST_10_1 Trade','TEMA_EMA_9 Trade']:df[i]='-'
   if df['Time Frame'][0]=="3m" or df['Time Frame'][0]=="THREE MINUTE" or df['Time Frame'][0]=="3min": df['Time Frame']="3m";time_frame="3m"
   elif df['Time Frame'][0]=="5m" or df['Time Frame'][0]=="FIVE MINUTE" or df['Time Frame'][0]=="5min": df['Time Frame']="5m";time_frame="5m"
   elif df['Time Frame'][0]=="15m" or df['Time Frame'][0]=="FIFTEEN MINUTE" or df['Time Frame'][0]=="15min": df['Time Frame']="15m";time_frame="15m"
@@ -500,8 +500,8 @@ def get_trade_info(df):
       if df['MACD'][i]>df['MACD signal'][i] and df['MACD'][i-1]< df['MACD signal'][i-1]: df['MACD Trade'][i]="Buy"
       elif df['MACD'][i]<df['MACD signal'][i] and df['MACD'][i-1]> df['MACD signal'][i-1]: df['MACD Trade'][i]="Sell"
 
-      if df['TEMA_9'][i-1]< df['EMA_9'][i-1] and df['TEMA_9'][i]> df['EMA_9'][i]: df['TEMA_EMA_9 Trade'][i]="Buy"
-      elif df['TEMA_9'][i-1]> df['EMA_9'][i-1] and df['TEMA_9'][i]< df['EMA_9'][i]: df['TEMA_EMA_9 Trade'][i]="Sell"
+      if df['Tema_9'][i-1]< df['EMA_9'][i-1] and df['Tema_9'][i]> df['EMA_9'][i]: df['TEMA_EMA_9 Trade'][i]="Buy"
+      elif df['Tema_9'][i-1]> df['EMA_9'][i-1] and df['Tema_9'][i]< df['EMA_9'][i]: df['TEMA_EMA_9 Trade'][i]="Sell"
         
       #if df['Close'][i-1]<=df['PSAR'][i-1] and df['Close'][i]> df['PSAR'][i]: df['PSAR Trade'][i]="Buy"
       #elif df['Close'][i-1]>=df['PSAR'][i-1] and df['Close'][i]< df['PSAR'][i]: df['PSAR Trade'][i]="Sell"
@@ -546,18 +546,20 @@ def get_trade_info(df):
       RSI_60=df['RSI_60 Trade'][i]; ST_10_1=df['ST_10_1 Trade'][i]
       Two_Candle_Theory=df['Two Candle Theory'][i]; HMA_Trade=df['HMA Trade'][i]
       EMA_5_7_Trade=df['EMA_5_7 Trade'][i];EMA_High_Low=df['EMA_High_Low Trade'][i]
-      #TEMA_EMA_9=df['TEMA_EMA_9 Trade'][i]
+      TEMA_EMA_9=df['TEMA_EMA_9 Trade'][i]
       
       if ((ST_10_1=="Buy" and 'ST_10_1 Trade' in five_buy_indicator) or 
           (ST_10_2=="Buy" and 'ST_10_2 Trade' in five_buy_indicator) or 
           (ST=="Buy" and 'St Trade' in five_buy_indicator) or
-          (MACD=="Buy" and 'MACD Trade' in five_buy_indicator)):
+          (MACD=="Buy" and 'MACD Trade' in five_buy_indicator) or
+           (TEMA_EMA_9=="Buy" and 'TEMA_EMA_9 Trade' in five_buy_indicator)):
             df['Trade'][i]="Buy"
             df['Trade End'][i]="Buy"
       elif ((ST_10_1=="Sell" and 'ST_10_1 Trade' in five_buy_indicator) or 
             (ST_10_2=="Sell" and 'ST_10_2 Trade' in five_buy_indicator) or 
             (ST=="Sell" and 'St Trade' in five_buy_indicator) or
-            (MACD=="Sell" and 'MACD Trade' in five_buy_indicator)):
+            (MACD=="Sell" and 'MACD Trade' in five_buy_indicator) or
+            (TEMA_EMA_9=="Sell" and 'TEMA_EMA_9 Trade' in five_buy_indicator):
               df['Trade'][i]="Sell"
               df['Trade End'][i]="Sell"
     except Exception as e:
@@ -572,7 +574,7 @@ def get_trade_info(df):
   elif "FUT" in Symbol: symbol_type= "FUT"
   else: symbol_type= "OPT"
   df['Indicator']=(symbol_type+" "+df['Trade']+" "+df['Time Frame']+":"+" ST_7_3:"+df['ST_7_3 Trade']+
-                   " ST_10_2:"+df['ST_10_2 Trade']+ " ST_10_1:"+df['ST_10_1 Trade']+ " MACD:"+df['MACD Trade'])
+                   " ST_10_2:"+df['ST_10_2 Trade']+ " ST_10_1:"+df['ST_10_1 Trade']+ " MACD:"+df['MACD Trade']+ " TEMA_EMA_9:"+df['TEMA_EMA_9 Trade'])
   df['RSI']= df['RSI'].astype(float)
   df['Indicator'] = df['Indicator'].str.replace(' ST_7_3:-','')
   df['Indicator'] = df['Indicator'].str.replace(' EMA:-','')
@@ -588,7 +590,7 @@ def get_trade_info(df):
   df['Indicator'] = df['Indicator'].str.replace(' EMA_H_L:-','')
   df['Indicator'] = df['Indicator'].str.replace(' Two Candle Theory:-','')
   df['Indicator'] = df['Indicator'].str.replace(' RSI_60:-','')
-  #df['Indicator'] = df['Indicator'].str.replace(' TEMA_EMA_9:-','')
+  df['Indicator'] = df['Indicator'].str.replace(' TEMA_EMA_9:-','')
   df['Indicator'] = df['Indicator'].str.replace(':Buy',',')
   df['Indicator'] = df['Indicator'].str.replace(':Sell',',')
   df['Indicator'] = df['Indicator'].str.replace('3m Two Candle Theory:','2 Candle Theory:')
@@ -640,8 +642,8 @@ def calculate_indicator(df):
     #df['EMA_High']=pdta.ema(df['High'],length=21)
     #df['EMA_Low']=pdta.ema(df['Low'],length=21)
     #df = df.round(decimals=2)
-    #df['Tema_9']=pdta.tema(df['Close'],9)
-    #df['EMA_9']=pdta.ema(df['Close'],length=9)
+    df['Tema_9']=pdta.tema(df['Close'],9)
+    df['EMA_9']=pdta.ema(df['Close'],length=9)
     df=get_trade_info(df)
     return df
   except Exception as e:
