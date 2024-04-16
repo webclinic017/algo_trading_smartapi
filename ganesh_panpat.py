@@ -1133,12 +1133,11 @@ def loop_code():
       if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
         close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
       if now.minute%5==0: trail_sl()
-      index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-      recheck_login()
       todays_trade=get_todays_trade(orderbook)
       todays_trade.dataframe(todays_trade,hide_index=True)
       todays_trade_updated.text(f"Todays Trade : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
-      
+      index_ltp_string.text(f"Index Ltp: {print_ltp()}")
+      recheck_login()
       last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       while now.second <50:
