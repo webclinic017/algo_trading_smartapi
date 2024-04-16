@@ -255,19 +255,20 @@ def print_ltp():
 
 def get_open_position():
   global pnl,position,open_position
-  position= pd.DataFrame(columns = ["exchange","symboltoken","producttype","tradingsymbol","symbolname","instrumenttype","priceden",
+  for attempt in range(3):
+    try:
+      position=obj.position()['data']
+      break
+    except: position=None
+  if position!=None:
+    position=pd.DataFrame(position)
+    position[['realised', 'unrealised']] = position[['realised', 'unrealised']].astype(float)
+  else:
+    position= pd.DataFrame(columns = ["exchange","symboltoken","producttype","tradingsymbol","symbolname","instrumenttype","priceden",
       "pricenum","genden","gennum","precision","multiplier","boardlotsize","buyqty","sellqty","buyamount",
       "sellamount","symbolgroup","strikeprice","optiontype","expirydate","lotsize","cfbuyqty","cfsellqty",
       "cfbuyamount","cfsellamount","buyavgprice","sellavgprice","avgnetprice","netvalue","netqty","totalbuyvalue",
       "totalsellvalue","cfbuyavgprice","cfsellavgprice","totalbuyavgprice","totalsellavgprice","netprice",'realised', 'unrealised','ltp'])
-  try:
-    for attempt in range(3):
-      position=obj.position()['data']
-      break
-  except: pass
-  if position!=None:
-    position=pd.DataFrame(position)
-    position[['realised', 'unrealised']] = position[['realised', 'unrealised']].astype(float)
   pnl=int(position['realised'].sum())+float(position['unrealised'].sum())
   open_position = position[(position['netqty'] > '0') & (position['instrumenttype'] == 'OPTIDX')]
   if len(position)!=0:
