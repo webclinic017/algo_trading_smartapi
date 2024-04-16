@@ -559,7 +559,7 @@ def get_trade_info(df):
             (ST_10_2=="Sell" and 'ST_10_2 Trade' in five_buy_indicator) or 
             (ST=="Sell" and 'St Trade' in five_buy_indicator) or
             (MACD=="Sell" and 'MACD Trade' in five_buy_indicator) or
-            (TEMA_EMA_9=="Sell" and 'TEMA_EMA_9 Trade' in five_buy_indicator):
+            (TEMA_EMA_9=="Sell" and 'TEMA_EMA_9 Trade' in five_buy_indicator)):
               df['Trade'][i]="Sell"
               df['Trade End'][i]="Sell"
     except Exception as e:
