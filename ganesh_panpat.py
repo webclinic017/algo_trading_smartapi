@@ -356,6 +356,7 @@ def get_order_book():
   order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
   n_pending_orders=pending_orders[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag','ltp']]
   open_order.dataframe(n_pending_orders,hide_index=True)
+  todays_trade_datatable.dataframe(orderbook,hide_index=True)
   open_order_updated.text(f"Pending Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
   return orderbook,pending_orders
 
@@ -1010,7 +1011,7 @@ def update_ltp_buy_df(buy_df):
 def get_todays_trade():
   try:
     orderbook,pending_orders=get_order_book()
-    todays_trade_df.dataframe(orderbook,hide_index=True)
+    todays_trade_datatable.dataframe(orderbook,hide_index=True)
     sell_df=orderbook[(orderbook['transactiontype']=="SELL") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
     sell_df['Remark']='-'
     buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
@@ -1073,7 +1074,7 @@ def get_todays_trade():
     buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp',
                                     'Profit','Target','Stop Loss', 'Profit %', 'Sell Indicator'])
   buy_df=buy_df.sort_values(by = ['Status', 'updatetime'], ascending = [False, True], na_position = 'first')
-  todays_trade_df.dataframe(buy_df,hide_index=True)
+  todays_trade_datatable.dataframe(buy_df,hide_index=True)
   todays_trade_updated.text(f"Todays Trade : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
   return buy_df
   
@@ -1161,7 +1162,7 @@ last_login=st.empty()
 last_login.text(f"Login: {st.session_state['login_time']}")
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-tab0, tab1, tab2, todays_trade,tab3, tab4,tab5,tab6,back_test= st.tabs(["Log","Order Book", "Position","Todays Trade","Open Order", "Settings","Token List","Future List","Back Test"])
+tab0, tab1, tab2, tab_2_1,tab3, tab4,tab5,tab6,back_test= st.tabs(["Log","Order Book", "Position","Todays Trade","Open Order", "Settings","Token List","Future List","Back Test"])
 with tab0:
   col1,col2=st.columns([1,9])
   with col1:
@@ -1182,10 +1183,10 @@ with tab2:
   position_updated=st.empty()
   position_updated.text(f"Position : ")
   position_datatable=st.empty()
-with todays_trade:
+with tab_2_1:
   todays_trade_updated=st.empty()
   todays_trade_updated.text(f"Todays Trade : ")
-  todays_trade_df=st.empty()
+  todays_trade_datatable=st.empty()
 with tab3:
   open_order_updated=st.empty()
   open_order_updated.text(f"Open Order : ")
