@@ -1182,10 +1182,14 @@ with tab2:
   position_updated=st.empty()
   position_updated.text(f"Position : ")
   position_datatable=st.empty()
-with tab3:
+with todays_trade:
   todays_trade_updated=st.empty()
   todays_trade_updated.text(f"Todays Trade : ")
   todays_trade=st.empty()
+with tab3:
+  open_order_updated=st.empty()
+  open_order_updated.text(f"Open Order : ")
+  open_order=st.empty()
 with tab4:
   ind_col1,ind_col2,ind_col3,ind_col4=st.columns([5,1.5,1.5,1.5])
   indicator_list=['St Trade', 'ST_10_2 Trade','ST_10_1 Trade', 'RSI MA Trade','RSI_60 Trade','MACD Trade','PSAR Trade','DI Trade',
