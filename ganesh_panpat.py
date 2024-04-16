@@ -920,8 +920,7 @@ def index_trade(symbol,interval):
   st.session_state['options_trade_list'].append(information)
   st.session_state[symbol +"_Trade"]=trade
   return fut_data.tail(1),trade,trade_end
-def get_todays_trade():
-  pass
+
 def closing_trade():
   position,open_position=get_open_position()
   orderbook,pending_orders=get_order_book()
