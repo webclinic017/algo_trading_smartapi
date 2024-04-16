@@ -1053,6 +1053,7 @@ def get_todays_trade():
     buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
     buy_df=buy_df[['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp', 'Profit','Target',
        'Stop Loss', 'Profit %', 'Sell Indicator']]
+    print(buy_df)
     for i in range(0,len(df)):
       if df['Status'].iloc[i]=="Pending":
         symboltoken=df['symboltoken'].iloc[i]
