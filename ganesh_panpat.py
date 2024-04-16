@@ -1071,7 +1071,7 @@ def get_todays_trade():
     buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp',
                                     'Profit','Target','Stop Loss', 'Profit %', 'Sell Indicator'])
   buy_df=buy_df.sort_values(by = ['Status', 'updatetime'], ascending = [False, True], na_position = 'first')
-  todays_trade.dataframe(buy_df,hide_index=True)
+  todays_trade_df.dataframe(buy_df,hide_index=True)
   todays_trade_updated.text(f"Todays Trade : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
   return buy_df
   
@@ -1183,7 +1183,7 @@ with tab2:
 with todays_trade:
   todays_trade_updated=st.empty()
   todays_trade_updated.text(f"Todays Trade : ")
-  todays_trade=st.empty()
+  todays_trade_df=st.empty()
 with tab3:
   open_order_updated=st.empty()
   open_order_updated.text(f"Open Order : ")
