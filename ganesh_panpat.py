@@ -1070,8 +1070,11 @@ def get_todays_trade():
     buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp',
                                     'Profit','Target','Stop Loss', 'Profit %', 'Sell Indicator'])
   buy_df=buy_df.sort_values(by = ['Status', 'updatetime'], ascending = [False, True], na_position = 'first')
-  todays_trade_datatable.dataframe(buy_df,hide_index=True)
-  todays_trade_updated.text(f"Todays Trade : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
+  pnl=int(buy_df['Profit'].sum())
+  n_buy_df=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp', 'Profit','Target',
+       'Stop Loss', 'Profit %', 'Sell Indicator']]
+  todays_trade_datatable.dataframe(n_buy_df,hide_index=True)
+  todays_trade_updated.text(f"Todays Trade : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)} PNL: {pnl}")
   return buy_df
   
 def recheck_login():
