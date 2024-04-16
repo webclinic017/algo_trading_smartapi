@@ -1053,25 +1053,24 @@ def get_todays_trade():
     buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
     buy_df=buy_df[['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp', 'Profit','Target',
        'Stop Loss', 'Profit %', 'Sell Indicator']]
-    todays_trade_datatable.dataframe(buy_df,hide_index=True)
-    for i in range(0,len(df)):
-      if df['Status'].iloc[i]=="Pending":
-        symboltoken=df['symboltoken'].iloc[i]
-        tradingsymbol=df['tradingsymbol'].iloc[i]
-        exch_seg=df['exchange'].iloc[i]
-        qty=df['quantity'].iloc[i]
-        ltp_price=df['ltp'].iloc[i]
-        sl=df['ltp'].iloc[i]
+    for i in range(0,len(buy_df)):
+      if buy_df['Status'].iloc[i]=="Pending":
+        symboltoken=buy_df['symboltoken'].iloc[i]
+        tradingsymbol=buy_df['tradingsymbol'].iloc[i]
+        exch_seg=buy_df['exchange'].iloc[i]
+        qty=buy_df['quantity'].iloc[i]
+        ltp_price=buy_df['ltp'].iloc[i]
+        sl=buy_df['ltp'].iloc[i]
         if int(sl)==0:ltp_price=1;sl=1
-        if int(df['ltp'].iloc[i])< int(df['Stop Loss'].iloc[i]):
-          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='SL Hit:'+str(df['ltp'].iloc[i]),producttype='CARRYFORWARD')
-        elif int(df['ltp'].iloc[i])> int(df['Target'].iloc[i]):
-          print(f"Target Hit: {df['tradingsymbol'].iloc[i]} LTP:{df['ltp'].iloc[i]} Target :{df['Target'].iloc[i]}")
-          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Target Hit:'+str(df['ltp'].iloc[i]),producttype='CARRYFORWARD')
+        if int(buy_df['ltp'].iloc[i])< int(buy_df['Stop Loss'].iloc[i]):
+          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='SL Hit:'+str(buy_df['ltp'].iloc[i]),producttype='CARRYFORWARD')
+        elif int(buy_df['ltp'].iloc[i])> int(buy_df['Target'].iloc[i]):
+          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Target Hit:'+str(buy_df['ltp'].iloc[i]),producttype='CARRYFORWARD')
   except:
     buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp',
                                     'Profit','Target','Stop Loss', 'Profit %', 'Sell Indicator'])
   buy_df=buy_df.sort_values(by = ['Status', 'updatetime'], ascending = [False, True], na_position = 'first')
+  todays_trade_datatable.dataframe(buy_df,hide_index=True)
   todays_trade_updated.text(f"Todays Trade : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
   return buy_df
   
