@@ -970,7 +970,110 @@ def trail_sl():
               modify_order(variety,orderid,ordertype,producttype,new_sl,quantity,symbol,token,exch_seg,new_sl,new_sl,new_sl)
       except: pass
 
+#todays trade
+def get_ltp_token(nfo_list,bfo_list):
+  try:
+    ltp_df=pd.DataFrame(obj.getMarketData(mode="LTP",exchangeTokens={ "BFO": list(bfo_list), "NFO": list(nfo_list),})['data']['fetched'])
+    return ltp_df
+  except Exception as e:
+    ltp_df=pd.DataFrame(columns = ['exchange','tradingSymbol','symbolToken','ltp'])
+    return ltp_df
 
+def update_target_sl(buy_df):
+  global order_history,target_history
+  for i in range(0,len(buy_df)):
+    try:
+      if "(" in buy_df['ordertag'].iloc[i] and ")" in buy_df['ordertag'].iloc[i]:
+        sl=(buy_df['ordertag'].iloc[i].split('('))[1].split(':')[0]
+        tgt=(buy_df['ordertag'].iloc[i].split(sl+':'))[1].split(')')[0]
+        buy_df['Stop Loss'].iloc[i]=sl
+        buy_df['Target'].iloc[i]=tgt
+      else:
+        buy_df['Stop Loss'].iloc[i]=int(float(buy_df['price'].iloc[i]*0.7))
+        buy_df['Target'].iloc[i]=int(float(buy_df['price'].iloc[i]*1.5))
+    except Exception as e:
+      print('Error found in ',e)
+  return buy_df
+
+def update_ltp_buy_df(buy_df):
+  nfo_list=numpy.unique(buy_df[buy_df['exchange']=="NFO"]['symboltoken'].values.tolist())
+  bfo_list=numpy.unique(buy_df[buy_df['exchange']=="BFO"]['symboltoken'].values.tolist())
+  ltp_df=get_ltp_token(nfo_list,bfo_list)
+  for i in range(0,len(buy_df)):
+    symboltoken=int(buy_df['symboltoken'].iloc[i])
+    n_ltp_df=ltp_df[ltp_df['symbolToken']==symboltoken]
+    if len(n_ltp_df)!=0:
+      buy_df['LTP'].iloc[i]=n_ltp_df['ltp'].iloc[0]
+    else:
+      buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
+  return buy_df
+
+def get_todays_trade(orderbook):
+  try:
+    orderbook=update_price_orderbook(orderbook)
+    sell_df=orderbook[(orderbook['transactiontype']=="SELL") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
+    sell_df['Remark']='-'
+    buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
+    buy_df['Exit Time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(hour=15, minute=30, second=0, microsecond=0,tzinfo=None).time()
+    buy_df['Status']="Pending"
+    for i in ['Sell','LTP','Profit','Index SL','Time Frame','Target','Stop Loss','Profit %','Sell Indicator']:buy_df[i]='-'
+    for i in range(0,len(buy_df)):
+      symbol=buy_df['tradingsymbol'].iloc[i];  updatetime=buy_df['updatetime'].iloc[i];  orderid=buy_df['orderid'].iloc[i]
+      if buy_df['Status'].iloc[i]=='Pending':
+        for k in range(0,len(sell_df)):
+          if (sell_df['tradingsymbol'].iloc[k]==symbol and sell_df['updatetime'].iloc[k] >= updatetime and sell_df['Remark'].iloc[k] =='-' and
+              buy_df['status'].iloc[i]==sell_df['status'].iloc[k] and str(orderid) in sell_df['ordertag'].iloc[k]):
+            buy_df['Sell'].iloc[i]=sell_df['price'].iloc[k]
+            buy_df['Exit Time'].iloc[i]=sell_df['updatetime'].iloc[k]
+            buy_df['Sell Indicator'].iloc[i]=sell_df['ordertag'].iloc[k]
+            buy_df['Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[k]='Taken'
+            break
+    for i in range(0,len(buy_df)):
+      symbol=buy_df['tradingsymbol'].iloc[i]
+      updatetime=buy_df['updatetime'].iloc[i]
+      orderid=buy_df['orderid'].iloc[i]
+      if buy_df['Status'].iloc[i]=='Pending':
+        for j in range(0,len(sell_df)):
+          if (sell_df['tradingsymbol'].iloc[j]==symbol and sell_df['updatetime'].iloc[j] >= updatetime and sell_df['Remark'].iloc[j] =='-' and
+              buy_df['status'].iloc[i]==sell_df['status'].iloc[j]):
+            buy_df['Sell'].iloc[i]=sell_df['price'].iloc[j]
+            buy_df['Exit Time'].iloc[i]=sell_df['updatetime'].iloc[j]
+            buy_df['Sell Indicator'].iloc[i]=sell_df['ordertag'].iloc[j]
+            buy_df['Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[j]='Taken'
+            break
+    buy_df=update_target_sl(buy_df)
+    if len(buy_df)!=0: buy_df=update_ltp_buy_df(buy_df)
+    for i in range(0,len(buy_df)):
+      if buy_df['Status'].iloc[i]!='Closed':
+        #buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
+        buy_df['Profit'].iloc[i]=float((buy_df['LTP'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
+        buy_df['Profit %'].iloc[i]=((buy_df['LTP'].iloc[i]/buy_df['price'].iloc[i])-1)*100
+      else:
+        buy_df['Profit'].iloc[i]=float((buy_df['Sell'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
+        buy_df['Profit %'].iloc[i]=((buy_df['Sell'].iloc[i]/buy_df['price'].iloc[i])-1)*100
+    buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
+    buy_df=buy_df[['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'LTP', 'Profit','Target',
+       'Stop Loss', 'Profit %', 'Sell Indicator']]
+    for i in range(0,len(df)):
+      if df['Status'].iloc[i]=="Pending":
+        symboltoken=df['symboltoken'].iloc[i]
+        tradingsymbol=df['tradingsymbol'].iloc[i]
+        exch_seg=df['exchange'].iloc[i]
+        qty=df['quantity'].iloc[i]
+        ltp_price=df['LTP'].iloc[i]
+        sl=df['LTP'].iloc[i]
+        if int(sl)==0:ltp_price=1;sl=1
+        if int(df['LTP'].iloc[i])< int(df['Stop Loss'].iloc[i]):
+          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='SL Hit:'+str(df['LTP'].iloc[i]),producttype='CARRYFORWARD')
+        elif int(df['LTP'].iloc[i])> int(df['Target'].iloc[i]):
+          print(f"Target Hit: {df['tradingsymbol'].iloc[i]} LTP:{df['LTP'].iloc[i]} Target :{df['Target'].iloc[i]}")
+          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Target Hit:'+str(df['LTP'].iloc[i]),producttype='CARRYFORWARD')
+  except:
+    buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'LTP',
+                                    'Profit','Target','Stop Loss', 'Profit %', 'Sell Indicator'])
+  buy_df=buy_df.sort_values(by = ['Status', 'updatetime'], ascending = [False, True], na_position = 'first')
+  return buy_df
+  
 def recheck_login():
   try:
     need_relogin=True
@@ -1032,6 +1135,10 @@ def loop_code():
       if now.minute%5==0: trail_sl()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       recheck_login()
+      todays_trade=get_todays_trade(orderbook)
+      todays_trade.dataframe(todays_trade,hide_index=True)
+      todays_trade_updated.text(f"Todays Trade : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
+      
       last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       while now.second <50:
@@ -1076,9 +1183,9 @@ with tab2:
   position_updated.text(f"Position : ")
   position_datatable=st.empty()
 with tab3:
-  open_order_updated=st.empty()
-  open_order_updated.text(f"Open Order : ")
-  open_order=st.empty()
+  todays_trade_updated=st.empty()
+  todays_trade_updated.text(f"Todays Trade : ")
+  todays_trade=st.empty()
 with tab4:
   ind_col1,ind_col2,ind_col3,ind_col4=st.columns([5,1.5,1.5,1.5])
   indicator_list=['St Trade', 'ST_10_2 Trade','ST_10_1 Trade', 'RSI MA Trade','RSI_60 Trade','MACD Trade','PSAR Trade','DI Trade',
