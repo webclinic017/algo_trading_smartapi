@@ -1010,12 +1010,12 @@ def update_ltp_buy_df(buy_df):
 def get_todays_trade():
   try:
     orderbook,pending_orders=get_order_book()
-    todays_trade_datatable.dataframe(orderbook,hide_index=True)
     sell_df=orderbook[(orderbook['transactiontype']=="SELL") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
     sell_df['Remark']='-'
     buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
     buy_df['Exit Time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(hour=15, minute=30, second=0, microsecond=0,tzinfo=None).time()
     buy_df['Status']="Pending"
+    todays_trade_datatable.dataframe(buy_df,hide_index=True)
     for i in ['Sell','Profit','Index SL','Time Frame','Target','Stop Loss','Profit %','Sell Indicator']:buy_df[i]='-'
     for i in range(0,len(buy_df)):
       symbol=buy_df['tradingsymbol'].iloc[i];  updatetime=buy_df['updatetime'].iloc[i];  orderid=buy_df['orderid'].iloc[i]
