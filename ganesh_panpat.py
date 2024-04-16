@@ -356,7 +356,6 @@ def get_order_book():
   order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
   n_pending_orders=pending_orders[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag','ltp']]
   open_order.dataframe(n_pending_orders,hide_index=True)
-  todays_trade_datatable.dataframe(orderbook,hide_index=True)
   open_order_updated.text(f"Pending Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
   return orderbook,pending_orders
 
@@ -1074,7 +1073,6 @@ def get_todays_trade():
     buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp',
                                     'Profit','Target','Stop Loss', 'Profit %', 'Sell Indicator'])
   buy_df=buy_df.sort_values(by = ['Status', 'updatetime'], ascending = [False, True], na_position = 'first')
-  todays_trade_datatable.dataframe(buy_df,hide_index=True)
   todays_trade_updated.text(f"Todays Trade : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
   return buy_df
   
@@ -1251,6 +1249,6 @@ if restart:
   todays_trade=get_todays_trade()
 position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
-#todays_trade=get_todays_trade()
+todays_trade=get_todays_trade()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}  Recheck : {st.session_state['recheck']}")
