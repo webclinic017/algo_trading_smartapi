@@ -1010,6 +1010,7 @@ def update_ltp_buy_df(buy_df):
 def get_todays_trade():
   try:
     orderbook,pending_orders=get_order_book()
+    todays_trade_df.dataframe(orderbook,hide_index=True)
     sell_df=orderbook[(orderbook['transactiontype']=="SELL") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
     sell_df['Remark']='-'
     buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
