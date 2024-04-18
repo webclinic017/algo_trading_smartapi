@@ -525,7 +525,7 @@ def get_trade_info(df):
       #if df['HMA_21'][i-1]< df['HMA_55'][i-1] and df['HMA_21'][i]> df['HMA_55'][i]: df['HMA Trade'][i]="Buy"
       #elif df['HMA_21'][i-1]> df['HMA_55'][i-1] and df['HMA_21'][i]< df['HMA_55'][i]: df['HMA Trade'][i]="Sell"
 
-      #if int(df['RSI'][i])>=60 and int(df['RSI'][i-1]) < 60 : df['RSI_60 Trade'][i]="Buy"
+      if int(df['RSI'][i])>=60 and int(df['RSI'][i-1]) < 60 : df['RSI_60 Trade'][i]="Buy"
 
       #if int(df['RSI'][i])>=60 or int(df['RSI'][i])<=40:
       #  if df['Close'][i-1]<df['EMA_High'][i-1] and df['Close'][i] > df['EMA_High'][i]: df['EMA_High_Low Trade'][i]="Buy"
@@ -853,7 +853,7 @@ def trade_near_options(time_frame):
                   'RSI':opt_data['RSI'].values[-1]}
         st.session_state['options_trade_list'].append(information)
         st.session_state[symbol+'_Trade']=opt_data['Trade'].values[-1]
-        if (opt_data['ST_7_3 Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy"):
+        if (opt_data['ST_7_3 Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy" or opt_data['RSI_60 Trade'][i].values[-1]=="Buy"):
           strike_symbol=option_list.iloc[i]
           stop_loss=int(float(opt_data['Close'].values[-1]*(1-(sl_point/100))))
           target_price=int(float(opt_data['Close'].values[-1]*(1+(target_point/100))))
