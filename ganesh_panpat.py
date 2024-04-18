@@ -860,7 +860,7 @@ def trade_near_options(time_frame):
           indicator =opt_data['Indicator'].values[-1]+":"
           strategy=indicator + " (" +str(stop_loss)+":"+str(target_price)+')'
           buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
-          break
+          #break
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
 
 def is_within_20_minute_gap(target_time):
