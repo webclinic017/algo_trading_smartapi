@@ -829,39 +829,41 @@ def get_near_options(symbol,index_ltp,symbol_expiry):
   
 def trade_near_options(time_frame):
   for symbol in ['NIFTY','BANKNIFTY','SENSEX']:
-    if st.session_state[symbol+'_Trade']=="-":
-      index_ltp=get_ltp_price(symbol)
-      if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
-      elif symbol=="BANKNIFTY":symbol_expiry=st.session_state['bnf_expiry_day']
-      elif symbol=="SENSEX":symbol_expiry=st.session_state['sensex_expiry_day']
-      else:symbol_expiry="-"
-      option_list=get_near_options(symbol,index_ltp,symbol_expiry)
-      for i in range(0,len(option_list)):
-        symbol_name=option_list['symbol'].iloc[i]
-        token_symbol=option_list['token'].iloc[i]
-        exch_seg=option_list['exch_seg'].iloc[i]
-        opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
-        information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
-                  'Symbol':symbol_name,
-                  'Datetime':str(opt_data['Datetime'].values[-1]),
-                  'Close':opt_data['Close'].values[-1],
-                  'Indicator':opt_data['Indicator'].values[-1],
-                  'Trade':opt_data['Trade'].values[-1],
-                  'Trade End':opt_data['Trade End'].values[-1],
-                  'Supertrend':opt_data['Supertrend'].values[-1],
-                  'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
-                  'RSI':opt_data['RSI'].values[-1]}
-        st.session_state['options_trade_list'].append(information)
-        st.session_state[symbol+'_Trade']=opt_data['Trade'].values[-1]
-        if (opt_data['ST_7_3 Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy" or opt_data['RSI_60 Trade'][i].values[-1]=="Buy"):
-          strike_symbol=option_list.iloc[i]
-          stop_loss=int(float(opt_data['Close'].values[-1]*(1-(sl_point/100))))
-          target_price=int(float(opt_data['Close'].values[-1]*(1+(target_point/100))))
-          indicator =opt_data['Indicator'].values[-1]+":"
-          strategy=indicator + " (" +str(stop_loss)+":"+str(target_price)+')'
-          buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
-          #break
-    log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+    try:
+      if st.session_state[symbol+'_Trade']=="-":
+        index_ltp=get_ltp_price(symbol)
+        if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
+        elif symbol=="BANKNIFTY":symbol_expiry=st.session_state['bnf_expiry_day']
+        elif symbol=="SENSEX":symbol_expiry=st.session_state['sensex_expiry_day']
+        else:symbol_expiry="-"
+        option_list=get_near_options(symbol,index_ltp,symbol_expiry)
+        for i in range(0,len(option_list)):
+          symbol_name=option_list['symbol'].iloc[i]
+          token_symbol=option_list['token'].iloc[i]
+          exch_seg=option_list['exch_seg'].iloc[i]
+          opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
+          information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+                    'Symbol':symbol_name,
+                    'Datetime':str(opt_data['Datetime'].values[-1]),
+                    'Close':opt_data['Close'].values[-1],
+                    'Indicator':opt_data['Indicator'].values[-1],
+                    'Trade':opt_data['Trade'].values[-1],
+                    'Trade End':opt_data['Trade End'].values[-1],
+                    'Supertrend':opt_data['Supertrend'].values[-1],
+                    'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
+                    'RSI':opt_data['RSI'].values[-1]}
+          st.session_state['options_trade_list'].append(information)
+          st.session_state[symbol+'_Trade']=opt_data['Trade'].values[-1]
+          if (opt_data['ST_7_3 Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy" or opt_data['RSI_60 Trade'][i].values[-1]=="Buy"):
+            strike_symbol=option_list.iloc[i]
+            stop_loss=int(float(opt_data['Close'].values[-1]*(1-(sl_point/100))))
+            target_price=int(float(opt_data['Close'].values[-1]*(1+(target_point/100))))
+            indicator =opt_data['Indicator'].values[-1]+":"
+            strategy=indicator + " (" +str(stop_loss)+":"+str(target_price)+')'
+            buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
+            #break
+      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+    except:pass
 
 def is_within_20_minute_gap(target_time):
     current_time = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(tzinfo=None,microsecond=0)
@@ -1077,6 +1079,24 @@ def get_todays_trade(orderbook):
   todays_trade_datatable.dataframe(n_buy_df,hide_index=True)
   todays_trade_updated.text(f"Todays Trade : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)} PNL: {pnl}")
   return buy_df
+
+def trail_sl_todays_trade(buy_df):
+  for i in range(0,len(buy_df)):
+    if buy_df['Status'].iloc[i]=="Pending":
+      try:
+        symboltoken=buy_df['symboltoken'].iloc[i]
+        tradingsymbol=buy_df['tradingsymbol'].iloc[i]
+        exch_seg=buy_df['exchange'].iloc[i]
+        qty=buy_df['quantity'].iloc[i]
+        ltp_price=buy_df['ltp'].iloc[i]
+        sl=buy_df['ltp'].iloc[i]
+        orderid=buy_df['orderid'].iloc[i]
+        opt_data=get_historical_data(symbol=tradingsymbol,interval="Five_Minute",token=symboltoken,exch_seg=exch_seg)
+        if (opt_data['ST_7_3 Trade'].values[-1]=="Sell" or opt_data['ST_10_2 Trade'].values[-1]=="Sell"):
+          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,ltp_price,ordertag=str(orderid)+' Indicator Exit:'+str(buy_df['ltp'].iloc[i]),producttype='CARRYFORWARD')
+      except:pass
+  return buy_df
+        
 def check_pnl_todays_trade(buy_df):
   for i in range(0,len(buy_df)):
       if buy_df['Status'].iloc[i]=="Pending":
@@ -1093,6 +1113,7 @@ def check_pnl_todays_trade(buy_df):
         elif int(buy_df['ltp'].iloc[i])> int(buy_df['Target'].iloc[i]):
           exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag=str(orderid)+' Target Hit:'+str(buy_df['ltp'].iloc[i]),producttype='CARRYFORWARD')
   return buy_df
+  
 def recheck_login():
   try:
     need_relogin=True
@@ -1152,7 +1173,9 @@ def loop_code():
       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
       if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
         close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
-      if now.minute%5==0: trail_sl()
+      if now.minute%5==0:
+        trail_sl()
+        trail_sl_todays_trade(todays_trade)
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       recheck_login()
       last_login.text(f"Login: {st.session_state['login_time']} Last Run : {now.time().replace(microsecond=0)} Recheck : {st.session_state['recheck']} {st.session_state['market_open']}")
