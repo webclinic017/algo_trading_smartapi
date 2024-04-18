@@ -983,21 +983,17 @@ def update_target_sl(buy_df):
   pattern = r'\((\d+):(\d+)\)'
   for i in range(0,len(buy_df)):
     try:
-      buy_df['Stop Loss'].iloc[i]=0
-      buy_df['Target'].iloc[i]=0
+      buy_df['Stop Loss'].iloc[i]=int(float(buy_df['price'].iloc[i]*0.7))
+      buy_df['Target'].iloc[i]=int(float(buy_df['price'].iloc[i]*1.5))
       matches = re.findall(pattern, buy_df['ordertag'].iloc[i])
       for match in matches:
         if match[0]>0: buy_df['Stop Loss'].iloc[i] =match[0]
         if match[1]>0: buy_df['Target'].iloc[i]=match[1]
-      if buy_df['Stop Loss'].iloc[i]==0 or buy_df['Target'].iloc[i]==0:
-        if "(" in buy_df['ordertag'].iloc[i] and ")" in buy_df['ordertag'].iloc[i]:
-          sl=(buy_df['ordertag'].iloc[i].split('('))[1].split(':')[0]
-          tgt=(buy_df['ordertag'].iloc[i].split(sl+':'))[1].split(')')[0]
-          buy_df['Stop Loss'].iloc[i]=sl
-          buy_df['Target'].iloc[i]=tgt
-        elif buy_df['Stop Loss'].iloc[i]==0 or buy_df['Target'].iloc[i]==0:
-          buy_df['Stop Loss'].iloc[i]=int(float(buy_df['price'].iloc[i]*0.7))
-          buy_df['Target'].iloc[i]=int(float(buy_df['price'].iloc[i]*1.5))
+        #if "(" in buy_df['ordertag'].iloc[i] and ")" in buy_df['ordertag'].iloc[i]:
+          #sl=(buy_df['ordertag'].iloc[i].split('('))[1].split(':')[0]
+          #tgt=(buy_df['ordertag'].iloc[i].split(sl+':'))[1].split(')')[0]
+          #buy_df['Stop Loss'].iloc[i]=sl
+          #buy_df['Target'].iloc[i]=tgt
     except Exception as e:
       print('Error found in ',e)
   return buy_df
