@@ -1006,9 +1006,18 @@ def update_ltp_buy_df(buy_df):
     symboltoken=int(buy_df['symboltoken'].iloc[i])
     n_ltp_df=ltp_df[ltp_df['symbolToken']==symboltoken]
     if len(n_ltp_df)!=0:
-      buy_df['LTP'].iloc[i]=n_ltp_df['ltp'].iloc[0]
+      buy_df['ltp'].iloc[i]=n_ltp_df['ltp'].iloc[0]
     else:
-      buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
+      buy_df['ltp'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
+  for i in range(0,len(buy_df)):
+  if buy_df['Status'].iloc[i]!='Closed':
+    #buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
+    buy_df['Profit'].iloc[i]=float((buy_df['ltp'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
+    buy_df['Profit %'].iloc[i]=((buy_df['ltp'].iloc[i]/buy_df['price'].iloc[i])-1)*100
+  else:
+    buy_df['Profit'].iloc[i]=float((buy_df['Sell'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
+    buy_df['Profit %'].iloc[i]=((buy_df['Sell'].iloc[i]/buy_df['price'].iloc[i])-1)*100
+    buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
   return buy_df
 
 def get_todays_trade(orderbook):
@@ -1149,6 +1158,11 @@ def loop_code():
       while now.second <50:
         index_ltp_string.text(f"Index Ltp: {print_ltp()}")
         now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
+        todays_trade=update_ltp_buy_df(todays_trade)
+        n_buy_df=todays_trade[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp', 'Profit','Target',
+                               'Stop Loss', 'Profit %', 'Sell Indicator']]
+        todays_trade_datatable.dataframe(n_buy_df,hide_index=True)
+        todays_trade_updated.text(f"Todays Trade : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)} PNL: {pnl}")
         time.sleep(1)
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
