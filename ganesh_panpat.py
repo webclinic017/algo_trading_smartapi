@@ -1015,9 +1015,9 @@ def update_ltp_buy_df(buy_df):
       buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
   return buy_df
 
-def get_todays_trade():
+def get_todays_trade(orderbook):
   try:
-    orderbook,pending_orders=get_order_book()
+    #orderbook,pending_orders=get_order_book()
     sell_df=orderbook[(orderbook['transactiontype']=="SELL") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
     sell_df['Remark']='-'
     buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
@@ -1059,7 +1059,7 @@ def get_todays_trade():
         buy_df['Profit'].iloc[i]=float((buy_df['Sell'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
         buy_df['Profit %'].iloc[i]=((buy_df['Sell'].iloc[i]/buy_df['price'].iloc[i])-1)*100
     buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
-    buy_df=buy_df[['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp', 'Profit','Target',
+    buy_df=buy_df[['orderid','updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp', 'Profit','Target',
        'Stop Loss', 'Profit %', 'Sell Indicator']]
     for i in range(0,len(buy_df)):
       if buy_df['Status'].iloc[i]=="Pending":
@@ -1069,11 +1069,12 @@ def get_todays_trade():
         qty=buy_df['quantity'].iloc[i]
         ltp_price=buy_df['ltp'].iloc[i]
         sl=buy_df['ltp'].iloc[i]
+        orderid=buy_df['orderid'].iloc[i]
         if int(sl)==0:ltp_price=1;sl=1
         if int(buy_df['ltp'].iloc[i])< int(buy_df['Stop Loss'].iloc[i]):
-          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='SL Hit:'+str(buy_df['ltp'].iloc[i]),producttype='CARRYFORWARD')
+          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag=str(orderid)+' SL Hit:'+str(buy_df['ltp'].iloc[i]),producttype='CARRYFORWARD')
         elif int(buy_df['ltp'].iloc[i])> int(buy_df['Target'].iloc[i]):
-          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Target Hit:'+str(buy_df['ltp'].iloc[i]),producttype='CARRYFORWARD')
+          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag=str(orderid)+' Target Hit:'+str(buy_df['ltp'].iloc[i]),producttype='CARRYFORWARD')
   except:
     buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'ltp',
                                     'Profit','Target','Stop Loss', 'Profit %', 'Sell Indicator'])
@@ -1140,7 +1141,7 @@ def loop_code():
         future_trade()
       position,open_position=get_open_position()
       orderbook,pending_orders=get_order_book()
-      todays_trade=get_todays_trade()
+      todays_trade=get_todays_trade(orderbook)
       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
       if nf_5m_trade_end!="-" or bnf_5m_trade_end!="-" or sensex_5m_trade_end!="-":
         close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
@@ -1255,9 +1256,9 @@ if bnf_pe:
 if close_all:
   closing_trade()
 if restart:
-  todays_trade=get_todays_trade()
+  pass
 position,open_position=get_open_position()
 orderbook,pending_orders=get_order_book()
-todays_trade=get_todays_trade()
+todays_trade=get_todays_trade(orderbook)
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 last_login.text(f"Login: {st.session_state['login_time']} Last Run : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}  Recheck : {st.session_state['recheck']}")
