@@ -1159,7 +1159,7 @@ def loop_code():
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       while now.second <50:
         index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-        if now.second <30
+        if now.second <30:
           todays_trade=update_ltp_buy_df(todays_trade)
           todays_trade=check_pnl_todays_trade(todays_trade)
           pnl=int(todays_trade['Profit'].sum())
