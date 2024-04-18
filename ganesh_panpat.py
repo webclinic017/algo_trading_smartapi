@@ -900,28 +900,30 @@ def future_trade():
       except Exception as e:pass
   
 def index_trade(symbol,interval):
-  fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
-  trade=str(fut_data['Trade'].values[-1])
-  if trade!="-":
-    indicator_strategy=fut_data['Indicator'].values[-1]
-    indexLtp=fut_data['Close'].values[-1]
-    interval_yf=fut_data['Time Frame'].values[-1]
-    indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(symbol,indexLtp=indexLtp)
-    if trade=="Buy" : buy_option(ce_strike_symbol,indicator_strategy,interval)
-    elif trade=="Sell" : buy_option(pe_strike_symbol,indicator_strategy,interval)
-  trade_end=str(fut_data['Trade End'].values[-1])
-  information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
-              'Symbol':symbol,
-              'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
-              'Indicator':fut_data['Indicator'].values[-1],
-              'Trade':fut_data['Trade'].values[-1],
-              'Trade End':fut_data['Trade End'].values[-1],
-              'Supertrend':fut_data['Supertrend'].values[-1],
-              'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],
-              'RSI':fut_data['RSI'].values[-1]}
-  st.session_state['options_trade_list'].append(information)
-  st.session_state[symbol +"_Trade"]=trade
-  return fut_data.tail(1),trade,trade_end
+  try:
+    fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
+    trade=str(fut_data['Trade'].values[-1])
+    if trade!="-":
+      indicator_strategy=fut_data['Indicator'].values[-1]
+      indexLtp=fut_data['Close'].values[-1]
+      interval_yf=fut_data['Time Frame'].values[-1]
+      indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(symbol,indexLtp=indexLtp)
+      if trade=="Buy" : buy_option(ce_strike_symbol,indicator_strategy,interval)
+      elif trade=="Sell" : buy_option(pe_strike_symbol,indicator_strategy,interval)
+    trade_end=str(fut_data['Trade End'].values[-1])
+    information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+                'Symbol':symbol,
+                'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
+                'Indicator':fut_data['Indicator'].values[-1],
+                'Trade':fut_data['Trade'].values[-1],
+                'Trade End':fut_data['Trade End'].values[-1],
+                'Supertrend':fut_data['Supertrend'].values[-1],
+                'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],
+                'RSI':fut_data['RSI'].values[-1]}
+    st.session_state['options_trade_list'].append(information)
+    st.session_state[symbol +"_Trade"]=trade
+    return fut_data.tail(1),trade,trade_end
+  except:pass
 
 def closing_trade():
   position,open_position=get_open_position()
