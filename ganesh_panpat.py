@@ -995,7 +995,7 @@ def update_target_sl(buy_df):
           tgt=(buy_df['ordertag'].iloc[i].split(sl+':'))[1].split(')')[0]
           buy_df['Stop Loss'].iloc[i]=sl
           buy_df['Target'].iloc[i]=tgt
-        else buy_df['Stop Loss'].iloc[i]==0 or buy_df['Target'].iloc[i]==0:
+        elif buy_df['Stop Loss'].iloc[i]==0 or buy_df['Target'].iloc[i]==0:
           buy_df['Stop Loss'].iloc[i]=int(float(buy_df['price'].iloc[i]*0.7))
           buy_df['Target'].iloc[i]=int(float(buy_df['price'].iloc[i]*1.5))
     except Exception as e:
