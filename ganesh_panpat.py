@@ -552,7 +552,8 @@ def get_trade_info(df):
           (ST_10_2=="Buy" and 'ST_10_2 Trade' in five_buy_indicator) or 
           (ST=="Buy" and 'St Trade' in five_buy_indicator) or
           (MACD=="Buy" and 'MACD Trade' in five_buy_indicator) or
-           (TEMA_EMA_9=="Buy" and 'TEMA_EMA_9 Trade' in five_buy_indicator)):
+          (TEMA_EMA_9=="Buy" and 'TEMA_EMA_9 Trade' in five_buy_indicator) or 
+          (RSI_60=="Buy" and 'RSI_60 Trade' in five_buy_indicator)):
             df['Trade'][i]="Buy"
             df['Trade End'][i]="Buy"
       elif ((ST_10_1=="Sell" and 'ST_10_1 Trade' in five_buy_indicator) or 
@@ -854,14 +855,14 @@ def trade_near_options(time_frame):
                     'RSI':opt_data['RSI'].values[-1]}
           st.session_state['options_trade_list'].append(information)
           st.session_state[symbol+'_Trade']=opt_data['Trade'].values[-1]
-          if (opt_data['ST_7_3 Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy" or opt_data['RSI_60 Trade'][i].values[-1]=="Buy"):
+          if (opt_data['ST_7_3 Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy"):
             strike_symbol=option_list.iloc[i]
             stop_loss=int(float(opt_data['Close'].values[-1]*(1-(sl_point/100))))
             target_price=int(float(opt_data['Close'].values[-1]*(1+(target_point/100))))
             indicator =opt_data['Indicator'].values[-1]+":"
             strategy=indicator + " (" +str(stop_loss)+":"+str(target_price)+')'
             buy_option(symbol=strike_symbol,indicator_strategy=strategy,interval="5m",index_sl="-")
-            #break
+            break
       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     except:pass
 
@@ -1247,7 +1248,7 @@ with tab4:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX'],['NIFTY','BANKNIFTY','SENSEX'])
     fut_list=st.multiselect('Select Future',['SILVERMIC','SILVER'],[])
     time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M', 'OPT:5M', 'OPT:15M','IDX:1M'],['IDX:5M','OPT:5M'])
-    five_buy_indicator = st.multiselect('Index Indicator',indicator_list,['St Trade', 'ST_10_2 Trade','MACD Trade','TEMA_EMA_9 Trade'])
+    five_buy_indicator = st.multiselect('Index Indicator',indicator_list,['St Trade', 'ST_10_2 Trade','MACD Trade','TEMA_EMA_9 Trade',"RSI_60 Trade"])
     option_buy_indicator = st.multiselect('Option Indicator',indicator_list,['St Trade', 'ST_10_2 Trade'])
     #three_buy_indicator = st.multiselect('Three Minute Indicator',indicator_list,[])
     #one_buy_indicator = st.multiselect('One Minute Indicator',indicator_list,[])
