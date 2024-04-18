@@ -1010,14 +1010,14 @@ def update_ltp_buy_df(buy_df):
     else:
       buy_df['ltp'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
   for i in range(0,len(buy_df)):
-  if buy_df['Status'].iloc[i]!='Closed':
-    #buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
-    buy_df['Profit'].iloc[i]=float((buy_df['ltp'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
-    buy_df['Profit %'].iloc[i]=((buy_df['ltp'].iloc[i]/buy_df['price'].iloc[i])-1)*100
-  else:
-    buy_df['Profit'].iloc[i]=float((buy_df['Sell'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
-    buy_df['Profit %'].iloc[i]=((buy_df['Sell'].iloc[i]/buy_df['price'].iloc[i])-1)*100
-    buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
+    if buy_df['Status'].iloc[i]!='Closed':
+      #buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
+      buy_df['Profit'].iloc[i]=float((buy_df['ltp'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
+      buy_df['Profit %'].iloc[i]=((buy_df['ltp'].iloc[i]/buy_df['price'].iloc[i])-1)*100
+    else:
+      buy_df['Profit'].iloc[i]=float((buy_df['Sell'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
+      buy_df['Profit %'].iloc[i]=((buy_df['Sell'].iloc[i]/buy_df['price'].iloc[i])-1)*100
+      buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
   return buy_df
 
 def get_todays_trade(orderbook):
