@@ -1113,10 +1113,10 @@ def check_pnl_todays_trade(buy_df):
         orderid=buy_df['orderid'].iloc[i]
         if int(sl)==0:ltp_price=1;sl=1
         if int(buy_df['ltp'].iloc[i])< int(buy_df['Stop Loss'].iloc[i]):
-          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='SL Hit:'+str(buy_df['ltp'].iloc[i])+" "+str(orderid)+,producttype='CARRYFORWARD')
+          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='SL Hit:'+str(buy_df['ltp'].iloc[i])+" "+str(orderid),producttype='CARRYFORWARD')
           buy_df['Status'].iloc[i]="SL Hit"
         elif int(buy_df['ltp'].iloc[i])> int(buy_df['Target'].iloc[i]):
-          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Target Hit:'+str(buy_df['ltp'].iloc[i])+" "+str(orderid)+,producttype='CARRYFORWARD')
+          exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Target Hit:'+str(buy_df['ltp'].iloc[i])+" "+str(orderid),producttype='CARRYFORWARD')
           buy_df['Status'].iloc[i]="Target Hit"
   return buy_df
   
