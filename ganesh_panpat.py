@@ -1097,6 +1097,7 @@ def trail_sl_todays_trade(buy_df):
         opt_data=get_historical_data(symbol=tradingsymbol,interval="Five_Minute",token=symboltoken,exch_seg=exch_seg)
         if (opt_data['ST_7_3 Trade'].values[-1]=="Sell" or opt_data['ST_10_2 Trade'].values[-1]=="Sell"):
           exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,ltp_price,ordertag=str(orderid)+' Indicator Exit:'+str(buy_df['ltp'].iloc[i]),producttype='CARRYFORWARD')
+          buy_df['Status'].iloc[i]="Indicator Exit"
       except:pass
   return buy_df
         
@@ -1113,8 +1114,10 @@ def check_pnl_todays_trade(buy_df):
         if int(sl)==0:ltp_price=1;sl=1
         if int(buy_df['ltp'].iloc[i])< int(buy_df['Stop Loss'].iloc[i]):
           exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag=str(orderid)+' SL Hit:'+str(buy_df['ltp'].iloc[i]),producttype='CARRYFORWARD')
+          buy_df['Status'].iloc[i]="SL Hit"
         elif int(buy_df['ltp'].iloc[i])> int(buy_df['Target'].iloc[i]):
           exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag=str(orderid)+' Target Hit:'+str(buy_df['ltp'].iloc[i]),producttype='CARRYFORWARD')
+          buy_df['Status'].iloc[i]="Target Hit"
   return buy_df
   
 def recheck_login():
