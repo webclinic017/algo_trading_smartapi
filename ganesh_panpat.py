@@ -59,11 +59,20 @@ def telegram_bot_sendtext(bot_message):
                 '&parse_mode=HTML&text=' + bot_message
   response = requests.get(send_text)
 
+
+
+
 username=st.secrets["username"]
 pwd=st.secrets["pwd"]
 apikey=st.secrets["apikey"]
 token=st.secrets["token"]
 user=st.secrets["user"]
+username = 'G93179'
+pwd = '4789'
+apikey = 'CjOKjC5g'
+token='U4EAZJ3L44CNJHNUZ56R22TPKI'
+user='Ganesh'
+
 LIVE_FEED_JSON= {}
 st.session_state['recheck']="-"
 st.session_state['market_open']="Open"
@@ -73,11 +82,11 @@ st.session_state['BANKNIFTY_Trade']="-"
 st.session_state['SENSEX_Trade']="-"
 #Angel Login
 def angel_login():
-  username=st.secrets["username"]
-  pwd=st.secrets["pwd"]
-  apikey=st.secrets["apikey"]
-  token=st.secrets["token"]
-  user=st.secrets["user"]
+  username = 'G93179'
+  pwd = '4789'
+  apikey = 'CjOKjC5g'
+  token='U4EAZJ3L44CNJHNUZ56R22TPKI'
+  user='Ganesh'
   obj=SmartConnect(api_key=apikey)
   data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
   refreshToken= data['data']['refreshToken']
