@@ -74,7 +74,8 @@ st.session_state['BANKNIFTY_Trade']="-"
 st.session_state['SENSEX_Trade']="-"
 #Angel Login
 def angel_login():
-  #obj=SmartConnect(api_key=apikey)
+  obj=SmartConnect(api_key=apikey)
+  FEED_TOKEN = None;TOKEN_MAP = None;SMART_API_OBJ = None
   data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
   refreshToken= data['data']['refreshToken']
   feedToken=obj.getfeedToken()
@@ -82,16 +83,12 @@ def angel_login():
   aa= userProfile.get('data')
   st.session_state['user_name']=aa.get('name').title()
   st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
-  st.session_state['access_token']=obj.access_token
-  st.session_state['refresh_token']=obj.refresh_token
-  st.session_state['feed_token']=obj.feed_token
-  st.session_state['userId']=obj.userId
-  st.session_state['api_key']=apikey
   logger.info('Login Sucess')
   return obj
 
 obj=SmartConnect(api_key=apikey)
 if 'user_name' not in st.session_state:
+  FEED_TOKEN = None;TOKEN_MAP = None;SMART_API_OBJ = None
   data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
   refreshToken= data['data']['refreshToken']
   feedToken=obj.getfeedToken()
@@ -99,12 +96,6 @@ if 'user_name' not in st.session_state:
   aa= userProfile.get('data')
   st.session_state['user_name']=aa.get('name').title()
   st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
-  st.session_state['access_token']=obj.access_token
-  st.session_state['refresh_token']=obj.refresh_token
-  st.session_state['feed_token']=obj.feed_token
-  st.session_state['userId']=obj.userId
-  st.session_state['api_key']=apikey
-  logger.info('Login Sucess')
 
 if 'five_p_login' not in st.session_state:
   try:
