@@ -74,7 +74,7 @@ st.session_state['BANKNIFTY_Trade']="-"
 st.session_state['SENSEX_Trade']="-"
 #Angel Login
 def angel_login():
-  obj=SmartConnect(api_key=apikey)
+  #obj=SmartConnect(api_key=apikey)
   data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
   refreshToken= data['data']['refreshToken']
   feedToken=obj.getfeedToken()
