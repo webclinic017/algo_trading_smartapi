@@ -94,6 +94,7 @@ def angel_login():
   logger.info('Login Sucess')
   obj=SmartConnect(api_key=st.session_state['api_key'],access_token=st.session_state['access_token'],
                  refresh_token=st.session_state['refresh_token'],feed_token=st.session_state['feed_token'],userId=st.session_state['userId'])
+  return obj
 
 obj=SmartConnect(api_key=apikey)
 if 'user_name' not in st.session_state:
