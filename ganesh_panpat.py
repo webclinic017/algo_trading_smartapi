@@ -119,7 +119,7 @@ if "User_Name" not in st.session_state:
     user=aa.get('name').title().split(' ')[0]
     st.session_state['User_Name']=user
   except Exception as e:
-    print(f"Unable to login error in angel_login {e}")
+    st.write(f"Unable to login error in angel_login {e}")
 
 header_text.header(f"Welcome {st.session_state['User_Name']}")
 
