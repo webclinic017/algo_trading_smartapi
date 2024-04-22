@@ -77,17 +77,32 @@ LIVE_FEED_JSON= {}
 SMART_WEB = None
 CORRELATION_ID = 'Wdn749NDjMfh23'  # ANY random string
 FEED_MODE = 1
-
-obj=SmartConnect(api_key=apikey)
-FEED_TOKEN = None;TOKEN_MAP = None;SMART_API_OBJ = None
-global user_name,feedToken
-data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
-refreshToken= data['data']['refreshToken']
-feedToken=obj.getfeedToken()
-userProfile= obj.getProfile(refreshToken)
-aa= userProfile.get('data')
-print(f"Welcome {aa.get('name').title()}...")
-user=aa.get('name').title().split(' ')[0]
+username = 'G93179'; pwd = '4789'; apikey = 'Rz6IiOsd'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
+LIVE_FEED_JSON= {}
+SMART_WEB = None
+CORRELATION_ID = 'Wdn749NDjMfh23'  # ANY random string
+FEED_MODE = 1
+try:
+  obj=SmartConnect(api_key=apikey)
+  FEED_TOKEN = None;TOKEN_MAP = None;SMART_API_OBJ = None
+  global user_name,feedToken
+  data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
+  refreshToken= data['data']['refreshToken']
+  feedToken=obj.getfeedToken()
+  userProfile= obj.getProfile(refreshToken)
+  aa= userProfile.get('data')
+  st.user_name=aa.get('name').title()
+  print(f"Welcome {aa.get('name').title()}...")
+  user=aa.get('name').title().split(' ')[0]
+  st.session_state['user_name']=aa.get('name').title()
+  st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
+  st.session_state['access_token']=obj.access_token
+  st.session_state['refresh_token']=obj.refresh_token
+  st.session_state['feed_token']=obj.feed_token
+  st.session_state['userId']=obj.userId
+  st.session_state['api_key']=apikey
+except Exception as e:
+  print(f"Unable to login error in angel_login {e}")
 
 if 'five_p_login' not in st.session_state:
   try:
