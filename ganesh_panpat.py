@@ -73,39 +73,21 @@ st.session_state['NIFTY_Trade']="-"
 st.session_state['BANKNIFTY_Trade']="-"
 st.session_state['SENSEX_Trade']="-"
 #Angel Login
-#Angel Login
-username,pwd,apikey,token,user=get_user_pwd("Ganesh")
 LIVE_FEED_JSON= {}
 SMART_WEB = None
 CORRELATION_ID = 'Wdn749NDjMfh23'  # ANY random string
 FEED_MODE = 1
-def angel_login():
-  try:
-    obj=SmartConnect(api_key=apikey)
-    FEED_TOKEN = None;TOKEN_MAP = None;SMART_API_OBJ = None
-    global user_name,feedToken
-    data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
-    refreshToken= data['data']['refreshToken']
-    feedToken=obj.getfeedToken()
-    userProfile= obj.getProfile(refreshToken)
-    aa= userProfile.get('data')
-    print(f"Welcome {aa.get('name').title()}...")
-    user=aa.get('name').title().split(' ')[0]
-    return obj
-  except Exception as e:
-    print(f"Unable to login error in angel_login {e}")
-obj=angel_login()
 
 obj=SmartConnect(api_key=apikey)
-if 'user_name' not in st.session_state:
-  FEED_TOKEN = None;TOKEN_MAP = None;SMART_API_OBJ = None
-  data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
-  refreshToken= data['data']['refreshToken']
-  feedToken=obj.getfeedToken()
-  userProfile= obj.getProfile(refreshToken)
-  aa= userProfile.get('data')
-  st.session_state['user_name']=aa.get('name').title()
-  st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
+FEED_TOKEN = None;TOKEN_MAP = None;SMART_API_OBJ = None
+global user_name,feedToken
+data = obj.generateSession(username,pwd,pyotp.TOTP(token).now())
+refreshToken= data['data']['refreshToken']
+feedToken=obj.getfeedToken()
+userProfile= obj.getProfile(refreshToken)
+aa= userProfile.get('data')
+print(f"Welcome {aa.get('name').title()}...")
+user=aa.get('name').title().split(' ')[0]
 
 if 'five_p_login' not in st.session_state:
   try:
