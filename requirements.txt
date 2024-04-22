@@ -1,4 +1,4 @@
-smartapi-python
+smartapi-python==1.4.8
 websocket-client
 pandas_ta
 requests
