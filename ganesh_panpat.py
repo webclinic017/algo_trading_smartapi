@@ -76,7 +76,7 @@ with tab8:
   download_data=st.button("Download Historical Data")
 
 #Main App
-from SmartApi import SmartConnect
+from SmartApi.smartConnect import SmartConnect
 import threading; import pandas as pd
 import pandas_ta as pdta
 import json
