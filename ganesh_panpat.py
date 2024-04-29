@@ -5,7 +5,6 @@ st.markdown("""
     .block-container {padding-top: 0.5rem;padding-bottom: 0rem;padding-left: 2rem;padding-right: 5rem;}
   </style>
   """, unsafe_allow_html=True)
-from SmartApi import SmartConnect
 import pyotp
 from logzero import logger
 from py5paisa import FivePaisaClient
