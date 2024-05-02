@@ -199,7 +199,8 @@ def get_yf_data(symbol,interval):
   df['Datetime'] = pd.to_datetime(df['Datetime']).dt.time
   df['Symbol']=symbol
   df['Time Frame']=interval
-  df=df[['Symbol','Date','Datetime','Open','High','Low','Close','Volume']]
+  df['Time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time()
+  df=df[['Symbol','Time','Date','Datetime','Open','High','Low','Close','Volume']]
   df=calculate_indicator(df)
   df=df.round(2)
   return df.tail(1)
