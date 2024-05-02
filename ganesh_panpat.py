@@ -216,6 +216,6 @@ def run():
     order_datatable.dataframe(df,hide_index=True)
     order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-    time.sleep(60-now.second)
+    time.sleep(60-now.second+1)
 if start==True:
   run()
