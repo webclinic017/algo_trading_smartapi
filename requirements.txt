@@ -1,7 +1,8 @@
-pyotp
-pandas_ta
-requests
+altair
+numpy
+pandas
+pydeck
+streamlit
 yfinance
-logzero
-py5paisa
-websocket
+pandas_ta
+numpy
