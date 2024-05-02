@@ -6,3 +6,8 @@ streamlit
 yfinance
 pandas_ta
 numpy
+smartapi-python
+websocket-client
+requests
+pyotp
+logzero
