@@ -37,6 +37,3 @@ else:
   aa= userProfile.get('data')
   st.write(f"Welcome {aa.get('name').title()}")
   break
-except Exception as e:
-  time.sleep(2)
-  print(f"Unable to login error in angel_login {e}")
