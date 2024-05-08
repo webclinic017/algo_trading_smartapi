@@ -21,11 +21,7 @@ pwd = '4789'
 apikey = 'Rz6IiOsd'
 token='U4EAZJ3L44CNJHNUZ56R22TPKI'
 obj = SmartConnect(apikey)
-try:totp = pyotp.TOTP(token).now()
-except Exception as e:
-  time.sleep(2)
-  logger.error("Invalid Token: The provided token is not valid.")
-  raise e
+totp = pyotp.TOTP(token).now()
 correlation_id = "abcde"
 data = obj.generateSession(username, pwd, totp)
 if data['status'] == False:logger.error(data)
