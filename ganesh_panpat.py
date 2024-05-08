@@ -22,6 +22,7 @@ apikey = 'Rz6IiOsd'
 token='U4EAZJ3L44CNJHNUZ56R22TPKI'
 obj = SmartConnect(apikey)
 totp = pyotp.TOTP(token).now()
+st.write(totp)
 correlation_id = "abcde"
 data = obj.generateSession(username, pwd, totp)
 if data['status'] == False:logger.error(data)
