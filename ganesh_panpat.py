@@ -141,30 +141,24 @@ def telegram_bot_sendtext(bot_message):
   except Exception as e:
     pass
 
-def angel_login():
-  try:
-    user='Ganesh'; username = 'G93179'; pwd = '4789'; apikey = 'Rz6IiOsd'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
-    obj = SmartConnect(apikey)
-    totp = pyotp.TOTP(token).now()
-    correlation_id = "abcde"
-    data = obj.generateSession(username, pwd, totp)
-    if data['status'] == False:logger.error(data)
-    else:
-      authToken = data['data']['jwtToken']
-      refreshToken = data['data']['refreshToken']
-      feedToken = obj.getfeedToken()
-      res = obj.getProfile(refreshToken)
-      obj.generateToken(refreshToken)
-      userProfile= obj.getProfile(refreshToken)
-      aa= userProfile.get('data')
-      logger.info(aa.get('name').title())
-      st.session_state['Logged_in']=aa.get('name').title()
-      st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
-      st.session_state['last_check']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
-    return obj
-  except Exception as e:
-    print('Login Error')
-    return obj
+user='Ganesh'; username = 'G93179'; pwd = '4789'; apikey = 'Rz6IiOsd'; token='U4EAZJ3L44CNJHNUZ56R22TPKI'
+obj = SmartConnect(apikey)
+totp = pyotp.TOTP(token).now()
+correlation_id = "abcde"
+data = obj.generateSession(username, pwd, totp)
+if data['status'] == False:logger.error(data)
+  else:
+    authToken = data['data']['jwtToken']
+    refreshToken = data['data']['refreshToken']
+    feedToken = obj.getfeedToken()
+    res = obj.getProfile(refreshToken)
+    obj.generateToken(refreshToken)
+    userProfile= obj.getProfile(refreshToken)
+    aa= userProfile.get('data')
+    logger.info(aa.get('name').title())
+    st.session_state['Logged_in']=aa.get('name').title()
+    st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
+    st.session_state['last_check']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
 
 #Order
 def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',
@@ -994,8 +988,7 @@ def get_todays_trade(orderbook=None):
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
   todays_trade_updated.text(f"Pending Orderbook : {now_time} Profit: {int(buy_df['Profit'].sum())}")
   return buy_df
-
-if st.session_state['Logged_in']=="Guest":obj=angel_login()
+  
 if algo_state:
   loop_code()
 if nf_ce:
