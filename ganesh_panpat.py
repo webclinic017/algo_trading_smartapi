@@ -985,7 +985,7 @@ def get_todays_trade(orderbook=None):
                                       'Profit','Target','SL', 'Profit %', 'Sell Indicator']]
   todays_trade_datatable.dataframe(buy_df,hide_index=True)
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
-  todays_trade_updated.text(f"Pending Orderbook : {now_time} Profit: {int(buy_df['Profit'].sum())}")
+  todays_trade_updated.text(f"Todays Trade : {now_time} Profit: {int(buy_df['Profit'].sum())}")
   return buy_df
   
 if algo_state:
