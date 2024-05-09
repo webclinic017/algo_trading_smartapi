@@ -95,14 +95,14 @@ with tab4:
   open_order=st.empty()
 with tab5:
   ind_col1,ind_col2,ind_col3,ind_col4=st.columns([5,1.5,1.5,1.5])
-  indicator_list=['St Trade', 'ST_10_2 Trade','ST_10_1 Trade', 'RSI MA Trade','RSI_60 Trade','MACD Trade','PSAR Trade','DI Trade',
+  indicator_list=['ST_7_3 Trade', 'ST_10_2 Trade','ST_10_1 Trade', 'RSI MA Trade','RSI_60 Trade','MACD Trade','PSAR Trade','DI Trade',
                   'MA Trade','EMA Trade','EMA_5_7 Trade','MA 21 Trade','HMA Trade','RSI_60 Trade','EMA_High_Low Trade','Two Candle Theory','TEMA_EMA_9 Trade']
   with ind_col1:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX'],['NIFTY','BANKNIFTY','SENSEX'])
     fut_list=st.multiselect('Select Future',['SILVERMIC','SILVER'],[])
     time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M'],['IDX:5M','OPT:5M'])
-    index_indicator = st.multiselect('Index Indicator',indicator_list,['St Trade', 'ST_10_2 Trade','MACD Trade','TEMA_EMA_9 Trade'])
-    option_indicator = st.multiselect('Option Indicator',indicator_list,['St Trade', 'ST_10_2 Trade'])
+    index_indicator = st.multiselect('Index Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade','TEMA_EMA_9 Trade'])
+    option_indicator = st.multiselect('Option Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
     three_buy_indicator = st.multiselect('Three Minute Indicator',indicator_list,[])
     one_buy_indicator = st.multiselect('One Minute Indicator',indicator_list,[])
     with ind_col2:
@@ -685,7 +685,7 @@ def trade_near_options(time_frame):
         exch_seg=option_list['exch_seg'].iloc[i]
         opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
         information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
-              'Symbol':symbol,
+              'Symbol':symbol_name,
               'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
               'Indicator':opt_data['Indicator'].values[-1],
               'Trade':opt_data['Trade'].values[-1],
@@ -996,3 +996,7 @@ def get_todays_trade(orderbook=None):
 if algo_state:
   obj=angel_login()
   loop_code()
+if nf_ce:
+  obj=angel_login()
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp="-")
+  buy_option(ce_strike_symbol,indicator_strategy,interval)
