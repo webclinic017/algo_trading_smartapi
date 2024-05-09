@@ -264,8 +264,8 @@ def get_order_book():
       if orderbook['status']==True:
         orderbook=obj.orderBook()['data']
         orderbook=pd.DataFrame(orderbook)
-        orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
-        orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [True], na_position = 'first')
+        #orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
+        #orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [True], na_position = 'first')
         break
     except Exception as e:
       print(f"Error in get_order_book {e}")
@@ -999,4 +999,4 @@ if algo_state:
 if nf_ce:
   obj=angel_login()
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp="-")
-  buy_option(ce_strike_symbol,indicator_strategy,interval)
+  buy_option(ce_strike_symbol,'Manual Buy','5m)
