@@ -147,18 +147,18 @@ totp = pyotp.TOTP(token).now()
 correlation_id = "abcde"
 data = obj.generateSession(username, pwd, totp)
 if data['status'] == False:logger.error(data)
-  else:
-    authToken = data['data']['jwtToken']
-    refreshToken = data['data']['refreshToken']
-    feedToken = obj.getfeedToken()
-    res = obj.getProfile(refreshToken)
-    obj.generateToken(refreshToken)
-    userProfile= obj.getProfile(refreshToken)
-    aa= userProfile.get('data')
-    logger.info(aa.get('name').title())
-    st.session_state['Logged_in']=aa.get('name').title()
-    st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
-    st.session_state['last_check']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
+else:
+  authToken = data['data']['jwtToken']
+  refreshToken = data['data']['refreshToken']
+  feedToken = obj.getfeedToken()
+  res = obj.getProfile(refreshToken)
+  obj.generateToken(refreshToken)
+  userProfile= obj.getProfile(refreshToken)
+  aa= userProfile.get('data')
+  logger.info(aa.get('name').title())
+  st.session_state['Logged_in']=aa.get('name').title()
+  st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
+  st.session_state['last_check']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
 
 #Order
 def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NORMAL',exch_seg='NFO',producttype='CARRYFORWARD',
