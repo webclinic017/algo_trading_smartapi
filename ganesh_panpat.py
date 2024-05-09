@@ -576,14 +576,15 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
     option_token=symbol['token']
     option_symbol=symbol['symbol']
     exch_seg=symbol['exch_seg']
-    lotsize=symbol['lotsize']*lots_to_trade
+    lotsize=int(symbol['lotsize'])
     try:
       ltp_price=round(float(get_ltp_price(symbol=option_symbol,token=option_token,exch_seg=exch_seg)),2)
       #lotsize=int(10000/(float(symbol['lotsize'])*ltp_price))*float(symbol['lotsize'])
       stop_loss=int(float(ltp_price*0.7))
       target_price=int(float(ltp_price*1.3))
       indicator_strategy=indicator_strategy+ " LTP:"+str(int(ltp_price))+"("+str(int(stop_loss))+":"+str(int(target_price))+")"
-    except:pass
+    except:
+      ltp_price=0
     orderId=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=int(ltp_price),
                           variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
     if str(orderId)=='Order placement failed':
