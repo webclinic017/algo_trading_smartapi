@@ -576,7 +576,7 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
     option_token=symbol['token']
     option_symbol=symbol['symbol']
     exch_seg=symbol['exch_seg']
-    lotsize=symbol['lotsize']*st.session_state['lots_to_trade']
+    lotsize=symbol['lotsize']*lots_to_trade
     try:
       ltp_price=round(float(get_ltp_price(symbol=option_symbol,token=option_token,exch_seg=exch_seg)),2)
       #lotsize=int(10000/(float(symbol['lotsize'])*ltp_price))*float(symbol['lotsize'])
