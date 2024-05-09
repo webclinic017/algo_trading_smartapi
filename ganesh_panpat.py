@@ -60,20 +60,22 @@ def get_token_df():
 if st.session_state['bnf_expiry_day']==None:
   get_token_df()
 
-login_details=st.empty()
-login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
-index_ltp_string=st.empty()
-index_ltp_string.text(f"Index Ltp: ")
+with st.sidebar:
+  st.title('Manual Buy')
+  nf_ce=st.button(label="NF CE")
+  bnf_ce=st.button(label="BNF CE")
+  nf_pe=st.button(label="NF PE")
+  bnf_pe=st.button(label="BNF PE")
+  close_all=st.button("Close All")
+  restart=st.button("Restart")
 tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7,tab8= st.tabs(["Log","Order Book", "Position","Todays Trade","Open Order", "Settings","Token List","Future List","Back Test"])
 with tab0:
   col1,col2=st.columns([1,9])
   with col1:
-    nf_ce=st.button(label="NF CE")
-    bnf_ce=st.button(label="BNF CE")
-    nf_pe=st.button(label="NF PE")
-    bnf_pe=st.button(label="BNF PE")
-    close_all=st.button("Close All")
-    restart=st.button("Restart")
+    login_details=st.empty()
+    login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
+    index_ltp_string=st.empty()
+    index_ltp_string.text(f"Index Ltp: ")
     algo_state=st.checkbox("Run Algo")
   with col2:
     log_holder=st.empty()
