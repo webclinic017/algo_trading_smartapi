@@ -31,6 +31,9 @@ if 'sensex_expiry_day' not in st.session_state: st.session_state['sensex_expiry_
 if 'opt_list' not in st.session_state:st.session_state['opt_list']=[]
 if 'fut_list' not in st.session_state:st.session_state['fut_list']=[]
 if 'options_trade_list' not in st.session_state:st.session_state['options_trade_list']=[]
+st.session_state['NIFTY_5m_Trade']="-"
+st.session_state['BANKNIFTY_5m_Trade']="-"
+st.session_state['SENSEX_5m_Trade']="-"
 
 def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
@@ -705,6 +708,7 @@ def index_trade(symbol,interval):
     if trade=="Buy" : buy_option(ce_strike_symbol,indicator_strategy,interval)
     elif trade=="Sell" : buy_option(pe_strike_symbol,indicator_strategy,interval)
   trade_end=str(fut_data['Trade End'].values[-1])
+  if interval=="5m":st.session_state[symbol+'_5m_Trade']=trade_end
   information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
               'Symbol':symbol,
               'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
@@ -911,14 +915,27 @@ def check_pnl_todays_trade(buy_df):
             telegram_bot_sendtext(multiline_string)
             buy_df['Status'].iloc[i]="Target Hit"
           else:
-            now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
-            if now.minute%5==0:
-              dd=get_historical_data(symbol=tradingsymbol,interval='5m',token=symboltoken,exch_seg=exch_seg,candle_type="NORMAL").tail(1)
-              if dd['ST_7_3 Trade'].iloc[0]=="Sell" or dd['Supertrend_10_2'].iloc[0]=="Sell":
-                exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Indicaor Hit:'+ordertag,producttype='CARRYFORWARD')
-                multiline_string = "Indicaor Hit:"+trade_info
-                telegram_bot_sendtext(multiline_string)
-                buy_df['Status'].iloc[i]="Indicaor Hit"
+            exit_trade="No"
+            if st.session_state['NIFTY_5m_Trade']=="Buy" and tradingsymbol.startswith("NIFTY") and tradingsymbol.endswith("PE"):exit_trade="Yes"
+            if st.session_state['NIFTY_5m_Trade']=="Sell" and tradingsymbol.startswith("NIFTY") and tradingsymbol.endswith("CE"):exit_trade="Yes"
+            if st.session_state['BANKNIFTY_5m_Trade']=="Buy" and tradingsymbol.startswith("BANKNIFTY") and tradingsymbol.endswith("PE"):exit_trade="Yes"
+            if st.session_state['BANKNIFTY_5m_Trade']=="Sell" and tradingsymbol.startswith("BANKNIFTY") and tradingsymbol.endswith("CE"):exit_trade="Yes"
+            if st.session_state['SENSEX_5m_Trade']=="Buy" and tradingsymbol.startswith("BANKNIFTY") and tradingsymbol.endswith("PE"):exit_trade="Yes"
+            if st.session_state['SENSEX_5m_Trade']=="Sell" and tradingsymbol.startswith("BANKNIFTY") and tradingsymbol.endswith("CE"):exit_trade="Yes"
+            if exit_trade=="Yes":
+              exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Indicaor Hit:'+ordertag,producttype='CARRYFORWARD')
+              multiline_string = "Indicaor Hit:"+trade_info
+              telegram_bot_sendtext(multiline_string)
+              buy_df['Status'].iloc[i]="Indicaor Hit"
+            else:
+              now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
+              if now.minute%5==0:
+                dd=get_historical_data(symbol=tradingsymbol,interval='5m',token=symboltoken,exch_seg=exch_seg,candle_type="NORMAL").tail(1)
+                if dd['ST_7_3 Trade'].iloc[0]=="Sell" or dd['Supertrend_10_2'].iloc[0]=="Sell":
+                  exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Indicaor Hit:'+ordertag,producttype='CARRYFORWARD')
+                  multiline_string = "Indicaor Hit:"+trade_info
+                  telegram_bot_sendtext(multiline_string)
+                  buy_df['Status'].iloc[i]="Indicaor Hit"
       except Exception as e:print(f"error in check_pnl_todays_trade {e}")
   return buy_df
 def get_todays_trade(orderbook=None):
