@@ -818,6 +818,8 @@ def loop_code():
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       #check_login()
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
+      if now.second<=30:recheck_pnl(todays_trade)
+      now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
     except Exception as e:
       print(f"error {e}")
@@ -860,11 +862,11 @@ def update_target_sl(buy_df):
       if "(" in buy_df['ordertag'].iloc[i] and ")" in buy_df['ordertag'].iloc[i]:
         sl=(buy_df['ordertag'].iloc[i].split('('))[1].split(':')[0]
         tgt=(buy_df['ordertag'].iloc[i].split(sl+':'))[1].split(')')[0]
-        buy_df['Stop Loss'].iloc[i]=sl
+        buy_df['SL'].iloc[i]=sl
         buy_df['Target'].iloc[i]=tgt
       else:
         if buy_df['price'].iloc[i]!="-":
-          buy_df['Stop Loss'].iloc[i]=int(float(buy_df['price'].iloc[i]*0.8))
+          buy_df['SL'].iloc[i]=int(float(buy_df['price'].iloc[i]*0.8))
           buy_df['Target'].iloc[i]=int(float(buy_df['price'].iloc[i]*1.1))
     except Exception as e:
       print('Error found in ',e)
@@ -880,8 +882,27 @@ def update_ltp_buy_df(buy_df):
       if len(n_ltp_df)!=0:buy_df['LTP'].iloc[i]=n_ltp_df['ltp'].iloc[0]
       #else:
       #  buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
+      if buy_df['Status'].iloc[i]!='Closed' and buy_df['price'].iloc[i]!="-":
+          #buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
+          buy_df['Profit'].iloc[i]=(float(buy_df['LTP'].iloc[i])-float(buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
+          buy_df['Profit %'].iloc[i]=((buy_df['LTP'].iloc[i]/buy_df['price'].iloc[i])-1)*100
+      else:
+          if buy_df['price'].iloc[i]!="-":
+            buy_df['Profit'].iloc[i]=float((buy_df['Sell'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
+            buy_df['Profit %'].iloc[i]=((buy_df['Sell'].iloc[i]/buy_df['price'].iloc[i])-1)*100
+          else:
+            buy_df['Profit'].iloc[i]=0
+            buy_df['Profit %'].iloc[i]=0
     except:pass
   return buy_df
+def recheck_pnl(buy_df):
+  try:
+    buy_df=update_ltp_buy_df(buy_df)
+    buy_df=check_pnl_todays_trade(buy_df)
+    todays_trade_datatable.dataframe(buy_df,hide_index=True)
+    now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
+    todays_trade_updated.text(f"Todays Trade : {now_time} Profit: {int(buy_df['Profit'].sum())}")
+  except:pass
 def check_pnl_todays_trade(buy_df):
   for i in range(0,len(buy_df)):
       try:
@@ -896,13 +917,13 @@ def check_pnl_todays_trade(buy_df):
           sl=buy_df['LTP'].iloc[i]
           trade_info = f"{buy_df['tradingsymbol'].iloc[i]}\n" \
                   f"LTP:{buy_df['LTP'].iloc[i]} Target:{buy_df['Target'].iloc[i]} " \
-                  f"SL:{buy_df['Stop Loss'].iloc[i]}\n" \
+                  f"SL:{buy_df['SL'].iloc[i]}\n" \
                   f"Price:{buy_df['price'].iloc[i]}\n" \
                   f"Time:{buy_df['updatetime'].iloc[i]}\n" \
                   f"Indicator: {buy_df['ordertag'].iloc[i]}"
           if int(sl)==0:ltp_price=1;sl=1
           ordertag=f"{ltp_price} : {orderid}"
-          if int(buy_df['LTP'].iloc[i])< int(buy_df['Stop Loss'].iloc[i]):
+          if int(buy_df['LTP'].iloc[i])< int(buy_df['SL'].iloc[i]):
             exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='SL Hit:'+ordertag,producttype='CARRYFORWARD')
             multiline_string = "SL Hit:"+trade_info
             telegram_bot_sendtext(multiline_string)
@@ -946,7 +967,7 @@ def get_todays_trade(orderbook=None):
     buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
     buy_df['Exit Time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(hour=15, minute=30, second=0, microsecond=0,tzinfo=None).time()
     buy_df['Status']="Pending"
-    for i in ['Sell','LTP','Profit','Index SL','Time Frame','Target','Stop Loss','Profit %','Sell Indicator']:buy_df[i]='-'
+    for i in ['Sell','LTP','Profit','Index SL','Time Frame','Target','SL','Profit %','Sell Indicator']:buy_df[i]='-'
     for i in range(0,len(buy_df)):
       symbol=buy_df['tradingsymbol'].iloc[i];  updatetime=buy_df['updatetime'].iloc[i];  orderid=buy_df['orderid'].iloc[i]
       if buy_df['Status'].iloc[i]=='Pending':
@@ -973,30 +994,15 @@ def get_todays_trade(orderbook=None):
             break
     buy_df=update_target_sl(buy_df)
     buy_df=update_ltp_buy_df(buy_df)
-    for i in range(0,len(buy_df)):
-      try:
-        if buy_df['Status'].iloc[i]!='Closed' and buy_df['price'].iloc[i]!="-":
-          #buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
-          buy_df['Profit'].iloc[i]=(float(buy_df['LTP'].iloc[i])-float(buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
-          buy_df['Profit %'].iloc[i]=((buy_df['LTP'].iloc[i]/buy_df['price'].iloc[i])-1)*100
-        else:
-          if buy_df['price'].iloc[i]!="-":
-            buy_df['Profit'].iloc[i]=float((buy_df['Sell'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
-            buy_df['Profit %'].iloc[i]=((buy_df['Sell'].iloc[i]/buy_df['price'].iloc[i])-1)*100
-          else:
-            buy_df['Profit'].iloc[i]=0
-            buy_df['Profit %'].iloc[i]=0
-      except:pass
     buy_df=buy_df[['orderid','updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'LTP', 'Profit','Target',
-        'Stop Loss', 'Profit %', 'Sell Indicator']]
+        'SL', 'Profit %', 'Sell Indicator']]
     buy_df=check_pnl_todays_trade(buy_df)
   except:
     buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'LTP',
-                                    'Profit','Target','Stop Loss', 'Profit %', 'Sell Indicator'])
+                                    'Profit','Target','SL', 'Profit %', 'Sell Indicator'])
   buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
   buy_df=buy_df.sort_values(by = ['Status', 'updatetime'], ascending = [False, True], na_position = 'first')
-  buy_df.rename(columns={'updatetime': 'Datetime', 'quantity': 'Qty', 'Stop Loss': 'SL'}, inplace=True)
-  buy_df=buy_df[['Datetime','tradingsymbol','price','Qty','ordertag','Exit Time','Status', 'Sell', 'LTP',
+  buy_df=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status', 'Sell', 'LTP',
                                       'Profit','Target','SL', 'Profit %', 'Sell Indicator']]
   todays_trade_datatable.dataframe(buy_df,hide_index=True)
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
