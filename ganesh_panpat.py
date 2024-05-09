@@ -918,8 +918,8 @@ def check_pnl_todays_trade(buy_df):
             if st.session_state['NIFTY_5m_Trade']=="Sell" and tradingsymbol.startswith("NIFTY") and tradingsymbol.endswith("CE"):exit_trade="Yes"
             if st.session_state['BANKNIFTY_5m_Trade']=="Buy" and tradingsymbol.startswith("BANKNIFTY") and tradingsymbol.endswith("PE"):exit_trade="Yes"
             if st.session_state['BANKNIFTY_5m_Trade']=="Sell" and tradingsymbol.startswith("BANKNIFTY") and tradingsymbol.endswith("CE"):exit_trade="Yes"
-            if st.session_state['SENSEX_5m_Trade']=="Buy" and tradingsymbol.startswith("BANKNIFTY") and tradingsymbol.endswith("PE"):exit_trade="Yes"
-            if st.session_state['SENSEX_5m_Trade']=="Sell" and tradingsymbol.startswith("BANKNIFTY") and tradingsymbol.endswith("CE"):exit_trade="Yes"
+            if st.session_state['SENSEX_5m_Trade']=="Buy" and tradingsymbol.startswith("SENSEX") and tradingsymbol.endswith("PE"):exit_trade="Yes"
+            if st.session_state['SENSEX_5m_Trade']=="Sell" and tradingsymbol.startswith("SENSEX") and tradingsymbol.endswith("CE"):exit_trade="Yes"
             if exit_trade=="Yes":
               exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Indicaor Hit:'+ordertag,producttype='CARRYFORWARD')
               multiline_string = "Indicaor Hit:"+trade_info
