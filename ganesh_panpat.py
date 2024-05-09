@@ -994,8 +994,8 @@ def get_todays_trade(orderbook=None):
   todays_trade_updated.text(f"Pending Orderbook : {now_time} Profit: {int(buy_df['Profit'].sum())}")
   return buy_df
 
+if st.session_state['Logged_in']=="Guest":obj=angel_login()
 if algo_state:
-  obj=angel_login()
   loop_code()
 if nf_ce:
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp="-")
