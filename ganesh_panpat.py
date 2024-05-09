@@ -720,16 +720,14 @@ def index_trade(symbol,interval):
               'RSI':fut_data['RSI'].values[-1]}
   st.session_state['options_trade_list'].append(information)
 def closing_trade():
-  position,open_position=get_open_position()
-  orderbook,pending_orders=get_order_book()
-  nf_5m_trade_end="Buy"
-  bnf_5m_trade_end="Buy"
-  sensex_5m_trade_end="Buy"
-  close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
-  nf_5m_trade_end="Sell"
-  bnf_5m_trade_end="Sell"
-  sensex_5m_trade_end="Sell"
-  close_options_position(position,nf_5m_trade_end=nf_5m_trade_end,bnf_5m_trade_end=bnf_5m_trade_end,sensex_5m_trade_end=sensex_5m_trade_end)
+  st.session_state['NIFTY_5m_Trade']="Buy"
+  st.session_state['BANKNIFTY_5m_Trade']="Buy"
+  st.session_state['SENSEX_5m_Trade']="Buy"
+  todays_trade=get_todays_trade()
+  st.session_state['NIFTY_5m_Trade']="Sell"
+  st.session_state['BANKNIFTY_5m_Trade']="Sell"
+  st.session_state['SENSEX_5m_Trade']="Sell"
+  todays_trade=get_todays_trade()
 def trail_sl():
   for attempt in range(3):
     try:
@@ -803,15 +801,15 @@ def check_login():
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now.replace(hour=22, minute=50, second=0, microsecond=0)
-  day_end = now.replace(hour=22, minute=30, second=0, microsecond=0)
+  marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
+  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
     print(now.time())
     st.session_state['last_check']=now.time()
     login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
     try:
-      if now > marketopen and now < marketclose:
+      if now > marketopen and now < day_end:
         if now > marketclose:closing_trade()
         else:df=sub_loop_code(now.minute)
         position,open_position=get_open_position()
