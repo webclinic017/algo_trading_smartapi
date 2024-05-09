@@ -999,4 +999,4 @@ if algo_state:
 if nf_ce:
   obj=angel_login()
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp="-")
-  buy_option(ce_strike_symbol,'Manual Buy','5m)
+  buy_option(ce_strike_symbol,'Manual Buy','5m')
