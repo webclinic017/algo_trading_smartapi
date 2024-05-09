@@ -157,6 +157,7 @@ def angel_login():
       obj.generateToken(refreshToken)
       userProfile= obj.getProfile(refreshToken)
       aa= userProfile.get('data')
+      logger.info(aa.get('name').title())
       st.session_state['Logged_in']=aa.get('name').title()
       st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
       st.session_state['last_check']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
@@ -173,10 +174,10 @@ def place_order(token,symbol,qty,buy_sell,ordertype='MARKET',price=0,variety='NO
       "ordertype": ordertype,"producttype": producttype,"duration": "DAY","price": int(float(price)),"squareoff":int(float(squareoff)),
       "stoploss": int(float(stoploss)),"quantity": str(qty),"triggerprice":int(float(triggerprice)),"ordertag":ordertag,"trailingStopLoss":5}
     orderId=obj.placeOrder(orderparams)
-    print(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} Ordertag: {ordertag} Price: {price}')
+    logger.info(f'{buy_sell} Order Placed: {orderId} Symbol: {symbol} Ordertag: {ordertag} Price: {price}')
     return orderId
   except Exception as e:
-    print(f"error in place_order Order placement failed: {e}")
+    logger.info(f"error in place_order Order placement failed: {e}")
     orderId='Order placement failed'
     telegram_bot_sendtext(f'{buy_sell} Order placement failed : {symbol}')
     return orderId
