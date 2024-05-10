@@ -576,11 +576,13 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
     try:
       ltp_price=round(float(get_ltp_price(symbol=option_symbol,token=option_token,exch_seg=exch_seg)),2)
       #lotsize=int(10000/(float(symbol['lotsize'])*ltp_price))*float(symbol['lotsize'])
-      stop_loss=int(float(ltp_price*0.7))
-      target_price=int(float(ltp_price*1.3))
-      #old_data=get_historical_data(symbol=option_symbol,interval='5m',token=option_token,exch_seg=exch_seg,candle_type="NORMAL")
-      #stop_loss=int(float(ltp_price-(float(old_data['Atr'].iloc[-1])*2)))
-      #target_price=int(float(ltp_price+(float(old_data['Atr'].iloc[-1])*2)))
+      stop_loss_a=int(float(ltp_price*0.7))
+      target_price_a=int(float(ltp_price*1.3))
+      old_data=get_historical_data(symbol=option_symbol,interval='5m',token=option_token,exch_seg=exch_seg,candle_type="NORMAL")
+      stop_loss_b=int(float(ltp_price-(float(old_data['Atr'].iloc[-1])*2)))
+      target_price_b=int(float(ltp_price+(float(old_data['Atr'].iloc[-1])*2)))
+      stop_loss=int(max(stop_loss_a,stop_loss_b))
+      target_price=int(max(target_price_a,target_price_b))
       indicator_strategy=indicator_strategy+ " LTP:"+str(int(ltp_price))+"("+str(int(stop_loss))+":"+str(int(target_price))+")"
     except:
       ltp_price=0
