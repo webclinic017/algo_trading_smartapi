@@ -966,6 +966,7 @@ def get_todays_trade(orderbook=None):
     if orderbook==None:orderbook,pending_orders=get_order_book()
     if len(orderbook)==0: return
     orderbook=update_price_orderbook(orderbook)
+    orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
     sell_df=orderbook[(orderbook['transactiontype']=="SELL") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
     sell_df['Remark']='-'
     buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
