@@ -875,8 +875,9 @@ def update_target_sl(buy_df):
         buy_df['Target'].iloc[i]=tgt
       else:
         if buy_df['price'].iloc[i]!="-":
-          buy_df['SL'].iloc[i]=int(float(buy_df['price'].iloc[i]*0.8))
-          buy_df['Target'].iloc[i]=int(float(buy_df['price'].iloc[i]*1.1))
+          buy_df['SL'].iloc[i]=int(float(buy_df['price'].iloc[i]*0.7))
+          buy_df['Target'].iloc[i]=int(float(buy_df['price'].iloc[i]*1.3))
+      buy_df['SL'].iloc[i]=int(max(buy_df['SL'].iloc[i],buy_df['LTP'].iloc[i]*0.7))
     except Exception as e:
       print('Error found in ',e)
   return buy_df
@@ -1002,8 +1003,8 @@ def get_todays_trade(orderbook=None):
             buy_df['Sell Indicator'].iloc[i]=sell_df['ordertag'].iloc[j]
             buy_df['Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[j]='Taken'
             break
-    buy_df=update_target_sl(buy_df)
     buy_df=update_ltp_buy_df(buy_df)
+    buy_df=update_target_sl(buy_df)
     buy_df=buy_df[['orderid','updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'LTP', 'Profit','Target',
         'SL', 'Profit %', 'Sell Indicator']]
     buy_df=check_pnl_todays_trade(buy_df)
