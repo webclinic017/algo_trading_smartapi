@@ -818,7 +818,11 @@ def loop_code():
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       #check_login()
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-      if now.second<=30:recheck_pnl(todays_trade)
+      while now.second<=40:
+        todays_trade=get_todays_trade()
+        index_ltp_string.text(f"Index Ltp: {print_ltp()}")
+        time.sleep(10)
+        now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
     except Exception as e:
