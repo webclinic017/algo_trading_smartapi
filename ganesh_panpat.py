@@ -578,9 +578,9 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
       #lotsize=int(10000/(float(symbol['lotsize'])*ltp_price))*float(symbol['lotsize'])
       stop_loss=int(float(ltp_price*0.7))
       target_price=int(float(ltp_price*1.3))
-      old_data=get_historical_data(symbol=option_symbol,interval='5m',token=option_token,exch_seg=exch_seg,candle_type="NORMAL")
-      stop_loss=int(float(ltp_price-(float(old_data['Atr'].iloc[-1])*2)))
-      target_price=int(float(ltp_price+(float(old_data['Atr'].iloc[-1])*2)))
+      #old_data=get_historical_data(symbol=option_symbol,interval='5m',token=option_token,exch_seg=exch_seg,candle_type="NORMAL")
+      #stop_loss=int(float(ltp_price-(float(old_data['Atr'].iloc[-1])*2)))
+      #target_price=int(float(ltp_price+(float(old_data['Atr'].iloc[-1])*2)))
       indicator_strategy=indicator_strategy+ " LTP:"+str(int(ltp_price))+"("+str(int(stop_loss))+":"+str(int(target_price))+")"
     except:
       ltp_price=0
