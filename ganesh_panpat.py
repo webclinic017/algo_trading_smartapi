@@ -822,7 +822,7 @@ def loop_code():
       #check_login()
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       while now.second<=40:
-        if len(todays_trade)>0: recheck_pnl(todays_trade)
+        todays_trade=get_todays_trade()
         index_ltp_string.text(f"Index Ltp: {print_ltp()}")
         time.sleep(10)
         now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
