@@ -953,18 +953,18 @@ def check_pnl_todays_trade(buy_df):
             if st.session_state['SENSEX_5m_Trade']=="Sell" and tradingsymbol.startswith("SENSEX") and tradingsymbol.endswith("CE"):exit_trade="Yes"
             if exit_trade=="Yes":
               exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Indicaor Exit:'+ordertag,producttype='CARRYFORWARD')
-              multiline_string = "Indicaor Hit:"+trade_info
+              multiline_string = "Indicaor Exit:"+trade_info
               telegram_bot_sendtext(multiline_string)
-              buy_df['Status'].iloc[i]="Indicaor Hit"
+              buy_df['Status'].iloc[i]="Indicaor Exit"
             else:
               now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
               if now.minute%5==0:
                 dd=get_historical_data(symbol=tradingsymbol,interval='5m',token=symboltoken,exch_seg=exch_seg,candle_type="NORMAL").tail(1)
                 if dd['ST_7_3 Trade'].iloc[0]=="Sell" or dd['Supertrend_10_2'].iloc[0]=="Sell":
                   exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Indicaor Exit:'+ordertag,producttype='CARRYFORWARD')
-                  multiline_string = "Indicaor Hit:"+trade_info
+                  multiline_string = "Indicaor Exit:"+trade_info
                   telegram_bot_sendtext(multiline_string)
-                  buy_df['Status'].iloc[i]="Indicaor Hit"
+                  buy_df['Status'].iloc[i]="Indicaor Exit"
       except Exception as e:print(f"error in check_pnl_todays_trade {e}")
   return buy_df
 def get_todays_trade(orderbook=None):
