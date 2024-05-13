@@ -1020,7 +1020,7 @@ def get_todays_trade(orderbook=None):
     pending_trade['price']=pending_trade['price'].astype(float).round(2)
     pending_trade['quantity']=pending_trade['quantity'].astype(float).round(2)
     pending_trade['Margin'] = pending_trade['price'] * pending_trade['quantity']
-    margin = int(pending_trade['Margin'].sum())
+    margin = f"{int(pending_trade['Margin'].sum())}, Active Trade:{len(pending_trade)}"    
   except:margin=0
   todays_trade_datatable.dataframe(buy_df,hide_index=True)
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
