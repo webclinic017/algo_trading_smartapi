@@ -1017,6 +1017,8 @@ def get_todays_trade(orderbook=None):
                                       'Profit','Target','SL', 'Profit %', 'Sell Indicator']]
   try:
     pending_trade=buy_df[buy_df['Status'] == 'Pending']
+    pending_trade['price']=pending_trade['price'].astype(float).round(2)
+    pending_trade['quantity']=pending_trade['quantity'].astype(float).round(2)
     pending_trade['Margin'] = pending_trade['price'] * pending_trade['quantity']
     margin = int(pending_trade['Margin'].sum())
   except:margin=0
