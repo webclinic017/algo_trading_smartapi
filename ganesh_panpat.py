@@ -1015,9 +1015,14 @@ def get_todays_trade(orderbook=None):
   buy_df=buy_df.sort_values(by = ['Status', 'updatetime'], ascending = [False, True], na_position = 'first')
   buy_df=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status', 'Sell', 'LTP',
                                       'Profit','Target','SL', 'Profit %', 'Sell Indicator']]
+  try:
+    pending_trade=buy_df[buy_df['Status'] == 'Pending']
+    pending_trade['Margin'] = pending_trade['price'] * pending_trade['quantity']
+    margin = int(pending_trade['Margin'].sum())
+  except:margin=0
   todays_trade_datatable.dataframe(buy_df,hide_index=True)
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
-  todays_trade_updated.text(f"Todays Trade : {now_time} Profit: {int(buy_df['Profit'].sum())}")
+  todays_trade_updated.text(f"Todays Trade : {now_time} Profit: {int(buy_df['Profit'].sum())} Margin:{margin}")
   return buy_df
   
 if algo_state:
