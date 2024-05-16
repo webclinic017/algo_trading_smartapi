@@ -676,6 +676,7 @@ def get_near_options(symbol,index_ltp,symbol_expiry):
   return df
 def trade_near_options(time_frame):
   for symbol in ['NIFTY','BANKNIFTY','SENSEX']:
+    if st.session_state[symbol+'_5m_Trade']!="-":continue
     try:
       index_ltp=get_ltp_price(symbol)
       if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
@@ -1068,6 +1069,7 @@ def modify_gtt():
       "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
     print(obj.gttModifyRule(gttCreateParams))
 def gtt_sub_loop():
+  cancel_gtt()
   for index in ['NIFTY','BANKNIFTY']:
     try:
       indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(index,indexLtp="-")
