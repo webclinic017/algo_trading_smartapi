@@ -781,6 +781,7 @@ def sub_loop_code(now_minute):
     five_min_trade.text(f"Index Trade: NIFTY:{st.session_state['NIFTY_5m_Trade']} BANKNIFTY:{st.session_state['BANKNIFTY_5m_Trade']} SENSEX:{st.session_state['SENSEX_5m_Trade']}")
     if 'OPT:5M' in time_frame_interval:
       trade_near_options('5m')
+    gtt_sub_loop()
   if (now_minute%15==0 and 'IDX:15M' in time_frame_interval):
     nf_data=index_trade("NIFTY","15m")
     bnf_data=index_trade("BANKNIFTY","15m")
@@ -1030,7 +1031,58 @@ def get_todays_trade(orderbook=None):
   now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
   todays_trade_updated.text(f"Todays Trade : {now_time} Profit: {int(buy_df['Profit'].sum())} Margin:{margin}")
   return buy_df
-  
+def create_gtt(tradingsymbol,symboltoken,exchange,producttype,transactiontype,price,qty,triggerprice):
+  try:
+    gttCreateParams={"tradingsymbol" : tradingsymbol,"symboltoken" : symboltoken,"exchange" : exchange, "producttype" : producttype,
+            "transactiontype" : transactiontype,"price" : price,"qty" : qty,"disclosedqty": qty,"triggerprice" : triggerprice,"timeperiod" : 1}
+    rule_id=obj.gttCreateRule(gttCreateParams)
+    logger.info(f"The GTT rule id is: {rule_id}")
+  except Exception as e:
+    logger.exception(f"GTT Rule creation failed: {e}")
+def get_gtt_list():
+  try:
+    status=["NEW"] #should be a list
+    page=1
+    count=100
+    lists=obj.gttLists(status,page,count)['data']
+    lists=pd.DataFrame.from_dict(lists)
+    lists[['id','tradingsymbol','symboltoken','exchange','producttype','transactiontype','price','qty']]
+    return lists
+  except Exception as e:
+    logger.exception(f"GTT Rule List failed: {e}")
+    lists=[]
+    return lists
+def cancel_gtt():
+  lists=get_gtt_list()
+  for i in range(0,len(lists)):
+    gttCreateParams={"id": str(lists['id'].iloc[i]),"symboltoken": str(lists['symboltoken'].iloc[i]),"exchange": str(lists['exchange'].iloc[i]),
+      "price": str(lists['price'].iloc[i]),"qty": str(lists['qty'].iloc[i]),"triggerprice": str(lists['price'].iloc[i]),
+      "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
+    #print(obj.gttModifyRule(gttCreateParams))
+    print(obj.gttCancelRule(gttCreateParams))
+def modify_gtt():
+  lists=get_gtt_list()
+  for i in range(0,len(lists)):
+    gttCreateParams={"id": str(lists['id'].iloc[i]),"symboltoken": str(lists['symboltoken'].iloc[i]),"exchange": str(lists['exchange'].iloc[i]),
+      "price": str(lists['price'].iloc[i]),"qty": str(lists['qty'].iloc[i]),"triggerprice": str(lists['price'].iloc[i]),
+      "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
+    print(obj.gttModifyRule(gttCreateParams))
+def gtt_sub_loop():
+  for index in ['NIFTY','BANKNIFTY']:
+    try:
+      indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(index,indexLtp="-")
+      for strike_symbol in [ce_strike_symbol,pe_strike_symbol]:
+        try:
+          tradingsymbol=strike_symbol['symbol']
+          symboltoken=strike_symbol['token']
+          qty=strike_symbol['lotsize']
+          exchange=strike_symbol['exch_seg']
+          old_data=get_historical_data(symbol=tradingsymbol,interval='5m',token=symboltoken,exch_seg=exchange,candle_type="NORMAL")
+          if old_data.iloc[-1]['Supertrend']>old_data.iloc[-1]['Close']:
+            price=int(old_data.iloc[-1]['Close'])
+            create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
+        except:pass
+    except:pass
 if algo_state:
   loop_code()
 if nf_ce:
