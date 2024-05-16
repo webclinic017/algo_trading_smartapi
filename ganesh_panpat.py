@@ -66,6 +66,8 @@ login_details=st.empty()
 login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp: ")
+five_min_trade=st.empty()
+five_min_trade.text(f"Index Trade: ")
 tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7,tab8= st.tabs(["Log","Order Book", "Position","Todays Trade","Open Order", "Settings","Token List","Future List","Back Test"])
 with tab0:
   col1,col2=st.columns([1,9])
@@ -573,9 +575,13 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
     option_symbol=symbol['symbol']
     exch_seg=symbol['exch_seg']
     lotsize=int(symbol['lotsize'])
+    orderId=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=int(0),
+                          variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
+    if str(orderId)=='Order placement failed':
+      telegram_bot_sendtext(f'Order Failed Buy: {option_symbol} Indicator {indicator_strategy}')
+      return
     try:
       ltp_price=round(float(get_ltp_price(symbol=option_symbol,token=option_token,exch_seg=exch_seg)),2)
-      #lotsize=int(10000/(float(symbol['lotsize'])*ltp_price))*float(symbol['lotsize'])
       stop_loss_a=int(float(ltp_price*0.7))
       target_price_a=int(float(ltp_price*1.3))
       old_data=get_historical_data(symbol=option_symbol,interval='5m',token=option_token,exch_seg=exch_seg,candle_type="NORMAL")
@@ -586,11 +592,6 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
       indicator_strategy=indicator_strategy+ " LTP:"+str(int(ltp_price))+"("+str(int(stop_loss))+":"+str(int(target_price))+")"
     except:
       ltp_price=0
-    orderId=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=int(ltp_price),
-                          variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
-    if str(orderId)=='Order placement failed':
-      telegram_bot_sendtext(f'Order Failed Buy: {option_symbol} Indicator {indicator_strategy}')
-      return
     orderbook=obj.orderBook()['data']
     orderbook=pd.DataFrame(orderbook)
     orders= orderbook[(orderbook['orderid'] == orderId)]
@@ -713,7 +714,7 @@ def index_trade(symbol,interval):
     if trade=="Buy" : buy_option(ce_strike_symbol,indicator_strategy,interval)
     elif trade=="Sell" : buy_option(pe_strike_symbol,indicator_strategy,interval)
   trade_end=str(fut_data['Trade End'].values[-1])
-  if interval=="5m":st.session_state[symbol+'_5m_Trade']=trade_end
+  if interval=="5m":st.session_state[symbol+'_5m_Trade']=trade
   information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
               'Symbol':symbol,
               'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
@@ -777,7 +778,7 @@ def sub_loop_code(now_minute):
     bnf_data=index_trade("BANKNIFTY","5m")
     sensex_data=index_trade("SENSEX","5m")
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    print(time_frame_interval)
+    five_min_trade.text(f"Index Trade: NIFTY:{st.session_state['NIFTY_5m_Trade']} BANKNIFTY:{st.session_state['BANKNIFTY_5m_Trade']} SENSEX:{st.session_state['SENSEX_5m_Trade']}")
     if 'OPT:5M' in time_frame_interval:
       trade_near_options('5m')
   if (now_minute%15==0 and 'IDX:15M' in time_frame_interval):
@@ -878,6 +879,9 @@ def update_target_sl(buy_df):
           buy_df['SL'].iloc[i]=int(float(buy_df['price'].iloc[i]*0.7))
           buy_df['Target'].iloc[i]=int(float(buy_df['price'].iloc[i]*1.3))
       buy_df['SL'].iloc[i]=int(max(buy_df['SL'].iloc[i],buy_df['LTP'].iloc[i]*0.7))
+      if "TEMA_EMA_9 Trade" in buy_df['ordertag'].iloc[i]:
+        buy_df['SL'].iloc[i]=int(float(buy_df['price'].iloc[i]*0.9))
+        buy_df['Target'].iloc[i]=int(float(buy_df['price'].iloc[i]*1.05))
     except Exception as e:
       print('Error found in ',e)
   return buy_df
