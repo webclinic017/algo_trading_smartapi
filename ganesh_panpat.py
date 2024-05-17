@@ -811,7 +811,7 @@ def loop_code():
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
   marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
   day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
-  get_gtt_list()
+  gtt=get_gtt_list()
   todays_trade=get_todays_trade()
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
@@ -1060,7 +1060,7 @@ def get_gtt_list():
     lists['expirydate'] = pd.to_datetime(lists['expirydate']).dt.time
     lists=lists[['id','updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status']]
     lists=lists.sort_values(by = ['tradingsymbol', 'price'], ascending = [False, True], na_position = 'first')
-    gtt_order_datatable.dataframe(buy_df,hide_index=True)
+    gtt_order_datatable.dataframe(lists,hide_index=True)
     now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
     gtt_order_updated.text(f"GTT Order : {now_time}")
     return lists
