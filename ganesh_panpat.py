@@ -68,7 +68,7 @@ index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp: ")
 five_min_trade=st.empty()
 five_min_trade.text(f"Index Trade: ")
-tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7,tab8= st.tabs(["Log","Order Book", "Position","Todays Trade","Open Order", "Settings","Token List","Future List","Back Test"])
+tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7,tab8= st.tabs(["Log","Order Book", "Position","Todays Trade","Open Order", "Settings","Token List","Future List","GTT Orders"])
 with tab0:
   col1,col2=st.columns([1,9])
   with col1:
@@ -129,9 +129,9 @@ with tab7:
     fut_token_df=st.empty()
     fut_token_df=st.dataframe(st.session_state['fut_list'],hide_index=True)
 with tab8:
-    hourly_scan=st.button("Hourly ST Scan")
-    daily_backtest=st.button("Todays Trade")
-    download_data=st.button("Download Historical Data")
+  gtt_order_updated=st.empty()
+  gtt_order_updated.text(f"GTT Open Order : ")
+  gtt_order=st.empty()
 
 def telegram_bot_sendtext(bot_message):
   BOT_TOKEN = '5051044776:AAHh6XjxhRT94iXkR4Eofp2PPHY3Omk2KtI'
@@ -811,6 +811,8 @@ def loop_code():
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
   marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
   day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
+  get_gtt_list()
+  todays_trade=get_todays_trade()
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
     print(now.time())
@@ -1047,11 +1049,24 @@ def get_gtt_list():
     count=100
     lists=obj.gttLists(status,page,count)['data']
     lists=pd.DataFrame.from_dict(lists)
-    lists[['id','tradingsymbol','symboltoken','exchange','producttype','transactiontype','price','qty']]
+    lists['createddate'] = lists['createddate'].apply(lambda x: datetime.datetime.fromisoformat(x))
+    lists['createddate'] = lists['createddate'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    lists['createddate'] = pd.to_datetime(lists['createddate']).dt.time
+    lists['updateddate'] = lists['updateddate'].apply(lambda x: datetime.datetime.fromisoformat(x))
+    lists['updateddate'] = lists['updateddate'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    lists['updateddate'] = pd.to_datetime(lists['updateddate']).dt.time
+    lists['expirydate'] = lists['expirydate'].apply(lambda x: datetime.datetime.fromisoformat(x))
+    lists['expirydate'] = lists['expirydate'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    lists['expirydate'] = pd.to_datetime(lists['expirydate']).dt.time
+    lists=lists[['id','updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status']]
+    lists=lists.sort_values(by = ['tradingsymbol', 'price'], ascending = [False, True], na_position = 'first')
+    gtt_order_datatable.dataframe(buy_df,hide_index=True)
+    now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
+    gtt_order_updated.text(f"GTT Order : {now_time}")
     return lists
   except Exception as e:
     logger.exception(f"GTT Rule List failed: {e}")
-    lists=[]
+    lists=pd.DataFrame(columns=['id','updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status'])
     return lists
 def cancel_gtt():
   lists=get_gtt_list()
