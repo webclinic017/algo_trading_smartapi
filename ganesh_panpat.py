@@ -131,7 +131,7 @@ with tab7:
 with tab8:
   gtt_order_updated=st.empty()
   gtt_order_updated.text(f"GTT Open Order : ")
-  gtt_order=st.empty()
+  gtt_order_datatable=st.empty()
 
 def telegram_bot_sendtext(bot_message):
   BOT_TOKEN = '5051044776:AAHh6XjxhRT94iXkR4Eofp2PPHY3Omk2KtI'
