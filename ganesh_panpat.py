@@ -824,6 +824,7 @@ def loop_code():
         else:df=sub_loop_code(now.minute)
         position,open_position=get_open_position()
       todays_trade=get_todays_trade()
+      gtt=get_gtt_list()
       if now.minute%5==0: trail_sl()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       #check_login()
@@ -1071,6 +1072,7 @@ def get_gtt_list():
 def cancel_gtt():
   lists=get_gtt_list()
   for i in range(0,len(lists)):
+    if lists['status'].iloc[i]!='NEW':continue
     gttCreateParams={"id": str(lists['id'].iloc[i]),"symboltoken": str(lists['symboltoken'].iloc[i]),"exchange": str(lists['exchange'].iloc[i]),
       "price": str(lists['price'].iloc[i]),"qty": str(lists['qty'].iloc[i]),"triggerprice": str(lists['price'].iloc[i]),
       "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
@@ -1079,12 +1081,29 @@ def cancel_gtt():
 def modify_gtt():
   lists=get_gtt_list()
   for i in range(0,len(lists)):
-    gttCreateParams={"id": str(lists['id'].iloc[i]),"symboltoken": str(lists['symboltoken'].iloc[i]),"exchange": str(lists['exchange'].iloc[i]),
-      "price": str(lists['price'].iloc[i]),"qty": str(lists['qty'].iloc[i]),"triggerprice": str(lists['price'].iloc[i]),
-      "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
-    print(obj.gttModifyRule(gttCreateParams))
+    if lists['status'].iloc[i]=='NEW':
+      try:
+        tradingsymbol=lists['tradingsymbol'].iloc[i]
+        symboltoken=lists['symboltoken'].iloc[i]
+        exchange=lists['exchange'].iloc[i]
+        price=lists['price'].iloc[i]
+        old_data=get_historical_data(symbol=tradingsymbol,interval='5m',token=symboltoken,exch_seg=exchange,candle_type="NORMAL")
+        if int(old_data.iloc[-1]['Supertrend'])>int(old_data.iloc[-1]['Close']) and int(old_data.iloc[-1]['Supertrend'])!=int(price):
+          price=int(old_data.iloc[-1]['Supertrend'])
+          print(f"GTT Modify: {tradingsymbol}")
+          gttCreateParams={"id": str(lists['id'].iloc[i]),"symboltoken": str(lists['symboltoken'].iloc[i]),"exchange": str(lists['exchange'].iloc[i]),
+            "price": str(price),"qty": str(lists['qty'].iloc[i]),"triggerprice": str(price),
+            "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
+          obj.gttModifyRule(gttCreateParams)
+        if old_data.iloc[-1]['Supertrend']<old_data.iloc[-1]['Close']:
+          print(f"GTT Cancel: {tradingsymbol}")
+          gttCreateParams={"id": str(lists['id'].iloc[i]),"symboltoken": str(lists['symboltoken'].iloc[i]),"exchange": str(lists['exchange'].iloc[i]),
+          "price": str(lists['price'].iloc[i]),"qty": str(lists['qty'].iloc[i]),"triggerprice": str(lists['price'].iloc[i]),
+          "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
+          obj.gttCancelRule(gttCreateParams)
+      except:pass
 def gtt_sub_loop():
-  #cancel_gtt()
+  modify_gtt()
   for index in ['NIFTY','BANKNIFTY']:
     try:
       indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(index,indexLtp="-")
