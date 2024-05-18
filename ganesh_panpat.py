@@ -1096,7 +1096,7 @@ def gtt_sub_loop():
           exchange=strike_symbol['exch_seg']
           old_data=get_historical_data(symbol=tradingsymbol,interval='5m',token=symboltoken,exch_seg=exchange,candle_type="NORMAL")
           if old_data.iloc[-1]['Supertrend']>old_data.iloc[-1]['Close']:
-            price=int(old_data.iloc[-1]['Close'])
+            price=int(old_data.iloc[-1]['Supertrend'])
             create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
         except:pass
     except:pass
