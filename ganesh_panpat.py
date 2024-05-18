@@ -1043,6 +1043,17 @@ def create_gtt(tradingsymbol,symboltoken,exchange,producttype,transactiontype,pr
     logger.info(f"The GTT rule id is: {rule_id}")
   except Exception as e:
     logger.exception(f"GTT Rule creation failed: {e}")
+def update_ltp_gtt(lists):
+  nfo_list=numpy.unique(lists[lists['exchange']=="NFO"]['symboltoken'].values.tolist())
+  bfo_list=numpy.unique(lists[lists['exchange']=="BFO"]['symboltoken'].values.tolist())
+  ltp_df=get_ltp_token(nfo_list,bfo_list)
+  for i in range(0,len(buy_df)):
+    try:
+      symboltoken=str(lists['symboltoken'].iloc[i])
+      n_ltp_df=ltp_df[lists['symbolToken']==symboltoken]
+      if len(n_ltp_df)!=0:lists['LTP'].iloc[i]=n_ltp_df['ltp'].iloc[0]
+    except:pass
+  return lists
 def get_gtt_list():
   try:
     status=["NEW"] #should be a list
@@ -1059,7 +1070,9 @@ def get_gtt_list():
     lists['expirydate'] = lists['expirydate'].apply(lambda x: datetime.datetime.fromisoformat(x))
     lists['expirydate'] = lists['expirydate'].dt.strftime('%Y-%m-%d %H:%M:%S')
     lists['expirydate'] = pd.to_datetime(lists['expirydate']).dt.time
-    lists=lists[['id','updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status']]
+    lists['LTP']='-'
+    lists=update_ltp_gtt(lists)
+    lists=lists[['id','updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status','LTP']]
     lists=lists.sort_values(by = ['tradingsymbol', 'price'], ascending = [False, True], na_position = 'first')
     gtt_order_datatable.dataframe(lists,hide_index=True)
     now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
@@ -1067,7 +1080,7 @@ def get_gtt_list():
     return lists
   except Exception as e:
     logger.exception(f"GTT Rule List failed: {e}")
-    lists=pd.DataFrame(columns=['id','updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status'])
+    lists=pd.DataFrame(columns=['id','updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status','LTP'])
     return lists
 def cancel_gtt():
   lists=get_gtt_list()
