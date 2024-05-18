@@ -1084,7 +1084,7 @@ def modify_gtt():
       "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
     print(obj.gttModifyRule(gttCreateParams))
 def gtt_sub_loop():
-  cancel_gtt()
+  #cancel_gtt()
   for index in ['NIFTY','BANKNIFTY']:
     try:
       indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(index,indexLtp="-")
