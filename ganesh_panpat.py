@@ -1047,10 +1047,10 @@ def update_ltp_gtt(lists):
   nfo_list=numpy.unique(lists[lists['exchange']=="NFO"]['symboltoken'].values.tolist())
   bfo_list=numpy.unique(lists[lists['exchange']=="BFO"]['symboltoken'].values.tolist())
   ltp_df=get_ltp_token(nfo_list,bfo_list)
-  for i in range(0,len(buy_df)):
+  for i in range(0,len(lists)):
     try:
       symboltoken=str(lists['symboltoken'].iloc[i])
-      n_ltp_df=ltp_df[lists['symbolToken']==symboltoken]
+      n_ltp_df=ltp_df[ltp_df['symbolToken']==symboltoken]
       if len(n_ltp_df)!=0:lists['LTP'].iloc[i]=n_ltp_df['ltp'].iloc[0]
     except:pass
   return lists
@@ -1091,8 +1091,7 @@ def cancel_gtt():
       "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
     #print(obj.gttModifyRule(gttCreateParams))
     print(obj.gttCancelRule(gttCreateParams))
-def modify_gtt():
-  lists=get_gtt_list()
+def modify_gtt(lists):
   for i in range(0,len(lists)):
     if lists['status'].iloc[i]=='NEW':
       try:
@@ -1116,22 +1115,25 @@ def modify_gtt():
           obj.gttCancelRule(gttCreateParams)
       except:pass
 def gtt_sub_loop():
-  modify_gtt()
+  lists=get_gtt_list()
+  gtt_symbol_list=lists['tradingsymbol'].tolist()
   for index in ['NIFTY','BANKNIFTY']:
     try:
       indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(index,indexLtp="-")
       for strike_symbol in [ce_strike_symbol,pe_strike_symbol]:
         try:
           tradingsymbol=strike_symbol['symbol']
-          symboltoken=strike_symbol['token']
-          qty=strike_symbol['lotsize']
-          exchange=strike_symbol['exch_seg']
-          old_data=get_historical_data(symbol=tradingsymbol,interval='5m',token=symboltoken,exch_seg=exchange,candle_type="NORMAL")
-          if old_data.iloc[-1]['Supertrend']>old_data.iloc[-1]['Close']:
-            price=int(old_data.iloc[-1]['Supertrend'])
-            create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
+          if tradingsymbol not in gtt_symbol_list:
+            symboltoken=strike_symbol['token']
+            qty=strike_symbol['lotsize']
+            exchange=strike_symbol['exch_seg']
+            old_data=get_historical_data(symbol=tradingsymbol,interval='5m',token=symboltoken,exch_seg=exchange,candle_type="NORMAL")
+            if old_data.iloc[-1]['Supertrend']>old_data.iloc[-1]['Close']:
+              price=int(old_data.iloc[-1]['Supertrend'])
+              create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
         except:pass
     except:pass
+  modify_gtt(lists)
 if algo_state:
   loop_code()
 if nf_ce:
