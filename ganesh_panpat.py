@@ -34,6 +34,9 @@ if 'options_trade_list' not in st.session_state:st.session_state['options_trade_
 st.session_state['NIFTY_5m_Trade']="-"
 st.session_state['BANKNIFTY_5m_Trade']="-"
 st.session_state['SENSEX_5m_Trade']="-"
+st.session_state['NIFTY_1m_Trade']="-"
+st.session_state['BANKNIFTY_1m_Trade']="-"
+st.session_state['SENSEX_1m_Trade']="-"
 
 def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
@@ -716,6 +719,7 @@ def index_trade(symbol,interval):
     elif trade=="Sell" : buy_option(pe_strike_symbol,indicator_strategy,interval)
   trade_end=str(fut_data['Trade End'].values[-1])
   if interval=="5m":st.session_state[symbol+'_5m_Trade']=trade
+  if interval=="1m":st.session_state[symbol+'_1m_Trade']=trade
   information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
               'Symbol':symbol,
               'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
@@ -735,6 +739,7 @@ def closing_trade():
   st.session_state['BANKNIFTY_5m_Trade']="Sell"
   st.session_state['SENSEX_5m_Trade']="Sell"
   todays_trade=get_todays_trade()
+  cancel_gtt()
 def trail_sl():
   for attempt in range(3):
     try:
@@ -782,7 +787,7 @@ def sub_loop_code(now_minute):
     five_min_trade.text(f"Index Trade: NIFTY:{st.session_state['NIFTY_5m_Trade']} BANKNIFTY:{st.session_state['BANKNIFTY_5m_Trade']} SENSEX:{st.session_state['SENSEX_5m_Trade']}")
     if 'OPT:5M' in time_frame_interval:
       trade_near_options('5m')
-    gtt_sub_loop()
+      gtt_sub_loop()
   if (now_minute%15==0 and 'IDX:15M' in time_frame_interval):
     nf_data=index_trade("NIFTY","15m")
     bnf_data=index_trade("BANKNIFTY","15m")
@@ -851,6 +856,7 @@ def get_ltp_token(nfo_list,bfo_list):
 def update_price_orderbook(df):
   for j in range(0,len(df)):
     try:
+      if df['ordertag'].iloc[j]=="": df['ordertag'].iloc[j]="GTT Buy OPT 5m:ST_7_3 Trade"
       if df['averageprice'].iloc[j]!=0:df['price'].iloc[j]=df['averageprice'].iloc[j]
       elif df['price'].iloc[j]==0:
         text=df['text'].iloc[j]
@@ -933,6 +939,7 @@ def check_pnl_todays_trade(buy_df):
           price=buy_df['price'].iloc[i]
           ltp_price=buy_df['LTP'].iloc[i]
           orderid=buy_df['orderid'].iloc[i]
+          indicator=buy_df['ordertag'].iloc[i]
           sl=buy_df['LTP'].iloc[i]
           trade_info = f"{buy_df['tradingsymbol'].iloc[i]}\n" \
                   f"LTP:{buy_df['LTP'].iloc[i]} Target:{buy_df['Target'].iloc[i]} " \
@@ -954,12 +961,21 @@ def check_pnl_todays_trade(buy_df):
             buy_df['Status'].iloc[i]="Target Hit"
           else:
             exit_trade="No"
-            if st.session_state['NIFTY_5m_Trade']=="Buy" and tradingsymbol.startswith("NIFTY") and tradingsymbol.endswith("PE"):exit_trade="Yes"
-            if st.session_state['NIFTY_5m_Trade']=="Sell" and tradingsymbol.startswith("NIFTY") and tradingsymbol.endswith("CE"):exit_trade="Yes"
-            if st.session_state['BANKNIFTY_5m_Trade']=="Buy" and tradingsymbol.startswith("BANKNIFTY") and tradingsymbol.endswith("PE"):exit_trade="Yes"
-            if st.session_state['BANKNIFTY_5m_Trade']=="Sell" and tradingsymbol.startswith("BANKNIFTY") and tradingsymbol.endswith("CE"):exit_trade="Yes"
-            if st.session_state['SENSEX_5m_Trade']=="Buy" and tradingsymbol.startswith("SENSEX") and tradingsymbol.endswith("PE"):exit_trade="Yes"
-            if st.session_state['SENSEX_5m_Trade']=="Sell" and tradingsymbol.startswith("SENSEX") and tradingsymbol.endswith("CE"):exit_trade="Yes"
+            if tradingsymbol.startswith("NIFTY"):
+              if " 5m" in indicator and tradingsymbol.endswith("PE") and st.session_state['NIFTY_5m_Trade']=="Buy":exit_trade="Yes"
+              if " 5m" in indicator and tradingsymbol.endswith("CE") and st.session_state['NIFTY_5m_Trade']=="Sell":exit_trade="Yes"
+              if " 1m" in indicator and tradingsymbol.endswith("PE") and st.session_state['NIFTY_1m_Trade']=="Buy":exit_trade="Yes"
+              if " 1m" in indicator and tradingsymbol.endswith("CE") and st.session_state['NIFTY_1m_Trade']=="Sell":exit_trade="Yes"
+            elif tradingsymbol.startswith("BANKNIFTY"):
+              if " 5m" in indicator and tradingsymbol.endswith("PE") and st.session_state['BANKNIFTY_5m_Trade']=="Buy":exit_trade="Yes"
+              if " 5m" in indicator and tradingsymbol.endswith("CE") and st.session_state['BANKNIFTY_5m_Trade']=="Sell":exit_trade="Yes"
+              if " 1m" in indicator and tradingsymbol.endswith("PE") and st.session_state['BANKNIFTY_1m_Trade']=="Buy":exit_trade="Yes"
+              if " 1m" in indicator and tradingsymbol.endswith("CE") and st.session_state['BANKNIFTY_1m_Trade']=="Sell":exit_trade="Yes"
+            elif tradingsymbol.startswith("SENSEX"):
+              if " 5m" in indicator and tradingsymbol.endswith("PE") and st.session_state['SENSEX_5m_Trade']=="Buy":exit_trade="Yes"
+              if " 5m" in indicator and tradingsymbol.endswith("CE") and st.session_state['SENSEX_5m_Trade']=="Sell":exit_trade="Yes"
+              if " 1m" in indicator and tradingsymbol.endswith("PE") and st.session_state['SENSEX_1m_Trade']=="Buy":exit_trade="Yes"
+              if " 1m" in indicator and tradingsymbol.endswith("CE") and st.session_state['SENSEX_1m_Trade']=="Sell":exit_trade="Yes"
             if exit_trade=="Yes":
               exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Indicaor Exit:'+ordertag,producttype='CARRYFORWARD')
               multiline_string = "Indicaor Exit:"+trade_info
