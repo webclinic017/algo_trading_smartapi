@@ -856,7 +856,7 @@ def get_ltp_token(nfo_list,bfo_list):
 def update_price_orderbook(df):
   for j in range(0,len(df)):
     try:
-      if df['ordertag'].iloc[j]=="": df['ordertag'].iloc[j]="GTT Buy OPT 5m:ST_7_3 Trade"
+      if df['ordertag'].iloc[j]=="": df['ordertag'].iloc[j]="GTT Buy OPT 5m:Supertrend Trade"
       if df['averageprice'].iloc[j]!=0:df['price'].iloc[j]=df['averageprice'].iloc[j]
       elif df['price'].iloc[j]==0:
         text=df['text'].iloc[j]
@@ -1148,6 +1148,9 @@ def gtt_sub_loop():
             old_data=get_historical_data(symbol=tradingsymbol,interval='5m',token=symboltoken,exch_seg=exchange,candle_type="NORMAL")
             if old_data.iloc[-1]['Supertrend']>old_data.iloc[-1]['Close']:
               price=int(old_data.iloc[-1]['Supertrend'])
+              create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
+            elif old_data.iloc[-1]['Supertrend_10_2']>old_data.iloc[-1]['Close']:
+              price=int(old_data.iloc[-1]['Supertrend_10_2'])
               create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
         except:pass
     except:pass
