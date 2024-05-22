@@ -163,7 +163,8 @@ else:
   userProfile= obj.getProfile(refreshToken)
   aa= userProfile.get('data')
   logger.info(aa.get('name').title())
-  st.session_state['Logged_in']=aa.get('name').title()
+  login_name=aa.get('name').title()
+  st.session_state['Logged_in']=login_name.split()[0]
   st.session_state['login_time']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
   st.session_state['last_check']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
 
@@ -824,10 +825,9 @@ def loop_code():
     st.session_state['last_check']=now.time()
     login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
     try:
-      if now > marketopen and now < day_end:
-        if now > marketclose:closing_trade()
-        else:df=sub_loop_code(now.minute)
-        position,open_position=get_open_position()
+      if now > marketopen and now < marketclose:
+        df=sub_loop_code(now.minute)
+      position,open_position=get_open_position()
       todays_trade=get_todays_trade()
       gtt=get_gtt_list()
       if now.minute%5==0: trail_sl()
@@ -946,17 +946,18 @@ def check_pnl_todays_trade(buy_df):
                   f"SL:{buy_df['SL'].iloc[i]}\n" \
                   f"Price:{buy_df['price'].iloc[i]}\n" \
                   f"Time:{buy_df['updatetime'].iloc[i]}\n" \
-                  f"Indicator: {buy_df['ordertag'].iloc[i]}"
+                  f"Indicator: {buy_df['ordertag'].iloc[i]}n" \ 
+                  f"Profit: {buy_df['Profit'].iloc[i]}" 
           if int(sl)==0:ltp_price=1;sl=1
           ordertag=f"{ltp_price} : {orderid}"
           if int(buy_df['LTP'].iloc[i])< int(buy_df['SL'].iloc[i]):
             exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='SL Hit:'+ordertag,producttype='CARRYFORWARD')
-            multiline_string = "SL Hit:"+trade_info
+            multiline_string = "SL Hit: "+trade_info
             telegram_bot_sendtext(multiline_string)
             buy_df['Status'].iloc[i]="SL Hit"
           elif int(buy_df['LTP'].iloc[i])> int(buy_df['Target'].iloc[i]):
             exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Target Hit:'+ordertag,producttype='CARRYFORWARD')
-            multiline_string = "Target Hit:"+trade_info
+            multiline_string = "Target Hit: "+trade_info
             telegram_bot_sendtext(multiline_string)
             buy_df['Status'].iloc[i]="Target Hit"
           else:
@@ -978,7 +979,7 @@ def check_pnl_todays_trade(buy_df):
               if " 1m" in indicator and tradingsymbol.endswith("CE") and st.session_state['SENSEX_1m_Trade']=="Sell":exit_trade="Yes"
             if exit_trade=="Yes":
               exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Indicaor Exit:'+ordertag,producttype='CARRYFORWARD')
-              multiline_string = "Indicaor Exit:"+trade_info
+              multiline_string = "Indicaor Exit: "+trade_info
               telegram_bot_sendtext(multiline_string)
               buy_df['Status'].iloc[i]="Indicaor Exit"
             else:
@@ -987,7 +988,7 @@ def check_pnl_todays_trade(buy_df):
                 dd=get_historical_data(symbol=tradingsymbol,interval='5m',token=symboltoken,exch_seg=exch_seg,candle_type="NORMAL").tail(1)
                 if dd['ST_7_3 Trade'].iloc[0]=="Sell" or dd['Supertrend_10_2'].iloc[0]=="Sell":
                   exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Opt Indicaor Exit:'+ordertag,producttype='CARRYFORWARD')
-                  multiline_string = "Opt Indicaor Exit:"+trade_info
+                  multiline_string = "Opt Indicaor Exit: "+trade_info
                   telegram_bot_sendtext(multiline_string)
                   buy_df['Status'].iloc[i]="Indicaor Exit"
       except Exception as e:print(f"error in check_pnl_todays_trade {e}")
