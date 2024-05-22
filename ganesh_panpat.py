@@ -941,13 +941,14 @@ def check_pnl_todays_trade(buy_df):
           orderid=buy_df['orderid'].iloc[i]
           indicator=buy_df['ordertag'].iloc[i]
           sl=buy_df['LTP'].iloc[i]
-          trade_info = f"{buy_df['tradingsymbol'].iloc[i]}\n" \
-                  f"LTP:{buy_df['LTP'].iloc[i]} Target:{buy_df['Target'].iloc[i]} " \
-                  f"SL:{buy_df['SL'].iloc[i]}\n" \
-                  f"Price:{buy_df['price'].iloc[i]}\n" \
-                  f"Time:{buy_df['updatetime'].iloc[i]}\n" \
-                  f"Indicator: {buy_df['ordertag'].iloc[i]}\n" \ 
-                  f"Profit: {buy_df['Profit'].iloc[i]}" 
+          trade_info = (
+          f"{buy_df['tradingsymbol'].iloc[i]}\n"
+          f"LTP:{buy_df['LTP'].iloc[i]} Target:{buy_df['Target'].iloc[i]} "
+          f"SL:{buy_df['SL'].iloc[i]}\n"
+          f"Price:{buy_df['price'].iloc[i]}\n"
+          f"Time:{buy_df['updatetime'].iloc[i]}\n"
+          f"Indicator: {buy_df['ordertag'].iloc[i]}\n"
+          f"Profit: {buy_df['Profit'].iloc[i]}")
           if int(sl)==0:ltp_price=1;sl=1
           ordertag=f"{ltp_price} : {orderid}"
           if int(buy_df['LTP'].iloc[i])< int(buy_df['SL'].iloc[i]):
