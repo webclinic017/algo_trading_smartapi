@@ -946,7 +946,7 @@ def check_pnl_todays_trade(buy_df):
                   f"SL:{buy_df['SL'].iloc[i]}\n" \
                   f"Price:{buy_df['price'].iloc[i]}\n" \
                   f"Time:{buy_df['updatetime'].iloc[i]}\n" \
-                  f"Indicator: {buy_df['ordertag'].iloc[i]}n" \ 
+                  f"Indicator: {buy_df['ordertag'].iloc[i]}\n" \ 
                   f"Profit: {buy_df['Profit'].iloc[i]}" 
           if int(sl)==0:ltp_price=1;sl=1
           ordertag=f"{ltp_price} : {orderid}"
