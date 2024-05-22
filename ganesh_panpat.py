@@ -107,7 +107,7 @@ with tab5:
   with ind_col1:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX'],['NIFTY','BANKNIFTY','SENSEX'])
     fut_list=st.multiselect('Select Future',['SILVERMIC','SILVER'],[])
-    time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M'],['IDX:5M','OPT:5M'])
+    time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M'],['IDX:5M','OPT:5M','IDX:1M'])
     index_indicator = st.multiselect('Index Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade','TEMA_EMA_9 Trade'])
     option_indicator = st.multiselect('Option Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
     three_buy_indicator = st.multiselect('Three Minute Indicator',indicator_list,[])
