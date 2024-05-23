@@ -1099,13 +1099,13 @@ def get_gtt_list():
     lists['createddate'] = pd.to_datetime(lists['createddate']).dt.time
     lists['updateddate'] = lists['updateddate'].apply(lambda x: datetime.datetime.fromisoformat(x))
     lists['updateddate'] = lists['updateddate'].dt.strftime('%Y-%m-%d %H:%M:%S')
-    lists['updateddate'] = pd.to_datetime(lists['updateddate']).dt.time
+    #lists['updateddate'] = pd.to_datetime(lists['updateddate']).dt.time
     lists['expirydate'] = lists['expirydate'].apply(lambda x: datetime.datetime.fromisoformat(x))
     lists['expirydate'] = lists['expirydate'].dt.strftime('%Y-%m-%d %H:%M:%S')
     lists['expirydate'] = pd.to_datetime(lists['expirydate']).dt.time
     lists['LTP']='-'
     lists=update_ltp_gtt(lists)
-    lists=lists[['id','createddate','updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status','LTP']]
+    lists=lists[['id','updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status','LTP']]
     lists=lists.sort_values(by = ['createddate', 'tradingsymbol'], ascending = [False, True], na_position = 'first')
     gtt_order_datatable.dataframe(lists,hide_index=True)
     now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
@@ -1113,7 +1113,7 @@ def get_gtt_list():
     return lists
   except Exception as e:
     logger.exception(f"GTT Rule List failed: {e}")
-    lists=pd.DataFrame(columns=['id','createddate','updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status','LTP'])
+    lists=pd.DataFrame(columns=['id','updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status','LTP'])
     return lists
 def cancel_gtt():
   lists=get_gtt_list()
