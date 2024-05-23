@@ -37,6 +37,14 @@ st.session_state['SENSEX_5m_Trade']="-"
 st.session_state['NIFTY_1m_Trade']="-"
 st.session_state['BANKNIFTY_1m_Trade']="-"
 st.session_state['SENSEX_1m_Trade']="-"
+st.session_state['NIFTY_5m_Indicator']="-"
+st.session_state['BANKNIFTY_5m_Indicator']="-"
+st.session_state['SENSEX_5m_Indicator']="-"
+st.session_state['NIFTY_1m_Indicator']="-"
+st.session_state['BANKNIFTY_1m_Indicator']="-"
+st.session_state['SENSEX_1m_Indicator']="-"
+st.session_state['Time_5m']="-"
+st.session_state['Time_1m']="-"
 
 def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
@@ -70,7 +78,9 @@ login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_s
 index_ltp_string=st.empty()
 index_ltp_string.text(f"Index Ltp: ")
 five_min_trade=st.empty()
-five_min_trade.text(f"Index Trade: ")
+five_min_trade.text(f"Index 5M Trade: ")
+one_min_trade=st.empty()
+one_min_trade.text(f"Index 1M Trade: ")
 tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7,tab8= st.tabs(["Log","Order Book", "Position","Todays Trade","Open Order", "Settings","Token List","Future List","GTT Orders"])
 with tab0:
   col1,col2=st.columns([1,9])
@@ -106,12 +116,14 @@ with tab5:
                   'MA Trade','EMA Trade','EMA_5_7 Trade','MA 21 Trade','HMA Trade','RSI_60 Trade','EMA_High_Low Trade','Two Candle Theory','TEMA_EMA_9 Trade']
   with ind_col1:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX'],['NIFTY','BANKNIFTY','SENSEX'])
+    time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M'],['IDX:5M','OPT:5M'])
+    five_buy_indicator = st.multiselect('5M Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade','RSI_60 Trade'])
+    five_opt_buy_indicator = st.multiselect('5M OPT Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
+    one_buy_indicator = st.multiselect('1M Indicator',indicator_list,[])
+    one_opt_buy_indicator = st.multiselect('1M OPT Indicator',indicator_list,['TEMA_EMA_9 Trade'])
+    fifteen_buy_indicator = st.multiselect('15M Indicator',indicator_list,[])
+    three_buy_indicator = st.multiselect('3M Indicator',indicator_list,[])
     fut_list=st.multiselect('Select Future',['SILVERMIC','SILVER'],[])
-    time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M'],['IDX:5M','OPT:5M','IDX:1M'])
-    index_indicator = st.multiselect('Index Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade','TEMA_EMA_9 Trade'])
-    option_indicator = st.multiselect('Option Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
-    three_buy_indicator = st.multiselect('Three Minute Indicator',indicator_list,[])
-    one_buy_indicator = st.multiselect('One Minute Indicator',indicator_list,[])
     with ind_col2:
       target_order_type = st.selectbox('Target Order',('Target', 'Stop_Loss', 'NA'),1)
       target_type = st.selectbox('Target Type',('Points', 'Per Cent','Indicator'),1)
@@ -352,9 +364,10 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
       delta_time=int(odd_interval)
       odd_interval+='m'
     if (symbol_i[0]=="^"):df=yfna_data(symbol_i,yf_interval,period)
-    now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
-    if isinstance(df, str) or (now - df.index[-1]) > datetime.timedelta(minutes=5):df=angel_data(token,agl_interval,exch_seg,period)
     else:df=angel_data(token,agl_interval,exch_seg,period)
+    now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
+    #if isinstance(df, str) or (now - df.index[-1]) > datetime.timedelta(minutes=5):df=angel_data(token,agl_interval,exch_seg,period)
+    #else:df=angel_data(token,agl_interval,exch_seg,period)
     if odd_candle ==True:
       df=df.groupby(pd.Grouper(freq=odd_interval+'in')).agg({"Date":"first","Datetime":"first","Open": "first", "High": "max",
                                                         "Low": "min", "Close": "last","Volume": "sum"})
@@ -392,13 +405,15 @@ def get_trade_info(df):
   elif df['Time Frame'][0]=="15m" or df['Time Frame'][0]=="FIFTEEN MINUTE" or df['Time Frame'][0]=="15min": df['Time Frame']="15m";time_frame="15m"
   elif df['Time Frame'][0]=="1m" or df['Time Frame'][0]=="ONE MINUTE" or df['Time Frame'][0]=="1min": df['Time Frame']="1m";time_frame="1m"
   time_frame=df['Time Frame'][0]
-  if time_frame=="5m":indicator_list=['ST_7_3 Trade','ST_10_2 Trade','RSI_60 Trade']
-  elif time_frame=="15m":indicator_list=['ST_7_3 Trade','ST_10_2 Trade','RSI_60 Trade']
-  elif time_frame=="1m":indicator_list=['TEMA_EMA_9 Trade']
-  elif time_frame=="3m":indicator_list=[]
-  else:indicator_list=['ST_7_3 Trade','ST_10_2 Trade','TEMA_EMA_9 Trade','RSI_60 Trade']
   Symbol=df['Symbol'][0]
   symbol_type = "IDX" if Symbol in ["^NSEBANK", "BANKNIFTY", "^NSEI", "NIFTY", "SENSEX", "^BSESN"] else "OPT"
+  if time_frame=="5m" and symbol_type=="IDX":indicator_list=five_buy_indicator
+  elif time_frame=="5m" and symbol_type=="OPT":indicator_list=five_opt_buy_indicator
+  elif time_frame=="15m" and symbol_type=="IDX":indicator_list=fifteen_buy_indicator
+  elif time_frame=="1m" and symbol_type=="IDX":indicator_list=one_buy_indicator
+  elif time_frame=="1m" and symbol_type=="OPT":indicator_list=one_opt_buy_indicator
+  elif time_frame=="3m" and symbol_type=="IDX":indicator_list=three_buy_indicator
+  else:indicator_list=['ST_7_3 Trade','ST_10_2 Trade','TEMA_EMA_9 Trade','RSI_60 Trade']
   df['Indicator']=symbol_type+" "+df['Time Frame']
   df['Trade']="-"
   df['Trade End']="-"
@@ -607,7 +622,7 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
       if st.session_state['target_order_type']=="Target":
         place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='LIMIT',price=target_price,
                     variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=str(orderId)+" Target order Placed")
-      elif st.session_state['target_order_type']=="Stop Loss":
+      elif st.session_state['target_order_type']=='Stop_Loss':
         place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='STOPLOSS_LIMIT',price=stop_loss,
                     variety='STOPLOSS',exch_seg=exch_seg,producttype='CARRYFORWARD',triggerprice=stop_loss,squareoff=stop_loss,
                     stoploss=stop_loss, ordertag=str(orderId)+" Stop Loss order Placed")
@@ -679,8 +694,10 @@ def get_near_options(symbol,index_ltp,symbol_expiry):
   df.sort_index(inplace=True)
   return df
 def trade_near_options(time_frame):
-  for symbol in ['NIFTY','BANKNIFTY','SENSEX']:
-    if st.session_state[symbol+'_5m_Trade']!="-":continue
+  print(f'Trade Near Option{time_frame}')
+  for symbol in index_list:
+    print(symbol)
+    if st.session_state[symbol+'_'+time_frame+'_Trade']!="-":continue
     try:
       index_ltp=get_ltp_price(symbol)
       if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
@@ -703,13 +720,14 @@ def trade_near_options(time_frame):
               'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
               'RSI':opt_data['RSI'].values[-1]}
         st.session_state['options_trade_list'].append(information)
-        if (opt_data['ST_7_3 Trade'].values[-1]=="Buy" or opt_data['ST_10_2 Trade'].values[-1]=="Buy"):
+        if opt_data['Trade'].values[-1]=="Buy":
           strike_symbol=option_list.iloc[i]
-          buy_option(symbol=strike_symbol,indicator_strategy=opt_data['Indicator'].values[-1],interval="5m",index_sl="-")
+          buy_option(symbol=strike_symbol,indicator_strategy=opt_data['Indicator'].values[-1],interval=time_frame,index_sl="-")
           break
     except:pass
 
 def index_trade(symbol,interval):
+  print(f'Index Trade {symbol} {interval}')
   fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
   trade=str(fut_data['Trade'].values[-1])
   if trade!="-":
@@ -779,39 +797,37 @@ def trail_sl():
       except: pass
 
 def sub_loop_code(now_minute):
+  st.session_state['options_trade_list']=[]
   if (now_minute%5==0 and 'IDX:5M' in time_frame_interval):
-    st.session_state['options_trade_list']=[]
-    nf_data=index_trade("NIFTY","5m")
-    bnf_data=index_trade("BANKNIFTY","5m")
-    sensex_data=index_trade("SENSEX","5m")
+    for symbol in index_list:df=index_trade(symbol,"5m")
+    st.session_state['Time_5m']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
+    #nf_data=index_trade("NIFTY","5m")
+    #bnf_data=index_trade("BANKNIFTY","5m")
+    #sensex_data=index_trade("SENSEX","5m")
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    five_min_trade.text(f"Index Trade: NIFTY:{st.session_state['NIFTY_5m_Trade']} BANKNIFTY:{st.session_state['BANKNIFTY_5m_Trade']} SENSEX:{st.session_state['SENSEX_5m_Trade']}")
+    five_min_trade.text(f"5M Index Trade:{st.session_state['Time_5m']} NIFTY:{st.session_state['NIFTY_5m_Trade']} BANKNIFTY:{st.session_state['BANKNIFTY_5m_Trade']} SENSEX:{st.session_state['SENSEX_5m_Trade']}")
     if 'OPT:5M' in time_frame_interval:
       trade_near_options('5m')
       gtt_sub_loop()
   if (now_minute%15==0 and 'IDX:15M' in time_frame_interval):
-    nf_data=index_trade("NIFTY","15m")
-    bnf_data=index_trade("BANKNIFTY","15m")
-    sensex_data=index_trade("SENSEX","15m")
+    for symbol in index_list:df=index_trade(symbol,"15m")
+    #nf_data=index_trade("NIFTY","15m")
+    #bnf_data=index_trade("BANKNIFTY","15m")
+    #sensex_data=index_trade("SENSEX","15m")
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
   if 'IDX:1M' in time_frame_interval:
-    nf_one_data=index_trade("NIFTY","1m")
-    bnf_one_data=index_trade("BANKNIFTY","1m")
-    sensex_one_data=index_trade("SENSEX","1m")
+    for symbol in index_list: df=index_trade(symbol,"1m")
+    st.session_state['Time_1m']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
+    one_min_trade.text(f"1M Index Trade:{st.session_state['Time_1m']} NIFTY:{st.session_state['NIFTY_1m_Trade']} BANKNIFTY:{st.session_state['BANKNIFTY_1m_Trade']} SENSEX:{st.session_state['SENSEX_1m_Trade']}")
+    #nf_one_data=index_trade("NIFTY","1m")
+    #bnf_one_data=index_trade("BANKNIFTY","1m")
+    #sensex_one_data=index_trade("SENSEX","1m")
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
   if 'OPT:1M' in time_frame_interval:trade_near_options('1m')
   log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
 
 def check_login():
-  try:
-    need_relogin=True
-    rms_status=obj.rmsLimit()
-    if 'status' in rms_status:
-      if rms_status['status']== True:
-        need_relogin=False
-    if need_relogin==True:
-      obj=angel_login()
-  except :obj=angel_login()
+  pass
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
@@ -825,8 +841,7 @@ def loop_code():
     st.session_state['last_check']=now.time()
     login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
     try:
-      if now > marketopen and now < marketclose:
-        df=sub_loop_code(now.minute)
+      if now > marketopen and now < marketclose:df=sub_loop_code(now.minute)
       position,open_position=get_open_position()
       todays_trade=get_todays_trade()
       gtt=get_gtt_list()
@@ -948,7 +963,7 @@ def check_pnl_todays_trade(buy_df):
           f"Price:{buy_df['price'].iloc[i]}\n"
           f"Time:{buy_df['updatetime'].iloc[i]}\n"
           f"Indicator: {buy_df['ordertag'].iloc[i]}\n"
-          f"Profit: {buy_df['Profit'].iloc[i]}")
+          f"Profit: {int(buy_df['Profit'].iloc[i])}")
           if int(sl)==0:ltp_price=1;sl=1
           ordertag=f"{ltp_price} : {orderid}"
           if int(buy_df['LTP'].iloc[i])< int(buy_df['SL'].iloc[i]):
@@ -1074,7 +1089,7 @@ def update_ltp_gtt(lists):
   return lists
 def get_gtt_list():
   try:
-    status=["NEW"] #should be a list
+    status=["FORALL"] #should be a list
     page=1
     count=100
     lists=obj.gttLists(status,page,count)['data']
@@ -1135,7 +1150,7 @@ def modify_gtt(lists):
 def gtt_sub_loop():
   lists=get_gtt_list()
   gtt_symbol_list=lists['tradingsymbol'].tolist()
-  for index in ['NIFTY','BANKNIFTY']:
+  for index in index_list:
     try:
       indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(index,indexLtp="-")
       for strike_symbol in [ce_strike_symbol,pe_strike_symbol]:
@@ -1160,3 +1175,12 @@ if algo_state:
 if nf_ce:
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp="-")
   buy_option(ce_strike_symbol,'Manual Buy','5m')
+if nf_pe:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('NIFTY',indexLtp="-")
+  buy_option(pe_strike_symbol,'Manual Buy','5m')
+if bnf_ce:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('BANKNIFTY',indexLtp="-")
+  buy_option(ce_strike_symbol,'Manual Buy','5m')
+if bnf_pe:
+  indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('BANKNIFTY',indexLtp="-")
+  buy_option(pe_strike_symbol,'Manual Buy','5m')
