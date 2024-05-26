@@ -352,10 +352,10 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     elif (symbol=="^BSESN" or symbol=="SENSEX") : symbol_i,token,exch_seg="^BSESN",99919000,"BSE"
     if symbol[3:]=='-EQ': symbol=symbol[:-3]+".NS"
     odd_candle,odd_interval,df=False,'','No Data Found'
-    if (interval=="5m" or interval=='FIVE_MINUTE'): period,delta_time,agl_interval,yf_interval,odd_interval=5,5,"FIVE_MINUTE","5m",'5m'
+    if (interval=="5m" or interval=='FIVE_MINUTE'): period,delta_time,agl_interval,yf_interval,odd_interval=7,5,"FIVE_MINUTE","5m",'5m'
     elif (interval=="15m" or interval=='FIFTEEN_MINUTE'): period,delta_time,agl_interval,yf_interval,odd_interval=10,15,"FIFTEEN_MINUTE","15m",'15m'
     elif (interval=="60m" or interval=='ONE_HOUR'): period,delta_time,agl_interval,yf_interval,odd_interval=30,60,"ONE_HOUR","60m",'60m'
-    elif (interval=="1m" or interval=='ONE_MINUTE') : period,delta_time,agl_interval,yf_interval,odd_interval=5,1,"ONE_MINUTE","1m",'1m'
+    elif (interval=="1m" or interval=='ONE_MINUTE') : period,delta_time,agl_interval,yf_interval,odd_interval=7,1,"ONE_MINUTE","1m",'1m'
     elif (interval=="1d" or interval=='ONE_DAY') : period,delta_time,agl_interval,yf_interval,odd_interval=100,5,"ONE_DAY","1d",'1d'
     else:
       period,delta_time,agl_interval,yf_interval,odd_candle=7,1,"ONE_MINUTE","1m",True
@@ -694,12 +694,9 @@ def get_near_options(symbol,index_ltp,symbol_expiry):
   df.sort_index(inplace=True)
   return df
 def trade_near_options(time_frame):
-  print(f'Trade Near Option{time_frame}')
   lists=get_gtt_list()
   gtt_symbol_list=lists['tradingsymbol'].tolist()
   for symbol in index_list:
-    print(symbol)
-    #if st.session_state[symbol+'_'+time_frame+'_Trade']!="-":continue
     try:
       index_ltp=get_ltp_price(symbol)
       if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
@@ -723,21 +720,20 @@ def trade_near_options(time_frame):
               'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
               'RSI':opt_data['RSI'].values[-1]}
         st.session_state['options_trade_list'].append(information)
+        print(information)
         if opt_data['Trade'].values[-1]=="Buy":
           strike_symbol=option_list.iloc[i]
           buy_option(symbol=strike_symbol,indicator_strategy=opt_data['Indicator'].values[-1],interval=time_frame,index_sl="-")
-        else:
-          if symbol_name not in gtt_symbol_list:
-            qty=strike_symbol['lotsize']
-            exchange=strike_symbol['exch_seg']
-            if opt_data['Supertrend'].values[-1]>opt_data['Close'].values[-1]:
-              price=int(opt_data['Supertrend'].values[-1])
-              create_gtt(symbol_name,token_symbol,exch_seg,'CARRYFORWARD',"BUY",price,qty,price)
-            elif opt_data['Supertrend_10_2'].values[-1]>opt_data['Close'].values[-1]:
-              price=int(opt_data['Supertrend_10_2'].values[-1])
-              create_gtt(symbol_name,token_symbol,exch_seg,'CARRYFORWARD',"BUY",price,qty,price)
+        if strike_symbol not in gtt_symbol_list:
+          if opt_data.iloc[-1]['Supertrend']>opt_data.iloc[-1]['Close']:
+            price=int(opt_data.iloc[-1]['Supertrend'])
+            create_gtt(symbol_name,token_symbol,exch_seg,'CARRYFORWARD',"BUY",price,qty,price)
+          elif opt_data.iloc[-1]['Supertrend_10_2']>opt_data.iloc[-1]['Close']:
+            price=int(opt_data.iloc[-1]['Supertrend_10_2'])
+            create_gtt(symbol_name,token_symbol,exch_seg,'CARRYFORWARD',"BUY",price,qty,price)
     except:pass
   modify_gtt(lists)
+
 def index_trade(symbol,interval):
   print(f'Index Trade {symbol} {interval}')
   fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
@@ -821,7 +817,6 @@ def sub_loop_code(now_minute):
     five_min_trade.text(f"5M Index Trade:{st.session_state['Time_5m']} NIFTY:{st.session_state['NIFTY_5m_Trade']} BANKNIFTY:{st.session_state['BANKNIFTY_5m_Trade']} SENSEX:{st.session_state['SENSEX_5m_Trade']}")
     if 'OPT:5M' in time_frame_interval:
       trade_near_options('5m')
-      #gtt_sub_loop()
   if (now_minute%15==0 and 'IDX:15M' in time_frame_interval):
     for symbol in index_list:df=index_trade(symbol,"15m")
     #nf_data=index_trade("NIFTY","15m")
@@ -1153,7 +1148,7 @@ def modify_gtt(lists):
             "price": str(price),"qty": str(lists['qty'].iloc[i]),"triggerprice": str(price),
             "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
           obj.gttModifyRule(gttCreateParams)
-        if old_data.iloc[-1]['Supertrend']<old_data.iloc[-1]['Close']:
+        if old_data.iloc[-1]['Supertrend']<old_data.iloc[-1]['Close'] and old_data.iloc[-1]['Supertrend_10_2']<old_data.iloc[-1]['Close']:
           print(f"GTT Cancel: {tradingsymbol}")
           gttCreateParams={"id": str(lists['id'].iloc[i]),"symboltoken": str(lists['symboltoken'].iloc[i]),"exchange": str(lists['exchange'].iloc[i]),
           "price": str(lists['price'].iloc[i]),"qty": str(lists['qty'].iloc[i]),"triggerprice": str(lists['price'].iloc[i]),
@@ -1197,3 +1192,5 @@ if bnf_ce:
 if bnf_pe:
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('BANKNIFTY',indexLtp="-")
   buy_option(pe_strike_symbol,'Manual Buy','5m')
+if restart:
+  sub_loop_code(5)
