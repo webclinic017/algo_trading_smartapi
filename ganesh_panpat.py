@@ -695,9 +695,11 @@ def get_near_options(symbol,index_ltp,symbol_expiry):
   return df
 def trade_near_options(time_frame):
   print(f'Trade Near Option{time_frame}')
+  lists=get_gtt_list()
+  gtt_symbol_list=lists['tradingsymbol'].tolist()
   for symbol in index_list:
     print(symbol)
-    if st.session_state[symbol+'_'+time_frame+'_Trade']!="-":continue
+    #if st.session_state[symbol+'_'+time_frame+'_Trade']!="-":continue
     try:
       index_ltp=get_ltp_price(symbol)
       if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
@@ -709,6 +711,7 @@ def trade_near_options(time_frame):
         symbol_name=option_list['symbol'].iloc[i]
         token_symbol=option_list['token'].iloc[i]
         exch_seg=option_list['exch_seg'].iloc[i]
+        qty=option_list['lotsize'].iloc[i]
         opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
         information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
               'Symbol':symbol_name,
@@ -723,9 +726,18 @@ def trade_near_options(time_frame):
         if opt_data['Trade'].values[-1]=="Buy":
           strike_symbol=option_list.iloc[i]
           buy_option(symbol=strike_symbol,indicator_strategy=opt_data['Indicator'].values[-1],interval=time_frame,index_sl="-")
-          break
+        else:
+          if symbol_name not in gtt_symbol_list:
+            qty=strike_symbol['lotsize']
+            exchange=strike_symbol['exch_seg']
+            if opt_data['Supertrend'].values[-1]>opt_data['Close'].values[-1]:
+              price=int(opt_data['Supertrend'].values[-1])
+              create_gtt(symbol_name,token_symbol,exch_seg,'CARRYFORWARD',"BUY",price,qty,price)
+            elif opt_data['Supertrend_10_2'].values[-1]>opt_data['Close'].values[-1]:
+              price=int(opt_data['Supertrend_10_2'].values[-1])
+              create_gtt(symbol_name,token_symbol,exch_seg,'CARRYFORWARD',"BUY",price,qty,price)
     except:pass
-
+  modify_gtt(lists)
 def index_trade(symbol,interval):
   print(f'Index Trade {symbol} {interval}')
   fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
@@ -809,7 +821,7 @@ def sub_loop_code(now_minute):
     five_min_trade.text(f"5M Index Trade:{st.session_state['Time_5m']} NIFTY:{st.session_state['NIFTY_5m_Trade']} BANKNIFTY:{st.session_state['BANKNIFTY_5m_Trade']} SENSEX:{st.session_state['SENSEX_5m_Trade']}")
     if 'OPT:5M' in time_frame_interval:
       trade_near_options('5m')
-      gtt_sub_loop()
+      #gtt_sub_loop()
   if (now_minute%15==0 and 'IDX:15M' in time_frame_interval):
     for symbol in index_list:df=index_trade(symbol,"15m")
     #nf_data=index_trade("NIFTY","15m")
