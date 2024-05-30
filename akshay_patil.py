@@ -600,13 +600,16 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
       return
     try:
       ltp_price=round(float(get_ltp_price(symbol=option_symbol,token=option_token,exch_seg=exch_seg)),2)
-      stop_loss_a=int(float(ltp_price*0.7))
-      target_price_a=int(float(ltp_price*1.3))
-      old_data=get_historical_data(symbol=option_symbol,interval='5m',token=option_token,exch_seg=exch_seg,candle_type="NORMAL")
-      stop_loss_b=int(float(ltp_price-(float(old_data['Atr'].iloc[-1])*2)))
-      target_price_b=int(float(ltp_price+(float(old_data['Atr'].iloc[-1])*2)))
-      stop_loss=int(max(stop_loss_a,stop_loss_b))
-      target_price=int(max(target_price_a,target_price_b))
+      if target_type =="Points" :
+        target_price=int(ltp_price)+int(target_point)
+        stop_loss=int(ltp_price)+int(sl_point)
+      elif target_type =="Per Cent":
+        target_price=int(float(ltp_price)*((100+target_point)/100))
+        stop_loss=int(float(ltp_price)*((100-sl_point)/100))
+      else:
+        old_data=get_historical_data(symbol=option_symbol,interval='5m',token=option_token,exch_seg=exch_seg,candle_type="NORMAL")
+        stop_loss=int(float(ltp_price-(float(old_data['Atr'].iloc[-1])*2)))
+        target_price=int(float(ltp_price+(float(old_data['Atr'].iloc[-1])*2)))
       indicator_strategy=indicator_strategy+ " LTP:"+str(int(ltp_price))+"("+str(int(stop_loss))+":"+str(int(target_price))+")"
     except:
       ltp_price=0
@@ -616,8 +619,6 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
     orders_status=orders.iloc[0]['orderstatus']
     trade_price=orders.iloc[0]['averageprice']
     if orders_status== 'complete':
-      stop_loss=int(float(trade_price*0.7))
-      target_price=int(float(trade_price*1.3))
       if st.session_state['target_order_type']=="Target":
         place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='LIMIT',price=target_price,
                     variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=str(orderId)+" Target order Placed")
