@@ -125,11 +125,10 @@ with tab5:
     three_buy_indicator = st.multiselect('3M Indicator',indicator_list,[])
     fut_list=st.multiselect('Select Future',['SILVERMIC','SILVER'],[])
     with ind_col2:
-      target_order_type = st.selectbox('Target Order',('Target', 'Stop_Loss', 'NA'),1)
+      target_order_type = st.selectbox('Target Order',('Target', 'Stop_Loss', 'NA'),0)
       target_type = st.selectbox('Target Type',('Points', 'Per Cent','Indicator'),1)
-      if target_type!="Indicator":
-        sl_point=st.number_input(label="SL",min_value=10, max_value=100, value=30, step=None)
-        target_point=st.number_input(label="Target",min_value=5, max_value=100, value=50, step=None)
+      sl_point=st.number_input(label="SL",min_value=1, max_value=100, value=10, step=None)
+      target_point=st.number_input(label="Target",min_value=1, max_value=100, value=10, step=None)
     with ind_col3:
       lots_to_trade=st.number_input(label="Lots To Trade",min_value=1, max_value=10, value=1, step=None)
     with ind_col4:
