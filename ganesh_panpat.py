@@ -828,6 +828,7 @@ def sub_loop_code(now_minute):
     if 'OPT:1M' in time_frame_interval:trade_near_options('1m')
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if "Multi Time ST Trade" in five_buy_indicator:multi_time_frame()
+    log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
   except Exception as e:
     logger.info(f"error in sub_loop_code: {e}")
 
@@ -1176,9 +1177,20 @@ def gtt_sub_loop():
     except:pass
   modify_gtt(lists)
 def multi_time_frame():
+  st.session_state['options_trade_list']=[]
   try:
     for symbol in index_list:
       fut_data=get_historical_data(symbol=symbol,interval="5m",token="-",exch_seg="-",candle_type="NORMAL")
+      information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+              'Symbol':symbol,
+              'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
+              'Indicator':fut_data['Indicator'].values[-1],
+              'Trade':fut_data['Trade'].values[-1],
+              'Trade End':fut_data['Trade End'].values[-1],
+              'Supertrend':fut_data['Supertrend'].values[-1],
+              'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],
+              'RSI':fut_data['RSI'].values[-1]}
+      st.session_state['options_trade_list'].append(information)
       index_ltp=fut_data['Close'].values[-1]
       st_7_3=fut_data['Supertrend'].values[-1]
       if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
@@ -1197,6 +1209,16 @@ def multi_time_frame():
           if opt_data['ST_7_3 Trade'].values[-1]=="Buy":
             strike_symbol=option_list.iloc[i]
             buy_option(symbol=strike_symbol,indicator_strategy="Buy:Multi Time Frame ST",interval="1m",index_sl="-")
+          information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+              'Symbol':symbol_name,
+              'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
+              'Indicator':opt_data['Indicator'].values[-1],
+              'Trade':opt_data['Trade'].values[-1],
+              'Trade End':opt_data['Trade End'].values[-1],
+              'Supertrend':opt_data['Supertrend'].values[-1],
+              'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
+              'RSI':opt_data['RSI'].values[-1]}
+          st.session_state['options_trade_list'].append(information)
   except Exception as e:pass
     
 if algo_state:
