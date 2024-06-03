@@ -994,6 +994,7 @@ def recheck_pnl():
     except:margin=0
     buy_df= buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
                                       'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']]
+    buy_df = buy_df.rename(columns={'updatetime':'Datetime','quantity':'Qty'})
     todays_trade_datatable.dataframe(buy_df,hide_index=True)
     now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
     todays_trade_updated.text(f"Todays Trade : {now_time} Profit: {int(buy_df['Profit'].sum())} Margin:{margin}")
