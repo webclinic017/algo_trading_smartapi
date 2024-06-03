@@ -992,7 +992,7 @@ def recheck_pnl():
       pending_trade['Margin'] = pending_trade['price'] * pending_trade['quantity']
       margin = f"{int(pending_trade['Margin'].sum())}, Active Trade:{len(pending_trade)}"
     except:margin=0
-    buy_df= buy_df[['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status',
+    buy_df= buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
                                       'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']]
     todays_trade_datatable.dataframe(buy_df,hide_index=True)
     now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
