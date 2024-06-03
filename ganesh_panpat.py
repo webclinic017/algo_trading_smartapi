@@ -273,6 +273,8 @@ def get_open_position():
     "totalsellvalue","cfbuyavgprice","cfsellavgprice","totalbuyavgprice","totalsellavgprice","netprice",'realised', 'unrealised','ltp'])
   pnl=int(position['realised'].sum())+float(position['unrealised'].sum())
   open_position = position[(position['netqty'] > '0') & (position['instrumenttype'] == 'OPTIDX')]
+  position_datatable.dataframe(position[['tradingsymbol',"totalbuyavgprice","totalsellavgprice","netqty",'realised', 'unrealised','ltp']],hide_index=True)
+  position_updated.text(f"PNL : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}: {pnl}")
   return position,open_position
 #Get Order Book
 def get_order_book():
@@ -1108,15 +1110,14 @@ def get_gtt_list():
     lists['createddate'] = pd.to_datetime(lists['createddate']).dt.time
     lists['updateddate'] = lists['updateddate'].apply(lambda x: datetime.datetime.fromisoformat(x))
     lists['updateddate'] = lists['updateddate'].dt.strftime('%Y-%m-%d %H:%M:%S')
-    lists['updateddate'] = pd.to_datetime(lists['updateddate']).dt.time
+    #lists['updateddate'] = pd.to_datetime(lists['updateddate']).dt.time
     lists['expirydate'] = lists['expirydate'].apply(lambda x: datetime.datetime.fromisoformat(x))
     lists['expirydate'] = lists['expirydate'].dt.strftime('%Y-%m-%d %H:%M:%S')
     lists['expirydate'] = pd.to_datetime(lists['expirydate']).dt.time
     lists['LTP']='-'
     lists=update_ltp_gtt(lists)
-    lists=lists[['id','updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status','LTP']]
-    lists=lists.sort_values(by = ['tradingsymbol', 'price'], ascending = [False, True], na_position = 'first')
-    gtt_order_datatable.dataframe(lists,hide_index=True)
+    lists=lists.sort_values(by = ['updateddate','tradingsymbol', 'price'], ascending = [True,False, True], na_position = 'first')
+    gtt_order_datatable.dataframe(lists[['updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status','LTP']],hide_index=True)
     now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
     gtt_order_updated.text(f"GTT Order : {now_time}")
     return lists
@@ -1237,3 +1238,8 @@ if bnf_pe:
   buy_option(pe_strike_symbol,'Manual Buy','5m')
 if restart:
   sub_loop_code(5)
+login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
+index_ltp_string.text(f"Index Ltp: {print_ltp()}")
+get_todays_trade()
+get_open_position()
+gtt=get_gtt_list()
