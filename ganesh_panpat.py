@@ -285,7 +285,7 @@ def get_order_book():
       orderbook=obj.orderBook()['data']
       orderbook=pd.DataFrame(orderbook)
       n_orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']]
-      #n_orderbook=n_orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
+      n_orderbook=n_orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
       order_datatable.dataframe(n_orderbook,hide_index=True)
       order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
   except Exception as e:
