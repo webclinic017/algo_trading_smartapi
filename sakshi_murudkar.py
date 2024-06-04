@@ -17,7 +17,7 @@ import math
 st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded",)
 st.markdown("""
   <style>
-    .block-container {padding-top: 0.5rem;padding-bottom: 0rem;padding-left: 2rem;padding-right: 5rem;}
+    .block-container {padding-top: 0.9rem;padding-bottom: 0rem;padding-left: 2rem;padding-right: 5rem;}
   </style>
   """, unsafe_allow_html=True)
 st.title("Welcome To Algo Trading")
@@ -45,6 +45,7 @@ st.session_state['BANKNIFTY_1m_Indicator']="-"
 st.session_state['SENSEX_1m_Indicator']="-"
 st.session_state['Time_5m']="-"
 st.session_state['Time_1m']="-"
+st.session_state['todays_trade']=[]
 
 def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
@@ -283,11 +284,13 @@ def get_order_book():
     if orderbook['status']==True:
       orderbook=obj.orderBook()['data']
       orderbook=pd.DataFrame(orderbook)
-      #orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
-      #orderbook=orderbook.sort_values(by = ['updatetime'], ascending = [True], na_position = 'first')
+      n_orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']]
+      n_orderbook=n_orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
+      order_datatable.dataframe(n_orderbook,hide_index=True)
+      order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
   except Exception as e:
     logger.info(f"error in get_order_book: {e}")
-    order_book_updated.text(f"Error Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
+    #order_book_updated.text(f"Error Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
     orderbook= pd.DataFrame(columns = ['variety', 'ordertype', 'producttype', 'duration', 'price','triggerprice', 'quantity', 'disclosedquantity',
           'squareoff','stoploss', 'trailingstoploss', 'tradingsymbol', 'transactiontype','exchange', 'symboltoken', 'ordertag', 'instrumenttype',
           'strikeprice','optiontype', 'expirydate', 'lotsize', 'cancelsize', 'averageprice','filledshares', 'unfilledshares', 'orderid', 'text',
@@ -295,10 +298,6 @@ def get_order_book():
   pending_orders = orderbook[((orderbook['orderstatus'] != 'complete') & (orderbook['orderstatus'] != 'cancelled') &
                               (orderbook['orderstatus'] != 'rejected') & (orderbook['orderstatus'] != 'AMO CANCELLED'))]
   pending_orders = pending_orders[(pending_orders['instrumenttype'] == 'OPTIDX')]
-  n_orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']]
-  n_orderbook=n_orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
-  order_datatable.dataframe(n_orderbook,hide_index=True)
-  order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
   n_pending_orders=pending_orders[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']]
   open_order.dataframe(n_pending_orders,hide_index=True)
   open_order_updated.text(f"Pending Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
@@ -834,31 +833,64 @@ def sub_loop_code(now_minute):
   except Exception as e:
     logger.info(f"error in sub_loop_code: {e}")
 
+def check_indicator_exit(buy_df,minute):
+  for i in range(0,len(buy_df)):
+      try:
+        if buy_df['Status'].iloc[i]=="Pending" and buy_df['price'].iloc[i]!="-":
+          symboltoken=buy_df['symboltoken'].iloc[i]
+          tradingsymbol=buy_df['tradingsymbol'].iloc[i]
+          exch_seg=buy_df['exchange'].iloc[i]
+          qty=buy_df['quantity'].iloc[i]
+          price=buy_df['price'].iloc[i]
+          ltp_price=buy_df['LTP'].iloc[i]
+          orderid=buy_df['orderid'].iloc[i]
+          indicator=buy_df['ordertag'].iloc[i]
+          sl=buy_df['LTP'].iloc[i]
+          trade_info = (
+          f"{buy_df['tradingsymbol'].iloc[i]}\n"
+          f"LTP:{buy_df['LTP'].iloc[i]} Target:{buy_df['Target'].iloc[i]} "
+          f"SL:{buy_df['SL'].iloc[i]}\n"
+          f"Price:{buy_df['price'].iloc[i]}\n"
+          f"Time:{buy_df['updatetime'].iloc[i]}\n"
+          f"Indicator: {buy_df['ordertag'].iloc[i]}\n"
+          f"Profit: {int(buy_df['Profit'].iloc[i])}")
+          ordertag=f"{ltp_price} : {orderid}"
+          if minute%15==0 and "15m" in indicator:
+            opt_data=get_historical_data(symbol=tradingsymbol,interval="15m",token=symboltoken,exch_seg=exch_seg,candle_type="NORMAL")
+          elif (minute%5==0 and "5m" in indicator) or "GTT" in indicator:
+            opt_data=get_historical_data(symbol=tradingsymbol,interval="5m",token=symboltoken,exch_seg=exch_seg,candle_type="NORMAL")
+          elif "1m" in indicator or indicator=="Buy:Multi Time Frame ST":
+            opt_data=get_historical_data(symbol=tradingsymbol,interval="1m",token=symboltoken,exch_seg=exch_seg,candle_type="NORMAL")
+          else:
+            opt_data=get_historical_data(symbol=tradingsymbol,interval="5m",token=symboltoken,exch_seg=exch_seg,candle_type="NORMAL")
+          #check for exit
+          if opt_data['ST_7_3 Trade'].values[-1]=="Sell":
+            exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='ST_7_3 Exit:'+ordertag,producttype='CARRYFORWARD')
+            multiline_string = "Indicator Exit: "+trade_info
+            telegram_bot_sendtext(multiline_string)
+            buy_df['Status'].iloc[i]="Indicator Exit"
+      except Exception as e:
+        print(e)
 def check_login():
   pass
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
   marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
-  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
+  day_end = now.replace(hour=18, minute=30, second=0, microsecond=0)
   gtt=get_gtt_list()
   todays_trade=get_todays_trade()
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
-    logger.info(now.time())
     st.session_state['last_check']=now.time()
     login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
     try:
       if now > marketopen and now < marketclose:df=sub_loop_code(now.minute)
       position,open_position=get_open_position()
-      todays_trade=get_todays_trade()
       gtt=get_gtt_list()
-      if now.minute%5==0: trail_sl()
-      index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-      #check_login()
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       while now.second<=40:
-        todays_trade=get_todays_trade()
+        get_todays_trade()
         index_ltp_string.text(f"Index Ltp: {print_ltp()}")
         time.sleep(10)
         now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
@@ -946,14 +978,28 @@ def update_ltp_buy_df(buy_df):
             buy_df['Profit %'].iloc[i]=0
     except Exception as e: logger.info(f"Error in update_ltp_buy_df: {e}")
   return buy_df
-def recheck_pnl(buy_df):
-  try:
+def recheck_pnl():
+  buy_df=st.session_state['todays_trade']
+  if len(buy_df)!=0:
     buy_df=update_ltp_buy_df(buy_df)
     buy_df=check_pnl_todays_trade(buy_df)
+    buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
+    buy_df=buy_df.sort_values(by = ['Status', 'updatetime'], ascending = [False, True], na_position = 'first')
+    try:
+      pending_trade=buy_df[buy_df['Status'] == 'Pending']
+      pending_trade['price']=pending_trade['price'].astype(float).round(2)
+      pending_trade['quantity']=pending_trade['quantity'].astype(float).round(2)
+      pending_trade['Margin'] = pending_trade['price'] * pending_trade['quantity']
+      margin = f"{int(pending_trade['Margin'].sum())}, Active Trade:{len(pending_trade)}"
+    except:margin=0
+    buy_df= buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
+                                      'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']]
+    buy_df = buy_df.rename(columns={'updatetime':'Datetime','quantity':'Qty'})
     todays_trade_datatable.dataframe(buy_df,hide_index=True)
     now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
-    todays_trade_updated.text(f"Todays Trade : {now_time} Profit: {int(buy_df['Profit'].sum())}")
-  except:pass
+    todays_trade_updated.text(f"Todays Trade : {now_time} Profit: {int(buy_df['Profit'].sum())} Margin:{margin}")
+
+
 def check_pnl_todays_trade(buy_df):
   for i in range(0,len(buy_df)):
       try:
@@ -1009,20 +1055,11 @@ def check_pnl_todays_trade(buy_df):
               multiline_string = "Indicaor Exit: "+trade_info
               telegram_bot_sendtext(multiline_string)
               buy_df['Status'].iloc[i]="Indicaor Exit"
-            else:
-              now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
-              if now.minute%5==0:
-                dd=get_historical_data(symbol=tradingsymbol,interval='5m',token=symboltoken,exch_seg=exch_seg,candle_type="NORMAL").tail(1)
-                if dd['ST_7_3 Trade'].iloc[0]=="Sell" or dd['Supertrend_10_2'].iloc[0]=="Sell":
-                  exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Opt Indicaor Exit:'+ordertag,producttype='CARRYFORWARD')
-                  multiline_string = "Opt Indicaor Exit: "+trade_info
-                  telegram_bot_sendtext(multiline_string)
-                  buy_df['Status'].iloc[i]="Indicaor Exit"
       except Exception as e: logger.info(f"error in check_pnl_todays_trade: {e}")
   return buy_df
-def get_todays_trade(orderbook=None):
+def get_todays_trade():
   try:
-    if orderbook==None:orderbook,pending_orders=get_order_book()
+    orderbook,pending_orders=get_order_book()
     if len(orderbook)==0: return
     orderbook=update_price_orderbook(orderbook)
     orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
@@ -1056,29 +1093,13 @@ def get_todays_trade(orderbook=None):
             buy_df['Sell Indicator'].iloc[i]=sell_df['ordertag'].iloc[j]
             buy_df['Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[j]='Taken'
             break
-    buy_df=update_ltp_buy_df(buy_df)
     buy_df=update_target_sl(buy_df)
-    buy_df=buy_df[['orderid','updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'LTP', 'Profit','Target',
-        'SL', 'Profit %', 'Sell Indicator']]
-    buy_df=check_pnl_todays_trade(buy_df)
-  except:
-    buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'LTP',
-                                    'Profit','Target','SL', 'Profit %', 'Sell Indicator'])
-  #buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
-  buy_df=buy_df.sort_values(by = ['Status', 'updatetime'], ascending = [False, True], na_position = 'first')
-  buy_df=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status', 'Sell', 'LTP',
-                                      'Profit','Target','SL', 'Profit %', 'Sell Indicator']]
-  try:
-    pending_trade=buy_df[buy_df['Status'] == 'Pending']
-    pending_trade['price']=pending_trade['price'].astype(float).round(2)
-    pending_trade['quantity']=pending_trade['quantity'].astype(float).round(2)
-    pending_trade['Margin'] = pending_trade['price'] * pending_trade['quantity']
-    margin = f"{int(pending_trade['Margin'].sum())}, Active Trade:{len(pending_trade)}"    
-  except:margin=0
-  todays_trade_datatable.dataframe(buy_df,hide_index=True)
-  now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
-  todays_trade_updated.text(f"Todays Trade : {now_time} Profit: {int(buy_df['Profit'].sum())} Margin:{margin}")
-  return buy_df
+  except Exception as e:
+    logger.error(f"Error in get_todays_trade: {e}")
+    buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status',
+                                    'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator'])
+  st.session_state['todays_trade']=buy_df
+  if len(buy_df)!=0:recheck_pnl()
 def create_gtt(tradingsymbol,symboltoken,exchange,producttype,transactiontype,price,qty,triggerprice):
   try:
     gttCreateParams={"tradingsymbol" : tradingsymbol,"symboltoken" : symboltoken,"exchange" : exchange, "producttype" : producttype,
@@ -1209,7 +1230,11 @@ def multi_time_frame():
           opt_data=get_historical_data(symbol=symbol_name,interval="1m",token=token_symbol,exch_seg=exch_seg)
           if opt_data['ST_7_3 Trade'].values[-1]=="Buy":
             strike_symbol=option_list.iloc[i]
-            buy_option(symbol=strike_symbol,indicator_strategy="Buy:Multi Time Frame ST",interval="1m",index_sl="-")
+            ltp=int(opt_data['Close'].values[-1])
+            st=int(opt_data['Supertrend'].values[-1])
+            tgt=int(2(ltp-st))
+            ordertag=f"Buy:Multi Time Frame ST LTP:{ltp}({st}:{tgt})"
+            buy_option(symbol=strike_symbol,indicator_strategy=ordertag,interval="1m",index_sl="-")
           information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
               'Symbol':symbol_name,
               'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
