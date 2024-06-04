@@ -1064,7 +1064,7 @@ def get_todays_trade(orderbook=None):
   except:
     buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status', 'Sell', 'LTP',
                                     'Profit','Target','SL', 'Profit %', 'Sell Indicator'])
-  buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
+  #buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
   buy_df=buy_df.sort_values(by = ['Status', 'updatetime'], ascending = [False, True], na_position = 'first')
   buy_df=buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status', 'Sell', 'LTP',
                                       'Profit','Target','SL', 'Profit %', 'Sell Indicator']]
