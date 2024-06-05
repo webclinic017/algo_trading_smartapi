@@ -46,6 +46,7 @@ st.session_state['SENSEX_1m_Indicator']="-"
 st.session_state['Time_5m']="-"
 st.session_state['Time_1m']="-"
 st.session_state['todays_trade']=[]
+st.session_state['orderbook']=[]
 
 def get_token_df():
   try:
@@ -205,7 +206,7 @@ def cancel_order(orderID,variety):
   obj.cancelOrder(orderID,variety=variety)
 def cancel_all_order(symbol):
   try:
-    orderbook,pending_orders=get_order_book()
+    orderbook=st.session_state['orderbook']
     if isinstance(orderbook,NoneType)!=True:
       orderlist = orderbook[(orderbook['tradingsymbol'] == symbol) &
                             ((orderbook['orderstatus'] != 'complete') & (orderbook['orderstatus'] != 'cancelled') &
@@ -285,6 +286,7 @@ def get_order_book():
     if orderbook['status']==True:
       orderbook=obj.orderBook()['data']
       orderbook=pd.DataFrame(orderbook)
+      st.session_state['orderbook']=orderbook
       n_orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']]
       n_orderbook=n_orderbook.sort_values(by = ['updatetime'], ascending = [False], na_position = 'first')
       order_datatable.dataframe(n_orderbook,hide_index=True)
