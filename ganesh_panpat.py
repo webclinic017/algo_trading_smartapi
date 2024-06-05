@@ -1037,7 +1037,7 @@ def close_day_end_trade():
         f"Profit: {int(buy_df['Profit'].iloc[i])}")
         ordertag=f"{ltp_price} : {orderid}"
         exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Day End:'+ordertag,producttype='CARRYFORWARD')
-        multiline_string = "SL Hit: "+trade_info
+        multiline_string = "Day End: "+trade_info
         telegram_bot_sendtext(multiline_string)
         buy_df['Status'].iloc[i]="Day End"
     except: pass
