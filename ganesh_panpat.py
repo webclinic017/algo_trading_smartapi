@@ -207,7 +207,7 @@ def cancel_order(orderID,variety):
 def cancel_all_order(symbol):
   try:
     orderbook=st.session_state['orderbook']
-    if isinstance(orderbook,NoneType)!=True:
+    if orderbook!=[]:
       orderlist = orderbook[(orderbook['tradingsymbol'] == symbol) &
                             ((orderbook['orderstatus'] != 'complete') & (orderbook['orderstatus'] != 'cancelled') &
                               (orderbook['orderstatus'] != 'rejected') & (orderbook['orderstatus'] != 'AMO CANCELLED'))]
