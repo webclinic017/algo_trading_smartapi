@@ -770,10 +770,14 @@ def closing_trade():
   st.session_state['BANKNIFTY_5m_Trade']="Buy"
   st.session_state['SENSEX_5m_Trade']="Buy"
   todays_trade=get_todays_trade()
+  buy_df=st.session_state['todays_trade']
+  buy_df=check_pnl_todays_trade(buy_df)
   st.session_state['NIFTY_5m_Trade']="Sell"
   st.session_state['BANKNIFTY_5m_Trade']="Sell"
   st.session_state['SENSEX_5m_Trade']="Sell"
   todays_trade=get_todays_trade()
+  buy_df=st.session_state['todays_trade']
+  buy_df=check_pnl_todays_trade(buy_df)
   cancel_gtt()
 def trail_sl():
   try:
@@ -878,13 +882,16 @@ def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
   marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
-  day_end = now.replace(hour=18, minute=30, second=0, microsecond=0)
+  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
     st.session_state['last_check']=now.time()
     login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
     try:
-      if now > marketopen and now < marketclose:df=sub_loop_code(now.minute)
+      if now > marketopen and now < marketclose:
+        df=sub_loop_code(now.minute)
+      else:
+        closing_trade()
       position,open_position=get_open_position()
       gtt=get_gtt_list()
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
