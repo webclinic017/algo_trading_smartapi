@@ -909,7 +909,7 @@ def loop_code():
       logger.info(f"error in loop_code: {e}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
-
+  if now > marketclose:close_day_end_trade()
 def get_ltp_token(nfo_list,bfo_list):
   try:
     ltp_df=pd.DataFrame(obj.getMarketData(mode="LTP",exchangeTokens={ "BFO": list(bfo_list), "NFO": list(nfo_list),})['data']['fetched'])
