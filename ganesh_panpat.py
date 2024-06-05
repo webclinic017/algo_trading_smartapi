@@ -890,8 +890,8 @@ def loop_code():
     try:
       if now > marketopen and now < marketclose:
         df=sub_loop_code(now.minute)
-      else:
-        closing_trade()
+      elif now > marketclose:
+        close_day_end_trade()
       position,open_position=get_open_position()
       gtt=get_gtt_list()
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
@@ -1012,6 +1012,36 @@ def recheck_pnl():
     todays_trade_datatable.dataframe(buy_df,hide_index=True)
     now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
     todays_trade_updated.text(f"Todays Trade : {now_time} Profit: {int(buy_df['Profit'].sum())} Margin:{margin}")
+def close_day_end_trade():
+  get_todays_trade()
+  buy_df=st.session_state['todays_trade']
+  for i in range(0,len(buy_df)):
+    try:
+      if buy_df['Status'].iloc[i]=="Pending":
+        symboltoken=buy_df['symboltoken'].iloc[i]
+        tradingsymbol=buy_df['tradingsymbol'].iloc[i]
+        exch_seg=buy_df['exchange'].iloc[i]
+        qty=buy_df['quantity'].iloc[i]
+        price=buy_df['price'].iloc[i]
+        ltp_price=buy_df['LTP'].iloc[i]
+        orderid=buy_df['orderid'].iloc[i]
+        indicator=buy_df['ordertag'].iloc[i]
+        sl=buy_df['LTP'].iloc[i]
+        trade_info = (
+        f"{buy_df['tradingsymbol'].iloc[i]}\n"
+        f"LTP:{buy_df['LTP'].iloc[i]} Target:{buy_df['Target'].iloc[i]} "
+        f"SL:{buy_df['SL'].iloc[i]}\n"
+        f"Price:{buy_df['price'].iloc[i]}\n"
+        f"Time:{buy_df['updatetime'].iloc[i]}\n"
+        f"Indicator: {buy_df['ordertag'].iloc[i]}\n"
+        f"Profit: {int(buy_df['Profit'].iloc[i])}")
+        ordertag=f"{ltp_price} : {orderid}"
+        exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Day End:'+ordertag,producttype='CARRYFORWARD')
+        multiline_string = "SL Hit: "+trade_info
+        telegram_bot_sendtext(multiline_string)
+        buy_df['Status'].iloc[i]="Day End"
+    except: pass
+    
 def check_pnl_todays_trade(buy_df):
   for i in range(0,len(buy_df)):
       try:
@@ -1285,7 +1315,7 @@ if bnf_pe:
   indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data('BANKNIFTY',indexLtp="-")
   buy_option(pe_strike_symbol,'Manual Buy','5m')
 if restart:
-  sub_loop_code(5)
+  close_day_end_trade()
 login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 get_todays_trade()
