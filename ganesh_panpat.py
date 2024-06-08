@@ -978,6 +978,7 @@ def loop_code():
         df=sub_loop_code(now.minute)
       elif now > marketclose:
         close_day_end_trade()
+        cancel_gtt()
       position,open_position=get_open_position()
       gtt=get_gtt_list()
       if now.minute%5==0:
