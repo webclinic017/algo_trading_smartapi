@@ -117,7 +117,7 @@ with tab5:
   with ind_col1:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX'],['NIFTY','BANKNIFTY','SENSEX'])
     time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M'],['IDX:5M','OPT:5M'])
-    five_buy_indicator = st.multiselect('5M Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade','Multi Time ST Trade'])
+    five_buy_indicator = st.multiselect('5M Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
     five_opt_buy_indicator = st.multiselect('5M OPT Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
     one_buy_indicator = st.multiselect('1M Indicator',indicator_list,[])
     one_opt_buy_indicator = st.multiselect('1M OPT Indicator',indicator_list,['TEMA_EMA_9 Trade'])
@@ -1087,7 +1087,7 @@ def recheck_pnl():
       pending_trade['Margin'] = pending_trade['price'] * pending_trade['quantity']
       margin = f"{int(pending_trade['Margin'].sum())}, Active Trade:{len(pending_trade)}"
     except:margin=0
-    buy_df= buy_df[['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status',
+    buy_df= buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
                                       'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']]
     todays_trade_datatable.dataframe(buy_df,hide_index=True)
     now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
@@ -1211,7 +1211,7 @@ def get_todays_trade():
     buy_df=check_pnl_todays_trade(buy_df)
   except Exception as e:
     logger.error(f"Error in get_todays_trade: {e}")
-    buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','symboltoken','exchange','price','quantity','ordertag','Exit Time','Status',
+    buy_df= pd.DataFrame(columns = ['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
                                     'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator'])
   st.session_state['todays_trade']=buy_df
   if len(buy_df)!=0:recheck_pnl()
