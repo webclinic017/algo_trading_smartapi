@@ -980,10 +980,10 @@ def loop_code():
         close_day_end_trade()
       position,open_position=get_open_position()
       gtt=get_gtt_list()
-      now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       if now.minute%5==0:
         get_todays_trade()
         trail_sl_todays_trade()
+      now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       while now.second<=40:
         get_todays_trade()
         index_ltp_string.text(f"Index Ltp: {print_ltp()}")
