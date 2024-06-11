@@ -780,8 +780,6 @@ def get_near_options(symbol,index_ltp,symbol_expiry):
   df.sort_index(inplace=True)
   return df
 def trade_near_options(time_frame):
-  lists=get_gtt_list()
-  gtt_symbol_list=lists['tradingsymbol'].tolist()
   for symbol in index_list:
     try:
       index_ltp=get_ltp_price(symbol)
@@ -810,15 +808,7 @@ def trade_near_options(time_frame):
           strike_symbol=option_list.iloc[i]
           buy_option(symbol=strike_symbol,indicator_strategy=opt_data['Indicator'].values[-1],interval=time_frame,index_sl="-")
           break
-        if symbol_name not in gtt_symbol_list:
-          if opt_data.iloc[-1]['Supertrend']>opt_data.iloc[-1]['Close']:
-            price=int(opt_data.iloc[-1]['Supertrend'])
-            create_gtt(symbol_name,token_symbol,exch_seg,'CARRYFORWARD',"BUY",price,qty,price)
-          elif opt_data.iloc[-1]['Supertrend_10_2']>opt_data.iloc[-1]['Close']:
-            price=int(opt_data.iloc[-1]['Supertrend_10_2'])
-            create_gtt(symbol_name,token_symbol,exch_seg,'CARRYFORWARD',"BUY",price,qty,price)
     except Exception as e:logger.info(f"Trade Near Option Error {e}")
-  modify_gtt(lists)
 
 
 def check_indicator_exit(buy_df,minute):
@@ -979,7 +969,6 @@ def loop_code():
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
   marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
   day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
-  gtt=get_gtt_list()
   todays_trade=get_todays_trade()
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
@@ -990,12 +979,11 @@ def loop_code():
         df=sub_loop_code(now.minute)
       elif now > marketclose:
         close_day_end_trade()
-        cancel_gtt()
       position,open_position=get_open_position()
-      gtt=get_gtt_list()
       if now.minute%5==0:
         get_todays_trade()
         trail_sl_todays_trade()
+        gtt_sub_loop()
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       while now.second<=40:
         get_todays_trade()
