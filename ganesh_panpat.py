@@ -934,11 +934,6 @@ def modify_gtt(lists):
             "price": str(price),"qty": str(lists['qty'].iloc[i]),"triggerprice": str(price),
             "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
           obj.gttModifyRule(gttCreateParams)
-        if old_data.iloc[-1]['Supertrend']<old_data.iloc[-1]['Close'] and old_data.iloc[-1]['Supertrend_10_2']<old_data.iloc[-1]['Close']:
-          gttCreateParams={"id": str(lists['id'].iloc[i]),"symboltoken": str(lists['symboltoken'].iloc[i]),"exchange": str(lists['exchange'].iloc[i]),
-          "price": str(lists['price'].iloc[i]),"qty": str(lists['qty'].iloc[i]),"triggerprice": str(lists['price'].iloc[i]),
-          "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
-          obj.gttCancelRule(gttCreateParams)
       except:pass
 
 #Loop Code
