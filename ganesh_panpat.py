@@ -32,6 +32,7 @@ if 'opt_list' not in st.session_state:st.session_state['opt_list']=[]
 if 'fut_list' not in st.session_state:st.session_state['fut_list']=[]
 if 'options_trade_list' not in st.session_state:st.session_state['options_trade_list']=[]
 if 'stop_loss' not in st.session_state:st.session_state['stop_loss']={}
+if 'target_list' not in st.session_state:st.session_state['target_list']={}
 st.session_state['NIFTY_5m_Trade']="-"
 st.session_state['BANKNIFTY_5m_Trade']="-"
 st.session_state['SENSEX_5m_Trade']="-"
@@ -116,7 +117,7 @@ with tab5:
                   'TEMA_EMA_9 Trade','Multi Time ST Trade']
   with ind_col1:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX'],['NIFTY','BANKNIFTY','SENSEX'])
-    time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M'],['IDX:5M','OPT:5M'])
+    time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M'],['IDX:5M','OPT:5M','OPT:1M'])
     five_buy_indicator = st.multiselect('5M Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
     five_opt_buy_indicator = st.multiselect('5M OPT Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
     gtt_indicator=st.multiselect('GTT Indicator',['5M_ST','5M_ST_10_2','1M_10_1','1M_10_2'],['5M_ST','5M_ST_10_2'])
@@ -449,7 +450,7 @@ def get_trade_info(df):
       if df['Close'][i-1]< df['Supertrend_10_1'][i-1] and df['Close'][i]> df['Supertrend_10_1'][i]: df['ST_10_1 Trade'][i]="Buy"
       elif df['Close'][i-1]> df['Supertrend_10_1'][i-1] and df['Close'][i]< df['Supertrend_10_1'][i]: df['ST_10_1 Trade'][i]="Sell"
 
-      if df['Tema_9'][i-1]< df['EMA_9'][i-1] and df['Tema_9'][i]> df['EMA_9'][i]: df['TEMA_EMA_9 Trade'][i]="Buy"
+      if df['Tema_9'][i-1]< df['EMA_9'][i-1] and df['Tema_9'][i]> df['EMA_9'][i] and int(df['RSI'][i])>=55: df['TEMA_EMA_9 Trade'][i]="Buy"
       elif df['Tema_9'][i-1]> df['EMA_9'][i-1] and df['Tema_9'][i]< df['EMA_9'][i]: df['TEMA_EMA_9 Trade'][i]="Sell"
 
       if int(df['RSI'][i])>=60 and int(df['RSI'][i-1]) < 60 : df['RSI_60 Trade'][i]="Buy"
@@ -949,8 +950,7 @@ def sub_loop_code(now_minute):
     if "Multi Time ST Trade" in five_buy_indicator:
       multi_time_frame()
       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    gtt_sub_loop(now_minute
-                 )
+    gtt_sub_loop(now_minute)
   except Exception as e:
     logger.info(f"error in sub_loop_code: {e}")
 def loop_code():
