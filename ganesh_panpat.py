@@ -119,6 +119,7 @@ with tab5:
     time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M'],['IDX:5M','OPT:5M'])
     five_buy_indicator = st.multiselect('5M Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
     five_opt_buy_indicator = st.multiselect('5M OPT Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
+    gtt_indicator=st.multiselect('GTT Indicator',['5M_ST','5M_ST_10_2','1M_10_1','1M_10_2'],['5M_ST','5M_ST_10_2'])
     one_buy_indicator = st.multiselect('1M Indicator',indicator_list,[])
     one_opt_buy_indicator = st.multiselect('1M OPT Indicator',indicator_list,['TEMA_EMA_9 Trade'])
     fifteen_buy_indicator = st.multiselect('15M Indicator',indicator_list,[])
@@ -810,7 +811,6 @@ def trade_near_options(time_frame):
           break
     except Exception as e:logger.info(f"Trade Near Option Error {e}")
 
-
 def check_indicator_exit(buy_df,minute):
   for i in range(0,len(buy_df)):
       try:
@@ -958,10 +958,14 @@ def sub_loop_code(now_minute):
       for symbol in index_list: df=index_trade(symbol,"1m")
       st.session_state['Time_1m']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    if 'OPT:1M' in time_frame_interval:trade_near_options('1m')
-    log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    if "Multi Time ST Trade" in five_buy_indicator:multi_time_frame()
-    log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+    if 'OPT:1M' in time_frame_interval:
+      trade_near_options('1m')
+      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+    if "Multi Time ST Trade" in five_buy_indicator:
+      multi_time_frame()
+      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+    gtt_sub_loop(now_minute
+                 )
   except Exception as e:
     logger.info(f"error in sub_loop_code: {e}")
 def loop_code():
@@ -983,7 +987,6 @@ def loop_code():
       if now.minute%5==0:
         get_todays_trade()
         trail_sl_todays_trade()
-        gtt_sub_loop()
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       while now.second<=40:
         get_todays_trade()
@@ -1104,7 +1107,7 @@ def trail_sl_todays_trade():
         new_sl=int(buy_df['SL'].iloc[i])
         old_data=get_historical_data(symbol=tradingsymbol,interval="5m",token=symboltoken,exch_seg=exch_seg,candle_type="NORMAL")
         ltp_price=float(old_data['Close'].iloc[-1])
-        atr=ltp_price-(float(old_data['Atr'].iloc[-1])*2)
+        atr=ltp_price-(float(old_data['Atr'].iloc[-1])*3)
         st_10_2=float(old_data['Supertrend_10_2'].iloc[-1])
         st_7_3=float(old_data['Supertrend'].iloc[-1])
         st_10_1=float(old_data['Supertrend_10_1'].iloc[-1])
@@ -1248,7 +1251,7 @@ def close_day_end_trade():
     except: pass
     
     
-def gtt_sub_loop():
+def gtt_sub_loop(now_minute):
   lists=get_gtt_list()
   gtt_symbol_list=lists['tradingsymbol'].tolist()
   for index in index_list:
@@ -1261,13 +1264,22 @@ def gtt_sub_loop():
             symboltoken=strike_symbol['token']
             qty=strike_symbol['lotsize']
             exchange=strike_symbol['exch_seg']
-            old_data=get_historical_data(symbol=tradingsymbol,interval='5m',token=symboltoken,exch_seg=exchange,candle_type="NORMAL")
-            if old_data.iloc[-1]['Supertrend']>old_data.iloc[-1]['Close']:
-              price=int(old_data.iloc[-1]['Supertrend'])
-              create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
-            elif old_data.iloc[-1]['Supertrend_10_2']>old_data.iloc[-1]['Close']:
-              price=int(old_data.iloc[-1]['Supertrend_10_2'])
-              create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
+            #5m gtt
+            if now_minute%5==0:
+                old_data=get_historical_data(symbol=tradingsymbol,interval="5m",token=symboltoken,exch_seg=exchange,candle_type="NORMAL")
+                if old_data.iloc[-1]['Supertrend']>old_data.iloc[-1]['Close'] and '5M_ST' in gtt_indicator:
+                    price=int(old_data.iloc[-1]['Supertrend'])
+                    create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
+                elif old_data.iloc[-1]['Supertrend_10_2']>old_data.iloc[-1]['Close'] and '5M_ST_10_2' in gtt_indicator:
+                    price=int(old_data.iloc[-1]['Supertrend_10_2'])
+                    create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
+            old_data=get_historical_data(symbol=tradingsymbol,interval="1m",token=symboltoken,exch_seg=exchange,candle_type="NORMAL")
+            if old_data.iloc[-1]['Supertrend_10_1']>old_data.iloc[-1]['Close'] and '1M_10_1' in gtt_indicator:
+                price=int(old_data.iloc[-1]['Supertrend_10_1'])
+                create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
+            elif old_data.iloc[-1]['Supertrend_10_2']>old_data.iloc[-1]['Close'] and '1M_10_2' in gtt_indicator:
+                price=int(old_data.iloc[-1]['Supertrend_10_2'])
+                create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
         except:pass
     except:pass
   modify_gtt(lists)
