@@ -890,18 +890,6 @@ def get_gtt_list():
     lists['expirydate'] = pd.to_datetime(lists['expirydate']).dt.time
     lists['LTP']='-'
     lists=update_ltp_gtt(lists)
-    for symbol in ['NIFTY','BANKNIFTY','SENSEX']:
-      for opt_type in ['CE','PE']:
-        new_list= lists[lists['tradingsymbol'].str.startswith(symbol) & lists['tradingsymbol'].str.endswith(opt_type)]
-        if opt_type=="CE":
-          new_list = new_list.sort_values(by='tradingsymbol', ascending=True)
-        else:
-          new_list = new_list.sort_values(by='tradingsymbol', ascending=False)
-        for i in range(1,len(new_list)):
-          gttCreateParams={"id": str(new_list['id'].iloc[i]),"symboltoken": str(new_list['symboltoken'].iloc[i]),"exchange": str(new_list['exchange'].iloc[i]),
-              "price": str(new_list['price'].iloc[i]),"qty": str(new_list['qty'].iloc[i]),"triggerprice": str(new_list['price'].iloc[i]),
-              "disclosedqty": str(new_list['qty'].iloc[i]),"timeperiod": "1"}
-          obj.gttCancelRule(gttCreateParams)
     lists=lists.sort_values(by = ['updateddate','tradingsymbol', 'price'], ascending = [True,False, True], na_position = 'first')
     gtt_order_datatable.dataframe(lists[['updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status','LTP']],hide_index=True)
     now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
