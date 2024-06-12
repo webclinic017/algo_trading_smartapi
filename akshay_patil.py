@@ -1405,7 +1405,6 @@ def index_backtest():
       df['Option']="-"
       df['Option Token']="-"
       df['Option Exch']="-"
-      df = df[(df['Date'] == dat)]
       for i in range(0,len(df)):
         if df['Trade'][i-1]!="-":
           symbol=df['Symbol'][i-1]
