@@ -1341,7 +1341,7 @@ def pull_options_data(token_df_new):
                          file_name=fl_name,
                          mime='text/csv',)
 
-def index_backtest():
+def index_back_data():
   dat=datetime.datetime.now(tz=gettz('Asia/Kolkata')).strftime("%Y-%m-%d")
   dat=datetime.datetime.now(tz=gettz('Asia/Kolkata')).date()
   symbol_list=['NIFTY','BANKNIFTY','SENSEX']
@@ -1367,6 +1367,46 @@ def index_backtest():
       token_df_new = token_df_new[(token_df_new['strike'] >= low) & (token_df_new['strike'] <= high) ]
       token_df_new.sort_values(by=['strike'], ascending = True, inplace=True)
       pull_options_data(token_df_new)
+def index_backtest_old():
+  todays_data = pd.DataFrame()
+  dat=datetime.datetime.now(tz=gettz('Asia/Kolkata')).strftime("%Y-%m-%d")
+  dat=datetime.datetime.now(tz=gettz('Asia/Kolkata')).date()
+  symbol_list=['NIFTY','BANKNIFTY','SENSEX']
+  for timeframe in ['1m','5m','15m']:
+    for symbol in symbol_list:
+      df=get_historical_data(symbol=symbol,interval=timeframe,token="-",exch_seg="-")
+      df = df.round(decimals=2)
+      df['Expiry']=dat.strftime('%m/%d/%y')
+      df['Symbol']=symbol
+      todays_data=pd.concat([df, todays_data])
+  df=todays_data.to_csv(index=False).encode('utf-8')
+  fl_name="Todays_Trade_"+dat.strftime('%Y_%m_%d')+ ".csv"
+  st.download_button(label=f"Download as CSV",
+                         data=df,
+                         file_name=fl_name,
+                         mime='text/csv',)
+
+def index_backtest():
+  todays_data = pd.DataFrame()
+  dat=datetime.datetime.now(tz=gettz('Asia/Kolkata')).date()
+  symbol_list=['^NSEI','^NSEBANK','^BSESN']
+  for timeframe in ['1m','5m','15m']:
+    for symbol in symbol_list:
+      df=yfna_data(symbol,timeframe,'7')
+      df['Time Frame']=timeframe
+      df.index.names = ['']
+      df['VWAP']=pdta.vwap(high=df['High'],low=df['Low'],close=df['Close'],volume=df['Volume'])
+      df=df[['Date','Datetime','Open','High','Low','Close','Volume','VWAP','Time Frame']]
+      df['Symbol']=symbol
+      df=calculate_indicator(df)
+      todays_data=pd.concat([df, todays_data])
+  df=todays_data.to_csv(index=False).encode('utf-8')
+  fl_name="Todays_Trade_"+dat.strftime('%Y_%m_%d')+ ".csv"
+  st.download_button(label=f"Download as CSV",
+                         data=df,
+                         file_name=fl_name,
+                         mime='text/csv',)
+
 if algo_state:
   loop_code()
 if nf_ce:
