@@ -1406,17 +1406,17 @@ def index_backtest():
       df['Option Token']="-"
       df['Option Exch']="-"
       for i in range(0,len(df)):
-        if df['Trade'][i-1]!="-":
-          symbol=df['Symbol'][i-1]
-          indexLtp=df['Close'][i-1]
+        if df['Trade'][i]!="-":
+          symbol=df['Symbol'][i]
+          indexLtp=df['Close'][i]
           indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(symbol,indexLtp=indexLtp)
           if df['Trade'][i]=="Buy":
             df['Option'][i]=ce_strike_symbol['symbol']
             df['Option Token'][i]=ce_strike_symbol['token']
             df['Option Exch'][i]=ce_strike_symbol['exch_seg']
           else:
-            df['Option'][i]=pe_strike_symbol['token']
-            df['Option Token'][i]=pe_strike_symbol['symbol']
+            df['Option'][i]=pe_strike_symbol['symbol']
+            df['Option Token'][i]=pe_strike_symbol['token']
             df['Option Exch'][i]=pe_strike_symbol['exch_seg']
       todays_data=pd.concat([df, todays_data])
   df=todays_data.to_csv(index=False).encode('utf-8')
