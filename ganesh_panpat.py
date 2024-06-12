@@ -1392,7 +1392,7 @@ def index_backtest():
   symbol_list=['^NSEI','^NSEBANK','^BSESN']
   for timeframe in ['1m','5m','15m']:
     for symbol in symbol_list:
-      df=yfna_data(symbol,timeframe,'7')
+      df=yfna_data(symbol,timeframe,'5')
       df['Time Frame']=timeframe
       df.index.names = ['']
       df['VWAP']=pdta.vwap(high=df['High'],low=df['Low'],close=df['Close'],volume=df['Volume'])
