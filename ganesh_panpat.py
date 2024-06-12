@@ -1399,13 +1399,24 @@ def index_backtest():
       df=df[['Date','Datetime','Open','High','Low','Close','Volume','VWAP','Time Frame']]
       df['Symbol']=symbol
       df=calculate_indicator(df)
+      df['Option']="-"
+      df['Option Token']="-"
+      df['Option Exch']="-"
+      for i in range(0,len(df)):
+        if df['Trade'][i-1]!="-":
+          indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(symbol,indexLtp="-")
+          if df['Trade'][i]=="Buy":
+            df['Option'][i]=ce_strike_symbol['token']
+            df['Option Token'][i]=ce_strike_symbol['symbol']
+            df['Option Exch'][i]=ce_strike_symbol['exch_seg']
+          else:
+            df['Option'][i]=pe_strike_symbol['token']
+            df['Option Token'][i]=pe_strike_symbol['symbol']
+            df['Option Exch'][i]=pe_strike_symbol['exch_seg']
       todays_data=pd.concat([df, todays_data])
   df=todays_data.to_csv(index=False).encode('utf-8')
   fl_name="Todays_Trade_"+dat.strftime('%Y_%m_%d')+ ".csv"
-  st.download_button(label=f"Download as CSV",
-                         data=df,
-                         file_name=fl_name,
-                         mime='text/csv',)
+  st.download_button(label=f"Download as CSV",data=df,file_name=fl_name,mime='text/csv',)
 
 if algo_state:
   loop_code()
