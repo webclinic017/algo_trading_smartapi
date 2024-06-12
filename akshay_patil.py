@@ -1406,15 +1406,15 @@ def index_backtest():
       df['Option Token']="-"
       df['Option Exch']="-"
       for i in range(0,len(df)):
-        if df['Trade'][i]!="-":
+        if df['Trade'][i]!="-" and df['ST_7_3 Trade'][i]!="-" and df['ST_10_2 Trade'][i]!="-" and df['RSI_60 Trade'][i]!="-" and df['ST_10_1 Trade'][i]!="-" and df['TEMA_EMA_9 Trade'][i]!="-":
           symbol=df['Symbol'][i]
           indexLtp=df['Close'][i]
           indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(symbol,indexLtp=indexLtp)
-          if df['Trade'][i]=="Buy":
+          if df['Trade'][i]=="Buy" or df['ST_7_3 Trade'][i]=="Buy" or df['ST_10_2 Trade'][i]=="Buy" or df['RSI_60 Trade'][i]=="Buy" or df['ST_10_1 Trade'][i]=="Buy" or df['TEMA_EMA_9 Trade'][i]=="Buy":
             df['Option'][i]=ce_strike_symbol['symbol']
             df['Option Token'][i]=ce_strike_symbol['token']
             df['Option Exch'][i]=ce_strike_symbol['exch_seg']
-          else:
+          elif df['Trade'][i]=="Sell" or df['ST_7_3 Trade'][i]=="Sell" or df['ST_10_2 Trade'][i]=="Sell" or df['RSI_60 Trade'][i]=="Sell" or df['ST_10_1 Trade'][i]=="Sell" or df['TEMA_EMA_9 Trade'][i]=="Sell:
             df['Option'][i]=pe_strike_symbol['symbol']
             df['Option Token'][i]=pe_strike_symbol['token']
             df['Option Exch'][i]=pe_strike_symbol['exch_seg']
