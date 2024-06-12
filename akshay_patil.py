@@ -1414,7 +1414,7 @@ def index_backtest():
             df['Option'][i]=ce_strike_symbol['symbol']
             df['Option Token'][i]=ce_strike_symbol['token']
             df['Option Exch'][i]=ce_strike_symbol['exch_seg']
-          elif df['Trade'][i]=="Sell" or df['ST_7_3 Trade'][i]=="Sell" or df['ST_10_2 Trade'][i]=="Sell" or df['RSI_60 Trade'][i]=="Sell" or df['ST_10_1 Trade'][i]=="Sell" or df['TEMA_EMA_9 Trade'][i]=="Sell:
+          elif df['Trade'][i]=="Sell" or df['ST_7_3 Trade'][i]=="Sell" or df['ST_10_2 Trade'][i]=="Sell" or df['RSI_60 Trade'][i]=="Sell" or df['ST_10_1 Trade'][i]=="Sell" or df['TEMA_EMA_9 Trade'][i]=="Sell":
             df['Option'][i]=pe_strike_symbol['symbol']
             df['Option Token'][i]=pe_strike_symbol['token']
             df['Option Exch'][i]=pe_strike_symbol['exch_seg']
