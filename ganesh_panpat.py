@@ -1392,22 +1392,28 @@ def index_backtest():
   symbol_list=['^NSEI','^NSEBANK','^BSESN']
   for timeframe in ['1m','5m','15m']:
     for symbol in symbol_list:
+      print(f'{symbol} {timeframe}')
       df=yfna_data(symbol,timeframe,'5')
+      print(f'Data fetched {symbol} {timeframe}')
       df['Time Frame']=timeframe
       df.index.names = ['']
       df['VWAP']=pdta.vwap(high=df['High'],low=df['Low'],close=df['Close'],volume=df['Volume'])
       df=df[['Date','Datetime','Open','High','Low','Close','Volume','VWAP','Time Frame']]
       df['Symbol']=symbol
       df=calculate_indicator(df)
+      print(f'Indicator calculated {symbol} {timeframe}')
       df['Option']="-"
       df['Option Token']="-"
       df['Option Exch']="-"
+      df = df[(df['Date'] == dat)]
       for i in range(0,len(df)):
         if df['Trade'][i-1]!="-":
-          indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(symbol,indexLtp="-")
+          symbol=df['Symbol'][i-1]
+          indexLtp=df['Close'][i-1]
+          indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(symbol,indexLtp=indexLtp)
           if df['Trade'][i]=="Buy":
-            df['Option'][i]=ce_strike_symbol['token']
-            df['Option Token'][i]=ce_strike_symbol['symbol']
+            df['Option'][i]=ce_strike_symbol['symbol']
+            df['Option Token'][i]=ce_strike_symbol['token']
             df['Option Exch'][i]=ce_strike_symbol['exch_seg']
           else:
             df['Option'][i]=pe_strike_symbol['token']
