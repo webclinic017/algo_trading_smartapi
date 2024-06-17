@@ -33,21 +33,21 @@ if 'fut_list' not in st.session_state:st.session_state['fut_list']=[]
 if 'options_trade_list' not in st.session_state:st.session_state['options_trade_list']=[]
 if 'stop_loss' not in st.session_state:st.session_state['stop_loss']={}
 if 'target_list' not in st.session_state:st.session_state['target_list']={}
-st.session_state['NIFTY_5m_Trade']="-"
-st.session_state['BANKNIFTY_5m_Trade']="-"
-st.session_state['SENSEX_5m_Trade']="-"
-st.session_state['NIFTY_1m_Trade']="-"
-st.session_state['BANKNIFTY_1m_Trade']="-"
-st.session_state['SENSEX_1m_Trade']="-"
-st.session_state['NIFTY_5m_Indicator']="-"
-st.session_state['BANKNIFTY_5m_Indicator']="-"
-st.session_state['SENSEX_5m_Indicator']="-"
-st.session_state['NIFTY_1m_Indicator']="-"
-st.session_state['BANKNIFTY_1m_Indicator']="-"
-st.session_state['SENSEX_1m_Indicator']="-"
-st.session_state['Time_5m']="-"
-st.session_state['Time_1m']="-"
-st.session_state['todays_trade']=[]
+if 'NIFTY_5m_Trade' not in st.session_state:st.session_state['NIFTY_5m_Trade']="-"
+if 'BANKNIFTY_5m_Trade' not in st.session_state:st.session_state['BANKNIFTY_5m_Trade']="-"
+if 'SENSEX_5m_Trade' not in st.session_state:st.session_state['SENSEX_5m_Trade']="-"
+if 'NIFTY_1m_Trade' not in st.session_state:st.session_state['NIFTY_1m_Trade']="-"
+if 'BANKNIFTY_1m_Trade' not in st.session_state:st.session_state['BANKNIFTY_1m_Trade']="-"
+if 'SENSEX_1m_Trade' not in st.session_state:st.session_state['SENSEX_1m_Trade']="-"
+if 'NIFTY_5m_Indicator' not in st.session_state:st.session_state['NIFTY_5m_Indicator']="-"
+if 'BANKNIFTY_5m_Indicator' not in st.session_state:st.session_state['BANKNIFTY_5m_Indicator']="-"
+if 'SENSEX_5m_Indicator' not in st.session_state:st.session_state['SENSEX_5m_Indicator']="-"
+if 'NIFTY_1m_Indicator' not in st.session_state:st.session_state['NIFTY_1m_Indicator']="-"
+if 'BANKNIFTY_1m_Indicator' not in st.session_state:st.session_state['BANKNIFTY_1m_Indicator']="-"
+if 'SENSEX_1m_Indicator' not in st.session_state:st.session_state['SENSEX_1m_Indicator']="-"
+if 'Time_5m' not in st.session_state:st.session_state['Time_5m']="-"
+if 'Time_1m' not in st.session_state:st.session_state['Time_1m']="-"
+if 'todays_trade' not in st.session_state:st.session_state['todays_trade']=[]
 
 def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
@@ -91,6 +91,7 @@ with tab0:
     restart=st.button("Restart")
     algo_state=st.checkbox("Run Algo")
   with col2:
+    trade_info=st.empty()
     log_holder=st.empty()
 with tab1:
   order_book_updated=st.empty()
@@ -117,7 +118,7 @@ with tab5:
                   'TEMA_EMA_9 Trade','Multi Time ST Trade']
   with ind_col1:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX'],['NIFTY','BANKNIFTY','SENSEX'])
-    time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M'],['IDX:5M','OPT:5M','OPT:1M'])
+    time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M','GTT:5M'],['IDX:5M','OPT:5M','OPT:1M','GTT:5M'])
     five_buy_indicator = st.multiselect('5M Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
     five_opt_buy_indicator = st.multiselect('5M OPT Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
     gtt_indicator=st.multiselect('GTT Indicator',['5M_ST','5M_ST_10_2','1M_10_1','1M_10_2'],['5M_ST','5M_ST_10_2'])
@@ -340,7 +341,7 @@ def yfna_data(symbol,interval,period):
     return df
   except Exception as e:
     logger.info(f"error in yfna_data {symbol}: {e}")
-    return 'No Data Found'
+    return None
 def angel_data(token,interval,exch_seg,period=5):
   try:
     to_date= datetime.datetime.now(tz=gettz('Asia/Kolkata'))
@@ -362,7 +363,7 @@ def angel_data(token,interval,exch_seg,period=5):
     return df
   except Exception as e:
     logger.info(f"error in angel_data : {e}")
-    return 'No Data Found'
+    return None
 def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_type="NORMAL"):
   try:
     symbol_i="-"
@@ -370,7 +371,7 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     elif (symbol=="^NSEBANK" or symbol=="BANKNIFTY") : symbol_i,token,exch_seg="^NSEBANK",99926009,"NSE"
     elif (symbol=="^BSESN" or symbol=="SENSEX") : symbol_i,token,exch_seg="^BSESN",99919000,"BSE"
     if symbol[3:]=='-EQ': symbol=symbol[:-3]+".NS"
-    odd_candle,odd_interval,df=False,'','No Data Found'
+    odd_candle,odd_interval,df=False,'',None
     if (interval=="5m" or interval=='FIVE_MINUTE'): period,delta_time,agl_interval,yf_interval,odd_interval=5,5,"FIVE_MINUTE","5m",'5m'
     elif (interval=="15m" or interval=='FIFTEEN_MINUTE'): period,delta_time,agl_interval,yf_interval,odd_interval=5,15,"FIFTEEN_MINUTE","15m",'15m'
     elif (interval=="60m" or interval=='ONE_HOUR'): period,delta_time,agl_interval,yf_interval,odd_interval=30,60,"ONE_HOUR","60m",'60m'
@@ -385,13 +386,13 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     if (symbol_i[0]=="^"):df=yfna_data(symbol_i,yf_interval,period)
     else:df=angel_data(token,agl_interval,exch_seg,period)
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
-    if isinstance(df, str) or (now - df.index[-1]) > datetime.timedelta(minutes=5):df=angel_data(token,agl_interval,exch_seg,period)
+    if df==None or (now - df.index[-1]) > datetime.timedelta(minutes=5):df=angel_data(token,agl_interval,exch_seg,period)
     #else:df=angel_data(token,agl_interval,exch_seg,period)
     if odd_candle ==True:
       df=df.groupby(pd.Grouper(freq=odd_interval+'in')).agg({"Date":"first","Datetime":"first","Open": "first", "High": "max",
                                                         "Low": "min", "Close": "last","Volume": "sum"})
       df=df[(df['Open']>0)]
-    if isinstance(df, str):
+    if df==None:
       df=pd.DataFrame(columns=['Date', 'Datetime', 'Open', 'High', 'Low', 'Close', 'Volume', 'VWAP','Time Frame', 'Symbol', 'RSI', 'UBB',
         'MBB', 'LBB', 'MACD','MACD signal', 'Macdhist', 'Supertrend', 'Supertrend_10_2','Supertrend_10_1', 'Supertrend_10_4','Supertrend_10_8',
         'PSAR', 'ADX','MINUS_DI', 'PLUS_DI', 'MA_200', 'MA_50', 'EMA_12', 'EMA_26', 'EMA_13','EMA_5', 'EMA_7','MA_1', 'MA_2', 'MA_3', 'MA_4',
@@ -414,6 +415,7 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     return df
   except Exception as e:
     logger.info(f"error in get_historical_data: {e}")
+    
 def get_trade_info(df):
   for i in ['ST_7_3 Trade','MACD Trade','PSAR Trade','DI Trade','MA Trade','EMA Trade','BB Trade','Trade','Trade End',
             'Rainbow MA','Rainbow Trade','MA 21 Trade','ST_10_2 Trade','Two Candle Theory','HMA Trade','VWAP Trade',
@@ -492,12 +494,12 @@ def get_trade_info(df):
         if df[indicator_trade][i]=="Buy":
           df['Trade'][i]="Buy"
           df['Trade End'][i]="Buy"
-          df['Indicator'][i]=df['Trade'][i]+" "+df['Indicator'][i]+":"+indicator_trade
+          df['Indicator'][i]=df['Trade'][i]+" "+df['Indicator'][i]+":"+indicator_trade+' RSI:'+str(df['RSI'][i])
           break
         elif df[indicator_trade][i]=="Sell":
           df['Trade'][i]="Sell"
           df['Trade End'][i]="Sell"
-          df['Indicator'][i]=df['Trade'][i]+" "+df['Indicator'][i]+":"+indicator_trade
+          df['Indicator'][i]=df['Trade'][i]+" "+df['Indicator'][i]+":"+indicator_trade+' RSI:'+str(df['RSI'][i])
           break
     except Exception as e:
       pass
@@ -621,6 +623,9 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
       elif target_type=="Points":
         target_price=int(ltp_price+target_point)
         stop_loss=int(ltp_price-sl_point)
+      elif 'TEMA_EMA_9 Trade' in indicator_strategy:
+        target_price=int(ltp_price+10)
+        stop_loss=int(ltp_price-10)
       else:
         target_price=int(ltp_price*2)
         stop_loss=int(ltp_price*0.5)
@@ -628,6 +633,8 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
         #target_price=int(float(ltp_price+(float(old_data['Atr'].iloc[-1])*2)))
         #stop_loss=int(float(ltp_price-(float(old_data['Atr'].iloc[-1])*2)))
       indicator_strategy=indicator_strategy+ " LTP:"+str(int(ltp_price))+"("+str(int(stop_loss))+":"+str(int(target_price))+")"
+      buy_msg=(f'Buy: {option_symbol}\nPrice: {trade_price} LTP: {ltp_price}\n{indicator_strategy}\nTarget: {target_price} Stop Loss: {stop_loss}')
+      telegram_bot_sendtext(buy_msg)
     except:
       ltp_price=0
     orderbook=obj.orderBook()['data']
@@ -643,8 +650,6 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
         place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='SELL',ordertype='STOPLOSS_LIMIT',price=stop_loss,
                     variety='STOPLOSS',exch_seg=exch_seg,producttype='CARRYFORWARD',triggerprice=stop_loss,squareoff=stop_loss,
                     stoploss=stop_loss, ordertag=str(orderId)+" Stop Loss order Placed")
-    buy_msg=(f'Buy: {option_symbol}\nPrice: {trade_price} LTP: {ltp_price}\n{indicator_strategy}\nTarget: {target_price} Stop Loss: {stop_loss}')
-    telegram_bot_sendtext(buy_msg)
   except Exception as e:
     logger.info(f"Error in buy_option: {e}")
 #Exit Position
@@ -697,7 +702,6 @@ def close_options_position(position,nf_5m_trade_end="-",bnf_5m_trade_end="-",sen
             time.sleep(1)
     except Exception as e:
       logger.info(f"Error in Close index trade: {e}")
-
 
 def index_trade(symbol,interval):
   try:
@@ -937,6 +941,8 @@ def sub_loop_code(now_minute):
       if 'OPT:5M' in time_frame_interval:
         trade_near_options('5m')
         log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+      if 'GTT:5M' in time_frame_interval:
+        gtt_sub_loop(now_minute)
     if (now_minute%15==0 and 'IDX:15M' in time_frame_interval):
       for symbol in index_list:df=index_trade(symbol,"15m")
       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
@@ -950,7 +956,7 @@ def sub_loop_code(now_minute):
     if "Multi Time ST Trade" in five_buy_indicator:
       multi_time_frame()
       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    gtt_sub_loop(now_minute)
+    
   except Exception as e:
     logger.info(f"error in sub_loop_code: {e}")
 def loop_code():
@@ -961,6 +967,7 @@ def loop_code():
   todays_trade=get_todays_trade()
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
+    print(now)
     st.session_state['last_check']=now.time()
     login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
     try:
@@ -1024,6 +1031,9 @@ def update_target_sl(buy_df):
         tgt=(buy_df['ordertag'].iloc[i].split(sl+':'))[1].split(')')[0]
         buy_df['SL'].iloc[i]=sl
         buy_df['Target'].iloc[i]=tgt
+      elif 'TEMA_EMA_9 Trade' in buy_df['ordertag'].iloc[i] :
+        buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i])+10
+        buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i])-10
       else:
         if buy_df['price'].iloc[i]!="-":
           if target_type=="Per Cent":
@@ -1234,8 +1244,7 @@ def close_day_end_trade():
         telegram_bot_sendtext(multiline_string)
         buy_df['Status'].iloc[i]="Day End"
     except: pass
-    
-    
+     
 def gtt_sub_loop(now_minute):
   lists=get_gtt_list()
   gtt_symbol_list=lists['tradingsymbol'].tolist()
@@ -1258,13 +1267,6 @@ def gtt_sub_loop(now_minute):
                 elif old_data.iloc[-1]['Supertrend_10_2']>old_data.iloc[-1]['Close'] and '5M_ST_10_2' in gtt_indicator:
                     price=int(old_data.iloc[-1]['Supertrend_10_2'])
                     create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
-            old_data=get_historical_data(symbol=tradingsymbol,interval="1m",token=symboltoken,exch_seg=exchange,candle_type="NORMAL")
-            if old_data.iloc[-1]['Supertrend_10_1']>old_data.iloc[-1]['Close'] and '1M_10_1' in gtt_indicator:
-                price=int(old_data.iloc[-1]['Supertrend_10_1'])
-                create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
-            elif old_data.iloc[-1]['Supertrend_10_2']>old_data.iloc[-1]['Close'] and '1M_10_2' in gtt_indicator:
-                price=int(old_data.iloc[-1]['Supertrend_10_2'])
-                create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
         except:pass
     except:pass
   modify_gtt(lists)
