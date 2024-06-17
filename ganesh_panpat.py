@@ -11,7 +11,7 @@ import warnings
 import yfinance as yf
 import time
 import numpy
-warnings.filterwarnings('ignore')
+#warnings.filterwarnings('ignore')
 NoneType = type(None)
 import math
 st.set_page_config(page_title="Algo App",layout="wide",initial_sidebar_state="expanded",)
