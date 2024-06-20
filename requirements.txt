@@ -11,3 +11,4 @@ websocket-client
 requests
 pyotp
 logzero
+numpy pandas_ta
