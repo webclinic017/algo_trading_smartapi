@@ -5,10 +5,10 @@ pydeck
 streamlit
 yfinance
 pandas_ta
+pandas-ta
 numpy
 smartapi-python
 websocket-client
 requests
 pyotp
 logzero
-numpy pandas_ta
