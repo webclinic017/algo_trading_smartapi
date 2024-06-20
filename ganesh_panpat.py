@@ -1,4 +1,5 @@
 import streamlit as st
+import numpy
 import requests
 import datetime
 from dateutil.tz import gettz
@@ -10,7 +11,7 @@ import pandas_ta as pdta
 import warnings
 import yfinance as yf
 import time
-import numpy
+
 #warnings.filterwarnings('ignore')
 NoneType = type(None)
 import math
