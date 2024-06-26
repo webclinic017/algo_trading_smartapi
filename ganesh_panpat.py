@@ -1,5 +1,6 @@
 import streamlit as st
 import numpy
+my_nan_value = np.nan
 import requests
 import datetime
 from dateutil.tz import gettz
