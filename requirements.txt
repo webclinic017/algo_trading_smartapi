@@ -4,8 +4,8 @@ pandas
 pydeck
 streamlit
 yfinance
-pandas_ta
-pandas-ta
+pandas_ta==0.3.14b
+pandas-ta==0.3.14b
 numpy
 smartapi-python
 websocket-client
