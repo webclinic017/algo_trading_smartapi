@@ -1,6 +1,5 @@
 import streamlit as st
 import numpy as np
-my_nan_value = np.nan
 import requests
 import datetime
 from dateutil.tz import gettz
@@ -8,13 +7,7 @@ import pandas as pd
 from SmartApi.smartConnect import SmartConnect
 import pyotp
 from logzero import logger
-#import pandas_ta as pdta
-from pandas_ta import rsi
-from pandas_ta import macd
-from pandas_ta import supertrend
-from pandas_ta import atr
-from pandas_ta import tema
-from pandas_ta import ema
+import pandas_ta as pdta
 import warnings
 import yfinance as yf
 import time
