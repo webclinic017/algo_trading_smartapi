@@ -7,6 +7,7 @@ import pandas as pd
 from SmartApi.smartConnect import SmartConnect
 import pyotp
 from logzero import logger
+import pandas_ta
 #import pandas_ta as pdta
 import warnings
 import yfinance as yf
