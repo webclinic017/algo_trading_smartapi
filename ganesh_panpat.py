@@ -267,7 +267,7 @@ def print_ltp():
 def get_open_position():
   try:
     position=obj.position()
-    if position['status']==True and position['data']!=None:
+    if position['status']==True and position['data'] is not None:
       position=position['data']
       position=pd.DataFrame(position)
       position[['realised', 'unrealised']] = position[['realised', 'unrealised']].astype(float)
@@ -288,7 +288,7 @@ def get_open_position():
 def get_order_book():
   try:
     orderbook=obj.orderBook()
-    if orderbook['status']==True and orderbook['data']!=None:
+    if orderbook['status']==True and orderbook['data'] is not None:
       orderbook=orderbook['data']
       orderbook[['price','squareoff','stoploss','triggerprice']]=orderbook[['price','squareoff','stoploss','triggerprice']].astype(float)
       orderbook[['quantity']]=orderbook[['quantity']].astype(int)
