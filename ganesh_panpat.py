@@ -1062,21 +1062,21 @@ def check_pnl_todays_trade(buy_df):
             buy_df.loc[i,'Status']="Target Hit"
           else:
             exit_trade="No"
-            if tradingsymbol.startswith("NIFTY"):
-              if " 5m" in indicator and tradingsymbol.endswith("PE") and st.session_state['NIFTY_5m_Trade']=="Buy":exit_trade="Yes"
-              if " 5m" in indicator and tradingsymbol.endswith("CE") and st.session_state['NIFTY_5m_Trade']=="Sell":exit_trade="Yes"
-              if " 1m" in indicator and tradingsymbol.endswith("PE") and st.session_state['NIFTY_1m_Trade']=="Buy":exit_trade="Yes"
-              if " 1m" in indicator and tradingsymbol.endswith("CE") and st.session_state['NIFTY_1m_Trade']=="Sell":exit_trade="Yes"
-            elif tradingsymbol.startswith("BANKNIFTY"):
-              if " 5m" in indicator and tradingsymbol.endswith("PE") and st.session_state['BANKNIFTY_5m_Trade']=="Buy":exit_trade="Yes"
-              if " 5m" in indicator and tradingsymbol.endswith("CE") and st.session_state['BANKNIFTY_5m_Trade']=="Sell":exit_trade="Yes"
-              if " 1m" in indicator and tradingsymbol.endswith("PE") and st.session_state['BANKNIFTY_1m_Trade']=="Buy":exit_trade="Yes"
-              if " 1m" in indicator and tradingsymbol.endswith("CE") and st.session_state['BANKNIFTY_1m_Trade']=="Sell":exit_trade="Yes"
-            elif tradingsymbol.startswith("SENSEX"):
-              if " 5m" in indicator and tradingsymbol.endswith("PE") and st.session_state['SENSEX_5m_Trade']=="Buy":exit_trade="Yes"
-              if " 5m" in indicator and tradingsymbol.endswith("CE") and st.session_state['SENSEX_5m_Trade']=="Sell":exit_trade="Yes"
-              if " 1m" in indicator and tradingsymbol.endswith("PE") and st.session_state['SENSEX_1m_Trade']=="Buy":exit_trade="Yes"
-              if " 1m" in indicator and tradingsymbol.endswith("CE") and st.session_state['SENSEX_1m_Trade']=="Sell":exit_trade="Yes"
+            #if tradingsymbol.startswith("NIFTY"):
+            #  if " 5m" in indicator and tradingsymbol.endswith("PE") and st.session_state['NIFTY_5m_Trade']=="Buy":exit_trade="Yes"
+            #  if " 5m" in indicator and tradingsymbol.endswith("CE") and st.session_state['NIFTY_5m_Trade']=="Sell":exit_trade="Yes"
+            #  if " 1m" in indicator and tradingsymbol.endswith("PE") and st.session_state['NIFTY_1m_Trade']=="Buy":exit_trade="Yes"
+            #  if " 1m" in indicator and tradingsymbol.endswith("CE") and st.session_state['NIFTY_1m_Trade']=="Sell":exit_trade="Yes"
+            #elif tradingsymbol.startswith("BANKNIFTY"):
+            #  if " 5m" in indicator and tradingsymbol.endswith("PE") and st.session_state['BANKNIFTY_5m_Trade']=="Buy":exit_trade="Yes"
+            #  if " 5m" in indicator and tradingsymbol.endswith("CE") and st.session_state['BANKNIFTY_5m_Trade']=="Sell":exit_trade="Yes"
+            #  if " 1m" in indicator and tradingsymbol.endswith("PE") and st.session_state['BANKNIFTY_1m_Trade']=="Buy":exit_trade="Yes"
+            #  if " 1m" in indicator and tradingsymbol.endswith("CE") and st.session_state['BANKNIFTY_1m_Trade']=="Sell":exit_trade="Yes"
+            #elif tradingsymbol.startswith("SENSEX"):
+            #  if " 5m" in indicator and tradingsymbol.endswith("PE") and st.session_state['SENSEX_5m_Trade']=="Buy":exit_trade="Yes"
+            #  if " 5m" in indicator and tradingsymbol.endswith("CE") and st.session_state['SENSEX_5m_Trade']=="Sell":exit_trade="Yes"
+            #  if " 1m" in indicator and tradingsymbol.endswith("PE") and st.session_state['SENSEX_1m_Trade']=="Buy":exit_trade="Yes"
+            #  if " 1m" in indicator and tradingsymbol.endswith("CE") and st.session_state['SENSEX_1m_Trade']=="Sell":exit_trade="Yes"
             if exit_trade=="Yes":
               exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Indicaor Exit:'+ordertag,producttype='CARRYFORWARD')
               multiline_string = "Indicaor Exit: "+trade_info
