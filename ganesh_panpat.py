@@ -1188,6 +1188,8 @@ def get_todays_trade():
     st.session_state['todays_trade']=buy_df
     if len(buy_df)!=0:recheck_pnl()
     sl_container.text("Trail Sl:"+str(st.session_state['stop_loss']))
+    todays_trade_datatable.dataframe(buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
+                                    'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']],hide_index=True)
     return buy_df
   except Exception as e:
     logger.error(f"Error in get_todays_trade: {e}")
