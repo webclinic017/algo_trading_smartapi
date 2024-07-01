@@ -1122,7 +1122,7 @@ def get_todays_trade():
             break
     buy_df=update_target_sl(buy_df)
     buy_df=update_ltp_buy_df(buy_df)
-    #buy_df=check_pnl_todays_trade(buy_df)
+    buy_df=check_pnl_todays_trade(buy_df)
     st.session_state['todays_trade']=buy_df
     if len(buy_df)!=0:recheck_pnl()
     sl_container.text("Trail Sl:"+str(st.session_state['stop_loss']))
