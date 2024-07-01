@@ -376,13 +376,13 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     if (symbol_i[0]=="^"):df=yfna_data(symbol_i,yf_interval,period)
     else:df=angel_data(token,agl_interval,exch_seg,period)
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
-    if df==None or (now - df.index[-1]) > datetime.timedelta(minutes=5):df=angel_data(token,agl_interval,exch_seg,period)
+    if df is None or (now - df.index[-1]) > datetime.timedelta(minutes=5):df=angel_data(token,agl_interval,exch_seg,period)
     #else:df=angel_data(token,agl_interval,exch_seg,period)
     if odd_candle ==True:
       df=df.groupby(pd.Grouper(freq=odd_interval+'in')).agg({"Date":"first","Datetime":"first","Open": "first", "High": "max",
                                                         "Low": "min", "Close": "last","Volume": "sum"})
       df=df[(df['Open']>0)]
-    if df==None:return None
+    if df is None:return None
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
     last_candle=now.replace(second=0, microsecond=0)- datetime.timedelta(minutes=delta_time)
     df = df[(df.index <= last_candle)]
