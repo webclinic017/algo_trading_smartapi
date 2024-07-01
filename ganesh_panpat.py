@@ -880,8 +880,8 @@ def sub_loop_code(now_minute):
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now.replace(hour=16, minute=00, second=0, microsecond=0)
-  day_end = now.replace(hour=16, minute=00, second=0, microsecond=0)
+  marketclose = now.replace(hour=17, minute=00, second=0, microsecond=0)
+  day_end = now.replace(hour=17, minute=00, second=0, microsecond=0)
   todays_trade=get_todays_trade()
   while now < day_end:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
