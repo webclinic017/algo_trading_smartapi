@@ -366,7 +366,7 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     if (interval=="5m" or interval=='FIVE_MINUTE'): period,delta_time,agl_interval,yf_interval,odd_interval=5,5,"FIVE_MINUTE","5m",'5m'
     elif (interval=="15m" or interval=='FIFTEEN_MINUTE'): period,delta_time,agl_interval,yf_interval,odd_interval=5,15,"FIFTEEN_MINUTE","15m",'15m'
     elif (interval=="60m" or interval=='ONE_HOUR'): period,delta_time,agl_interval,yf_interval,odd_interval=30,60,"ONE_HOUR","60m",'60m'
-    elif (interval=="1m" or interval=='ONE_MINUTE') : period,delta_time,agl_interval,yf_interval,odd_interval=5,1,"ONE_MINUTE","1m",'1m'
+    elif (interval=="1m" or interval=='ONE_MINUTE') : period,delta_time,agl_interval,yf_interval,odd_interval=1,1,"ONE_MINUTE","1m",'1m'
     elif (interval=="1d" or interval=='ONE_DAY') : period,delta_time,agl_interval,yf_interval,odd_interval=100,5,"ONE_DAY","1d",'1d'
     else:
       period,delta_time,agl_interval,yf_interval,odd_candle=5,1,"ONE_MINUTE","1m",True
@@ -1126,6 +1126,7 @@ def get_todays_trade():
     st.session_state['todays_trade']=buy_df
     if len(buy_df)!=0:recheck_pnl()
     sl_container.text("Trail Sl:"+str(st.session_state['stop_loss']))
+    buy_df_sorted = buy_df.sort_values(by=['Status', 'updatetime'], ascending=[True, False], key=lambda x: x.map({v: i for i, v in enumerate(status_order)}))
     todays_trade_datatable.dataframe(buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
                                     'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']],hide_index=True)
     return buy_df
