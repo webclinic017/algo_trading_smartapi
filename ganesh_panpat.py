@@ -292,7 +292,7 @@ def get_order_book():
       orderbook=pd.DataFrame(orderbook)
       orderbook[['price','squareoff','stoploss','triggerprice']]=orderbook[['price','squareoff','stoploss','triggerprice']].astype(float)
       orderbook[['quantity']]=orderbook[['quantity']].astype(int)
-      orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
+      #orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
       order_datatable.dataframe(orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']],hide_index=True)
       order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
       pending_orders = orderbook[((orderbook['orderstatus'] != 'complete') & (orderbook['orderstatus'] != 'cancelled') &
@@ -1089,7 +1089,7 @@ def get_todays_trade():
     orderbook,pending_orders=get_order_book()
     if orderbook is None: return None
     orderbook=update_price_orderbook(orderbook)
-    #orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
+    orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
     sell_df=orderbook[(orderbook['transactiontype']=="SELL") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
     sell_df['Remark']='-'
     buy_df=orderbook[(orderbook['transactiontype']=="BUY") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
@@ -1102,10 +1102,10 @@ def get_todays_trade():
         for k in range(0,len(sell_df)):
           if (sell_df['tradingsymbol'].iloc[k]==symbol and sell_df['updatetime'].iloc[k] >= updatetime and sell_df['Remark'].iloc[k] =='-' and
               buy_df['status'].iloc[i]==sell_df['status'].iloc[k] and str(orderid) in sell_df['ordertag'].iloc[k]):
-            buy_df.loc[i,'Sell']=sell_df['price'].iloc[k]
-            buy_df.loc[i,'Exit Time']=sell_df['updatetime'].iloc[k]
-            buy_df.loc[i,'Sell Indicator']=sell_df['ordertag'].iloc[k]
-            buy_df.loc[i,'Status']='Closed'; sell_df.loc[k,'Remark']='Taken'
+            buy_df['Sell'].iloc[i]=sell_df['price'].iloc[k]
+            buy_df['Exit Time'].iloc[i]=sell_df['updatetime'].iloc[k]
+            buy_df['Sell Indicator'].iloc[i]=sell_df['ordertag'].iloc[k]
+            buy_df['Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[k]='Taken'
             break
     for i in range(0,len(buy_df)):
       symbol=buy_df['tradingsymbol'].iloc[i]
@@ -1115,14 +1115,14 @@ def get_todays_trade():
         for j in range(0,len(sell_df)):
           if (sell_df['tradingsymbol'].iloc[j]==symbol and sell_df['updatetime'].iloc[j] >= updatetime and sell_df['Remark'].iloc[j] =='-' and
               buy_df['status'].iloc[i]==sell_df['status'].iloc[j]):
-            buy_df.loc[i,'Sell']=sell_df['price'].iloc[j]
-            buy_df.loc[i,'Exit Time']=sell_df['updatetime'].iloc[j]
-            buy_df.loc[i,'Sell Indicator']=sell_df['ordertag'].iloc[j]
-            buy_df.loc[i,'Status']='Closed'; sell_df.loc[j,'Remark']='Taken'
+            buy_df['Sell'].iloc[i]=sell_df['price'].iloc[j]
+            buy_df['Exit Time'].iloc[i]=sell_df['updatetime'].iloc[j]
+            buy_df['Sell Indicator'].iloc[i]=sell_df['ordertag'].iloc[j]
+            buy_df['Status'].iloc[i]='Closed'; sell_df['Remark'].iloc[j]='Taken'
             break
     buy_df=update_target_sl(buy_df)
     buy_df=update_ltp_buy_df(buy_df)
-    buy_df=check_pnl_todays_trade(buy_df)
+    #buy_df=check_pnl_todays_trade(buy_df)
     st.session_state['todays_trade']=buy_df
     if len(buy_df)!=0:recheck_pnl()
     sl_container.text("Trail Sl:"+str(st.session_state['stop_loss']))
