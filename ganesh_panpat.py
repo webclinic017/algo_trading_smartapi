@@ -916,8 +916,8 @@ def modify_gtt(lists):
 #Loop Code
 def sub_loop_code(now_minute):
   try:
+    st.session_state['options_trade_list']=[]
     if (now_minute%5==0 and 'IDX:5M' in time_frame_interval):
-      st.session_state['options_trade_list']=[]
       for symbol in index_list: df=index_trade(symbol,"5m")
       st.session_state['Time_5m']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
