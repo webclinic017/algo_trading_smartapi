@@ -883,7 +883,8 @@ def loop_code():
   marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
   day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
   todays_trade=get_todays_trade()
-  while now < day_end:
+  if now > marketclose: close_day_end_trade()
+  while now < marketclose:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
     st.session_state['last_check']=now.time()
     login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
@@ -1339,6 +1340,4 @@ if restart:
   pass
 login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-get_todays_trade()
-get_open_position()
 if backtest: index_backtest()
