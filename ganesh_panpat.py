@@ -299,6 +299,7 @@ def get_order_book():
                               (orderbook['orderstatus'] != 'rejected') & (orderbook['orderstatus'] != 'AMO CANCELLED'))]
       pending_orders = pending_orders[(pending_orders['instrumenttype'] == 'OPTIDX')]
       n_pending_orders=pending_orders[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']]
+      n_pending_orders = n_pending_orders.sort_values(by=['updatetime'], ascending=[False])
       open_order.dataframe(n_pending_orders,hide_index=True)
       open_order_updated.text(f"Pending Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
       return orderbook,pending_orders
