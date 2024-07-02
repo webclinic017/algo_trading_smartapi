@@ -112,7 +112,7 @@ with tab5:
     five_opt_buy_indicator = st.multiselect('5M OPT Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
     gtt_indicator=st.multiselect('GTT Indicator',['5M_ST','5M_ST_10_2','1M_10_1','1M_10_2'],['5M_ST','5M_ST_10_2'])
     one_buy_indicator = st.multiselect('1M Indicator',indicator_list,[])
-    one_opt_buy_indicator = st.multiselect('1M OPT Indicator',indicator_list,['TEMA_EMA_9 Trade'])
+    one_opt_buy_indicator = st.multiselect('1M OPT Indicator',indicator_list,['ST_7_3 Trade','TEMA_EMA_9 Trade'])
     fifteen_buy_indicator = st.multiselect('15M Indicator',indicator_list,[])
     three_buy_indicator = st.multiselect('3M Indicator',indicator_list,[])
     fut_list=st.multiselect('Select Future',['SILVERMIC','SILVER'],[])
