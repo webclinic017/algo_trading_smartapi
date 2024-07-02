@@ -1127,7 +1127,7 @@ def get_todays_trade():
     st.session_state['todays_trade']=buy_df
     if len(buy_df)!=0:recheck_pnl()
     sl_container.text("Trail Sl:"+str(st.session_state['stop_loss']))
-    buy_df_sorted = buy_df.sort_values(by=['Status', 'updatetime'], ascending=[True, False])
+    buy_df_sorted = buy_df.sort_values(by=['Status', 'updatetime'], ascending=[False, True])
     todays_trade_datatable.dataframe(buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
                                     'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']],hide_index=True)
     return buy_df
