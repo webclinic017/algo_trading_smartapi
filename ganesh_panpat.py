@@ -293,7 +293,10 @@ def get_order_book():
       orderbook[['price','squareoff','stoploss','triggerprice']]=orderbook[['price','squareoff','stoploss','triggerprice']].astype(float)
       orderbook[['quantity']]=orderbook[['quantity']].astype(int)
       #orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
-      order_datatable.dataframe(orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']],hide_index=True)
+      g_orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']]
+      g_orderbook['updatetime'] = pd.to_datetime(g_orderbook['updatetime']).dt.time
+      g_orderbook = g_orderbook.sort_values(by=['updatetime'], ascending=[False])
+      order_datatable.dataframe(g_orderbook,hide_index=True)
       order_book_updated.text(f"Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
       pending_orders = orderbook[((orderbook['orderstatus'] != 'complete') & (orderbook['orderstatus'] != 'cancelled') &
                               (orderbook['orderstatus'] != 'rejected') & (orderbook['orderstatus'] != 'AMO CANCELLED'))]
