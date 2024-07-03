@@ -35,6 +35,9 @@ if 'stop_loss' not in st.session_state:st.session_state['stop_loss']={}
 if 'target_list' not in st.session_state:st.session_state['target_list']={}
 if 'index_trade_end' not in st.session_state:st.session_state['index_trade_end']={}
 if 'todays_trade' not in st.session_state:st.session_state['todays_trade']=[]
+if 'orderbook' not in st.session_state:st.session_state['orderbook']=[]
+if 'pending_orders' not in st.session_state:st.session_state['pending_orders']=[]
+
 
 def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
@@ -79,6 +82,7 @@ with tab0:
     close_all=st.button("Close All")
     restart=st.button("Restart")
     algo_state=st.checkbox("Run Algo")
+    todays_trade=st.checkbox("Todays Trade")
   with col2:
     trade_info=st.empty()
     log_holder=st.empty()
@@ -305,6 +309,8 @@ def get_order_book():
       n_pending_orders = n_pending_orders.sort_values(by=['updatetime'], ascending=[False])
       open_order.dataframe(n_pending_orders,hide_index=True)
       open_order_updated.text(f"Pending Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
+      st.session_state['orderbook']=orderbook
+      st.session_state['pending_orders']=pending_orders
       return orderbook,pending_orders
     else:
       order_book_updated.text(f"No Order : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
@@ -361,23 +367,17 @@ def angel_data(token,interval,exch_seg,period=5):
   
 def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_type="NORMAL"):
   try:
-    symbol_i="-"
+    symbol_i="-";df=None
     if (symbol=="^NSEI" or symbol=="NIFTY") : symbol_i,token,exch_seg="^NSEI",99926000,"NSE"
     elif (symbol=="^NSEBANK" or symbol=="BANKNIFTY") : symbol_i,token,exch_seg="^NSEBANK",99926009,"NSE"
     elif (symbol=="^BSESN" or symbol=="SENSEX") : symbol_i,token,exch_seg="^BSESN",99919000,"BSE"
     if symbol[3:]=='-EQ': symbol=symbol[:-3]+".NS"
-    odd_candle,odd_interval,df=False,'',None
-    if (interval=="5m" or interval=='FIVE_MINUTE'): period,delta_time,agl_interval,yf_interval,odd_interval=5,5,"FIVE_MINUTE","5m",'5m'
-    elif (interval=="15m" or interval=='FIFTEEN_MINUTE'): period,delta_time,agl_interval,yf_interval,odd_interval=5,15,"FIFTEEN_MINUTE","15m",'15m'
-    elif (interval=="60m" or interval=='ONE_HOUR'): period,delta_time,agl_interval,yf_interval,odd_interval=30,60,"ONE_HOUR","60m",'60m'
-    elif (interval=="1m" or interval=='ONE_MINUTE') : period,delta_time,agl_interval,yf_interval,odd_interval=1,1,"ONE_MINUTE","1m",'1m'
-    elif (interval=="1d" or interval=='ONE_DAY') : period,delta_time,agl_interval,yf_interval,odd_interval=100,5,"ONE_DAY","1d",'1d'
-    else:
-      period,delta_time,agl_interval,yf_interval,odd_candle=5,1,"ONE_MINUTE","1m",True
-      for i in interval:
-        if(i.isdigit()): odd_interval+=i
-      delta_time=int(odd_interval)
-      odd_interval+='m'
+    if (interval=="5m" or interval=='FIVE_MINUTE'): period,delta_time,agl_interval,yf_interval=5,5,"FIVE_MINUTE","5m"
+    elif (interval=="1m" or interval=='ONE_MINUTE') : period,delta_time,agl_interval,yf_interval=1,1,"ONE_MINUTE","1m"
+    elif (interval=="15m" or interval=='FIFTEEN_MINUTE'): period,delta_time,agl_interval,yf_interval=5,15,"FIFTEEN_MINUTE","15m"
+    elif (interval=="60m" or interval=='ONE_HOUR'): period,delta_time,agl_interval,yf_interval=30,60,"ONE_HOUR","60m"
+    elif (interval=="1d" or interval=='ONE_DAY') : period,delta_time,agl_interval,yf_interval=100,5,"ONE_DAY","1d"
+    else:period,delta_time,agl_interval,yf_interval=5,1,"ONE_MINUTE","1m"
     if (symbol_i[0]=="^"):df=yfna_data(symbol_i,yf_interval,period)
     else:df=angel_data(token,agl_interval,exch_seg,period)
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
@@ -391,7 +391,7 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
     last_candle=now.replace(second=0, microsecond=0)- datetime.timedelta(minutes=delta_time)
     df = df[(df.index <= last_candle)]
-    df['Time Frame']=odd_interval
+    df['Time Frame']=yf_interval
     df['Time']=now.time()
     df.index.names = ['']
     df['VWAP']=pdta.vwap(high=df['High'],low=df['Low'],close=df['Close'],volume=df['Volume'])
@@ -701,7 +701,6 @@ def close_options_position(position,nf_5m_trade_end="-",bnf_5m_trade_end="-",sen
 def index_trade(symbol,interval):
   try:
     fut_data=get_historical_data(symbol=symbol,interval=interval,token="-",exch_seg="-",candle_type="NORMAL")
-    print(fut_data)
     if fut_data is None: return None
     trade=str(fut_data['Trade'].values[-1])
     if trade!="-":
@@ -710,9 +709,6 @@ def index_trade(symbol,interval):
       indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(symbol,indexLtp=indexLtp)
       if trade=="Buy" : buy_option(ce_strike_symbol,indicator_strategy,interval)
       elif trade=="Sell" : buy_option(pe_strike_symbol,indicator_strategy,interval)
-    trade_end=str(fut_data['Trade End'].values[-1])
-    if interval=="5m":st.session_state[symbol+'_5m_Trade']=trade
-    if interval=="1m":st.session_state[symbol+'_1m_Trade']=trade
     information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
                 'Symbol':symbol,
                 'Datetime':str(fut_data['Datetime'].values[-1]),'Close':fut_data['Close'].values[-1],
@@ -767,21 +763,23 @@ def trade_near_options(time_frame):
         if opt_data['Trade'].values[-1]=="Buy":
           sl=int(opt_data['Close'].values[-1]-(opt_data['Atr'].values[-1]))
           tgt=int(opt_data['Close'].values[-1]+(opt_data['Atr'].values[-1]))
-          indicator=f"{fut_data['Indicator'].values[-1]} ({sl}:{tgt}) ATR:{int(fut_data['Atr'].values[-1])}"
+          indicator=f"{opt_data['Indicator'].values[-1]} ({sl}:{tgt}) ATR:{int(opt_data['Atr'].values[-1])}"
           strike_symbol=option_list.iloc[i]
           buy_option(symbol=strike_symbol,indicator_strategy=indicator,interval=time_frame,index_sl="-")
           break
     except Exception as e:logger.info(f"Trade Near Option Error {e}")
 
 def closing_trade():
-  st.session_state['NIFTY_5m_Trade']="Buy"
-  st.session_state['BANKNIFTY_5m_Trade']="Buy"
-  st.session_state['SENSEX_5m_Trade']="Buy"
-  todays_trade=get_todays_trade()
-  st.session_state['NIFTY_5m_Trade']="Sell"
-  st.session_state['BANKNIFTY_5m_Trade']="Sell"
-  st.session_state['SENSEX_5m_Trade']="Sell"
-  todays_trade=get_todays_trade()
+  try:
+    st.session_state['NIFTY_5m_Trade']="Buy"
+    st.session_state['BANKNIFTY_5m_Trade']="Buy"
+    st.session_state['SENSEX_5m_Trade']="Buy"
+    todays_trade=get_todays_trade()
+    st.session_state['NIFTY_5m_Trade']="Sell"
+    st.session_state['BANKNIFTY_5m_Trade']="Sell"
+    st.session_state['SENSEX_5m_Trade']="Sell"
+    todays_trade=get_todays_trade()
+  except:pass
 
 def trail_sl():
   orderbook,pending_orders=get_order_book()
@@ -863,33 +861,23 @@ def sub_loop_code(now_minute):
   try:
     st.session_state['options_trade_list']=[]
     if (now_minute%5==0 and 'IDX:5M' in time_frame_interval):
-      for symbol in index_list: df=index_trade(symbol,"5m")
-      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-      if 'OPT:5M' in time_frame_interval:
-        trade_near_options('5m')
-        log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    if (now_minute%15==0 and 'IDX:15M' in time_frame_interval):
-      for symbol in index_list:df=index_trade(symbol,"15m")
-      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+      for symbol in index_list: index_trade(symbol,"5m")
+      if 'OPT:5M' in time_frame_interval:trade_near_options('5m')
+    if (now_minute%15==0 and 'IDX:15M' in time_frame_interval): 
+      for symbol in index_list:index_trade(symbol,"15m")
     if 'IDX:1M' in time_frame_interval:
-      for symbol in index_list: df=index_trade(symbol,"1m")
-      st.session_state['Time_1m']=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0).time()
-      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    if 'OPT:1M' in time_frame_interval:
-      trade_near_options('1m')
-      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    if "Multi Time ST Trade" in five_buy_indicator:
-      multi_time_frame()
-      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+      for symbol in index_list: index_trade(symbol,"1m")
+    if 'OPT:1M' in time_frame_interval: trade_near_options('1m')
+    if "Multi Time ST Trade" in five_buy_indicator: multi_time_frame()
+    log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
   except Exception as e:
     logger.info(f"error in sub_loop_code: {e}")
 
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
-  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
-  todays_trade=get_todays_trade()
+  marketclose = now.replace(hour=21, minute=50, second=0, microsecond=0)
+  day_end = now.replace(hour=21, minute=30, second=0, microsecond=0)
   if now > marketclose: close_day_end_trade()
   while now < marketclose:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
@@ -898,10 +886,11 @@ def loop_code():
     try:
       if now > marketopen and now < marketclose: sub_loop_code(now.minute)
       elif now > marketclose: close_day_end_trade()
+      orderbook,pending_orders=get_order_book()
       position,open_position=get_open_position()
-      get_todays_trade()
-      if now.minute%5==0: trail_sl_todays_trade()
-      now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
+      if todays_trade:
+        get_todays_trade()
+        if now.minute%5==0: trail_sl_todays_trade()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
@@ -1094,8 +1083,8 @@ def check_pnl_todays_trade(buy_df):
 
 def get_todays_trade():
   try:
-    orderbook,pending_orders=get_order_book()
-    if orderbook is None: return None
+    orderbook=st.session_state['orderbook']
+    if orderbook is None or orderbook==[]: return None
     orderbook=update_price_orderbook(orderbook)
     orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
     sell_df=orderbook[(orderbook['transactiontype']=="SELL") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
