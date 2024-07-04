@@ -82,7 +82,7 @@ with tab0:
     close_all=st.button("Close All")
     restart=st.button("Restart")
     algo_state=st.checkbox("Run Algo")
-    todays_trade=st.checkbox("Todays Trade")
+    check_todays_trade=st.checkbox("Todays Trade")
   with col2:
     trade_info=st.empty()
     log_holder=st.empty()
@@ -888,7 +888,7 @@ def loop_code():
       elif now > marketclose: close_day_end_trade()
       orderbook,pending_orders=get_order_book()
       position,open_position=get_open_position()
-      if todays_trade:
+      if check_todays_trade:
         get_todays_trade()
         if now.minute%5==0: trail_sl_todays_trade()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
