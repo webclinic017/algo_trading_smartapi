@@ -1083,7 +1083,7 @@ def check_pnl_todays_trade(buy_df):
 
 def get_todays_trade():
   try:
-    orderbook=st.session_state['orderbook']
+    orderbook,pending_orders=get_order_book()
     if orderbook is None or orderbook==[]: return None
     orderbook=update_price_orderbook(orderbook)
     orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
