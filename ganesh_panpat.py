@@ -311,10 +311,12 @@ def get_order_book():
       return orderbook,pending_orders
     else:
       order_book_updated.text(f"No Order : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
+      open_order_updated.text(f"No Open Order : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
       return None,None
   except Exception as e:
     print(f'Error in getting order book {e}')
     order_book_updated.text(f"Error in getting Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
+    open_order_updated.text(f"Error in getting Orderbook : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
   return None,None
 
 #Historical Data and Calculate Indicator
@@ -883,7 +885,7 @@ def loop_code():
       elif now > marketclose: close_day_end_trade()
       orderbook,pending_orders=get_order_book()
       position,open_position=get_open_position()
-      get_todays_trade()
+      get_todays_trade(orderbook)
       if now.minute%5==0: trail_sl_todays_trade()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
@@ -1075,9 +1077,8 @@ def check_pnl_todays_trade(buy_df):
       except Exception as e: logger.info(f"error in check_pnl_todays_trade: {e}")
   return buy_df
 
-def get_todays_trade():
+def get_todays_trade(orderbook):
   try:
-    orderbook,pending_orders=get_order_book()
     if orderbook is None or orderbook==[]: return None
     orderbook=update_price_orderbook(orderbook)
     orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
