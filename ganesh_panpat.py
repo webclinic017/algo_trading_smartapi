@@ -37,7 +37,7 @@ if 'index_trade_end' not in st.session_state:st.session_state['index_trade_end']
 if 'todays_trade' not in st.session_state:st.session_state['todays_trade']=[]
 if 'orderbook' not in st.session_state:st.session_state['orderbook']=[]
 if 'pending_orders' not in st.session_state:st.session_state['pending_orders']=[]
-
+if 'near_opt_df' not in st.session_state:st.session_state['near_opt_df']=[]
 
 def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
@@ -66,8 +66,8 @@ def get_token_df():
   fut_token = fut_token.sort_values(by = ['name', 'expiry'], ascending = [True, True], na_position = 'first')
   st.session_state['fut_list']=fut_token
 if st.session_state['bnf_expiry_day']==None:get_token_df()
-tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7,tab8, tab9= st.tabs(["Log","Order Book", "Position","Todays Trade","Open Order", "Settings",
-                                                                    "Token List","Future List","GTT Orders",'Back Test'])
+tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7,tab8, tab9, tab10= st.tabs(["Log","Order Book", "Position","Todays Trade","Open Order", "Settings",
+                                                                    "Token List","Future List","GTT Orders",'Back Test','Near Options'])
 with tab0:
   login_details=st.empty()
   login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
@@ -144,6 +144,12 @@ with tab8:
   gtt_order_datatable=st.empty()
 with tab9:
   backtest=st.button(label="Back Test")
+with tab10:
+  near_opt_updated=st.empty()
+  near_opt_updated.text(f"Near Option Updated : ")
+  near_opt_df=st.empty()
+  near_opt_df=st.dataframe(st.session_state['near_opt_df'],hide_index=True)
+
 
 def telegram_bot_sendtext(bot_message):
   BOT_TOKEN = '5051044776:AAHh6XjxhRT94iXkR4Eofp2PPHY3Omk2KtI'
@@ -293,8 +299,8 @@ def get_order_book():
     if orderbook['status']==True:
       orderbook=orderbook['data']
       orderbook=pd.DataFrame(orderbook)
-      orderbook[['price','squareoff','stoploss','triggerprice']]=orderbook[['price','squareoff','stoploss','triggerprice']].astype(float)
-      orderbook[['quantity']]=orderbook[['quantity']].astype(int)
+      #orderbook[['price','squareoff','stoploss','triggerprice']]=orderbook[['price','squareoff','stoploss','triggerprice']].astype(float)
+      #orderbook[['quantity']]=orderbook[['quantity']].astype(int)
       #orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
       g_orderbook=orderbook[['updatetime','orderid','transactiontype','status','tradingsymbol','price','averageprice','quantity','ordertag']]
       g_orderbook['updatetime'] = pd.to_datetime(g_orderbook['updatetime']).dt.time
@@ -733,7 +739,8 @@ def get_near_options(symbol,index_ltp,symbol_expiry):
   df.sort_index(inplace=True)
   return df
 
-def trade_near_options(time_frame):
+def all_near_options():
+  df=pd.DataFrame()
   for symbol in index_list:
     try:
       index_ltp=get_ltp_price(symbol)
@@ -742,29 +749,40 @@ def trade_near_options(time_frame):
       elif symbol=="SENSEX":symbol_expiry=st.session_state['sensex_expiry_day']
       else:symbol_expiry="-"
       option_list=get_near_options(symbol,index_ltp,symbol_expiry)
+      df=pd.concat([df,option_list])
+    except Exception as e:print(e)
+  st.session_state['near_opt_df']=df
+  near_opt_df.dataframe(df,hide_index=True)
+  near_opt_updated.text(f"Near Option Updated : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
+
+def trade_near_options(time_frame):
+  try:
+    option_list=st.session_state['near_opt_df']
+    for symbol in index_list:
       for i in range(0,len(option_list)):
         symbol_name=option_list['symbol'].iloc[i]
-        token_symbol=option_list['token'].iloc[i]
-        exch_seg=option_list['exch_seg'].iloc[i]
-        opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
-        information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
-              'Symbol':symbol_name,
-              'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
-              'Indicator':opt_data['Indicator'].values[-1],
-              'Trade':opt_data['Trade'].values[-1],
-              'Trade End':opt_data['Trade End'].values[-1],
-              'Supertrend':opt_data['Supertrend'].values[-1],
-              'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
-              'RSI':opt_data['RSI'].values[-1]}
-        st.session_state['options_trade_list'].append(information)
-        if opt_data['Trade'].values[-1]=="Buy":
-          sl=int(opt_data['Close'].values[-1]-(opt_data['Atr'].values[-1]))
-          tgt=int(opt_data['Close'].values[-1]+(opt_data['Atr'].values[-1]))
-          indicator=f"{opt_data['Indicator'].values[-1]} ({sl}:{tgt}) ATR:{int(opt_data['Atr'].values[-1])}"
-          strike_symbol=option_list.iloc[i]
-          buy_option(symbol=strike_symbol,indicator_strategy=indicator,interval=time_frame,index_sl="-")
-          break
-    except Exception as e:logger.info(f"Trade Near Option Error {e}")
+        if symbol_name.startswith(symbol):
+          token_symbol=option_list['token'].iloc[i]
+          exch_seg=option_list['exch_seg'].iloc[i]
+          opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
+          information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+                'Symbol':symbol_name,
+                'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
+                'Indicator':opt_data['Indicator'].values[-1],
+                'Trade':opt_data['Trade'].values[-1],
+                'Trade End':opt_data['Trade End'].values[-1],
+                'Supertrend':opt_data['Supertrend'].values[-1],
+                'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
+                'RSI':opt_data['RSI'].values[-1]}
+          st.session_state['options_trade_list'].append(information)
+          if opt_data['Trade'].values[-1]=="Buy":
+            sl=int(opt_data['Close'].values[-1]-(opt_data['Atr'].values[-1]))
+            tgt=int(opt_data['Close'].values[-1]+(opt_data['Atr'].values[-1]))
+            indicator=f"{opt_data['Indicator'].values[-1]} ({sl}:{tgt}) ATR:{int(opt_data['Atr'].values[-1])}"
+            strike_symbol=option_list.iloc[i]
+            buy_option(symbol=strike_symbol,indicator_strategy=indicator,interval=time_frame,index_sl="-")
+            break
+  except Exception as e:logger.info(f"Trade Near Option Error {e}")
 
 def closing_trade():
   try:
@@ -873,8 +891,8 @@ def sub_loop_code(now_minute):
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now.replace(hour=21, minute=50, second=0, microsecond=0)
-  day_end = now.replace(hour=21, minute=30, second=0, microsecond=0)
+  marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
+  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
   if now > marketclose: close_day_end_trade()
   while now < marketclose:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
@@ -888,6 +906,7 @@ def loop_code():
       get_todays_trade(orderbook)
       if now.minute%5==0: trail_sl_todays_trade()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
+      all_near_options()
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
     except Exception as e:
@@ -1079,7 +1098,6 @@ def check_pnl_todays_trade(buy_df):
 
 def get_todays_trade(orderbook):
   try:
-    if orderbook is None or orderbook==[]: return None
     orderbook=update_price_orderbook(orderbook)
     orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
     sell_df=orderbook[(orderbook['transactiontype']=="SELL") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
@@ -1332,3 +1350,6 @@ if restart:
 login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 if backtest: index_backtest()
+all_near_options()
+orderbook,pending_orders=get_order_book()
+get_todays_trade(orderbook)
