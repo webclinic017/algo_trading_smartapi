@@ -1148,7 +1148,7 @@ def get_todays_trade(orderbook):
     return buy_df
 
 def close_day_end_trade():
-  orderbook,pending_orders=get_order_book(
+  orderbook,pending_orders=get_order_book()
   buy_df=get_todays_trade(orderbook)
   for i in range(0,len(buy_df)):
     try:
