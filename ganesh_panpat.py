@@ -786,14 +786,15 @@ def trade_near_options(time_frame):
 
 def closing_trade():
   try:
+    orderbook,pending_orders=get_order_book()
     st.session_state['NIFTY_5m_Trade']="Buy"
     st.session_state['BANKNIFTY_5m_Trade']="Buy"
     st.session_state['SENSEX_5m_Trade']="Buy"
-    todays_trade=get_todays_trade()
+    todays_trade=get_todays_trade(orderbook)
     st.session_state['NIFTY_5m_Trade']="Sell"
     st.session_state['BANKNIFTY_5m_Trade']="Sell"
     st.session_state['SENSEX_5m_Trade']="Sell"
-    todays_trade=get_todays_trade()
+    todays_trade=get_todays_trade(orderbook)
   except:pass
 
 def trail_sl():
@@ -1147,7 +1148,8 @@ def get_todays_trade(orderbook):
     return buy_df
 
 def close_day_end_trade():
-  buy_df=get_todays_trade()
+  orderbook,pending_orders=get_order_book(
+  buy_df=get_todays_trade(orderbook)
   for i in range(0,len(buy_df)):
     try:
       if buy_df['Status'].iloc[i]=="Pending":
