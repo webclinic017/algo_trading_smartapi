@@ -913,7 +913,7 @@ def loop_code():
   all_near_options()
   if now > marketclose: close_day_end_trade()
   while now < marketclose:
-    now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
+    now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     next_loop=now.replace(second=0, microsecond=0)+ datetime.timedelta(minutes=1)
     st.session_state['last_check']=now.time()
     login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
@@ -930,8 +930,8 @@ def loop_code():
         index_ltp_string.text(f"Index Ltp: {print_ltp()}")
         now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
         time.sleep(1)
-      if datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)<next_loop:
-        time.sleep((next_loop-datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)).seconds)
+      if datetime.datetime.now(tz=gettz('Asia/Kolkata')) < next_loop:
+        time.sleep((next_loop-datetime.datetime.now(tz=gettz('Asia/Kolkata'))).seconds)
     except Exception as e:
       logger.info(f"error in loop_code: {e}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
