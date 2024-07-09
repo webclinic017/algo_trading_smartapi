@@ -932,6 +932,7 @@ def loop_code():
         time.sleep(1)
       if datetime.datetime.now(tz=gettz('Asia/Kolkata')) < next_loop:
         time.sleep((next_loop-datetime.datetime.now(tz=gettz('Asia/Kolkata'))).seconds)
+        time.sleep(1)
     except Exception as e:
       logger.info(f"error in loop_code: {e}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
