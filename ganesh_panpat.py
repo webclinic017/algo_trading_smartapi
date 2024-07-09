@@ -925,11 +925,7 @@ def loop_code():
       get_todays_trade(orderbook)
       if now.minute%5==0: trail_sl_todays_trade()
       all_near_options()
-      now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-      while now.second < 50:
-        index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-        now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-        time.sleep(1)
+      index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       if datetime.datetime.now(tz=gettz('Asia/Kolkata')) < next_loop:
         time.sleep((next_loop-datetime.datetime.now(tz=gettz('Asia/Kolkata'))).seconds)
         time.sleep(1)
