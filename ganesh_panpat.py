@@ -604,6 +604,21 @@ def get_ce_pe_data(symbol,indexLtp="-"):
 def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"):
   try:
     option_token=symbol['token']; option_symbol=symbol['symbol']; exch_seg=symbol['exch_seg']; lotsize=int(symbol['lotsize'])
+    try:
+      if "(" not in indicator_strategy:
+        opt_data=get_historical_data(symbol=option_symbol,interval=interval,token=option_token,exch_seg=exch_seg)
+        close=opt_data['Close'].values[-1]
+        st_7_3=opt_data['Supertrend'].values[-1]
+        st_10_2=opt_data['Supertrend_10_2'].values[-1]
+        if close > st_7_3:
+          stop_loss=st_7_3
+          target_price=int(close+(2*(close-stop_loss)))
+          indicator_strategy=f"{indicator_strategy} ({stop_loss}:{target_price}"
+        elif close > st_10_2:
+          stop_loss=st_10_2
+          target_price=int(close+(2*(close-stop_loss)))
+          indicator_strategy=f"{indicator_strategy} ({stop_loss}:{target_price}"
+    except:pass
     orderId=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=int(0),
                           variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
     if str(orderId)=='Order placement failed':
@@ -778,7 +793,7 @@ def trade_near_options(time_frame):
           if opt_data['Trade'].values[-1]=="Buy":
             sl=int(opt_data['Close'].values[-1]-(opt_data['Atr'].values[-1]))
             tgt=int(opt_data['Close'].values[-1]+(opt_data['Atr'].values[-1]))
-            indicator=f"{opt_data['Indicator'].values[-1]} ({sl}:{tgt}) ATR:{int(opt_data['Atr'].values[-1])}"
+            indicator=f"{opt_data['Indicator'].values[-1]} ({sl}:{tgt}"
             strike_symbol=option_list.iloc[i]
             buy_option(symbol=strike_symbol,indicator_strategy=indicator,interval=time_frame,index_sl="-")
             break
@@ -875,8 +890,8 @@ def check_login():
 #Loop Code
 def sub_loop_code(now_minute):
   try:
-    st.session_state['options_trade_list']=[]
     if (now_minute%5==0 and 'IDX:5M' in time_frame_interval):
+      st.session_state['options_trade_list']=[]
       for symbol in index_list: index_trade(symbol,"5m")
       if 'OPT:5M' in time_frame_interval:trade_near_options('5m')
     if (now_minute%15==0 and 'IDX:15M' in time_frame_interval): 
@@ -1352,6 +1367,3 @@ if restart:
 login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 if backtest: index_backtest()
-all_near_options()
-orderbook,pending_orders=get_order_book()
-get_todays_trade(orderbook)
