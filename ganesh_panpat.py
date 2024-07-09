@@ -891,8 +891,8 @@ def check_login():
 #Loop Code
 def sub_loop_code(now_minute):
   try:
+    st.session_state['options_trade_list']=[]
     if (now_minute%5==0 and 'IDX:5M' in time_frame_interval):
-      st.session_state['options_trade_list']=[]
       for symbol in index_list: index_trade(symbol,"5m")
       if 'OPT:5M' in time_frame_interval:trade_near_options('5m')
     if (now_minute%15==0 and 'IDX:15M' in time_frame_interval): 
