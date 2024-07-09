@@ -910,8 +910,8 @@ def sub_loop_code(now_minute):
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
-  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
+  marketclose = now.replace(hour=16, minute=50, second=0, microsecond=0)
+  day_end = now.replace(hour=17, minute=30, second=0, microsecond=0)
   all_near_options()
   if now > marketclose: close_day_end_trade()
   while now < marketclose:
