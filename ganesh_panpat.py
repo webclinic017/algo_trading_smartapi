@@ -893,7 +893,9 @@ def sub_loop_code(now_minute):
     if (now_minute%5==0 and 'IDX:5M' in time_frame_interval):
       st.session_state['options_trade_list']=[]
       for symbol in index_list: index_trade(symbol,"5m")
+      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
       if 'OPT:5M' in time_frame_interval:trade_near_options('5m')
+       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if (now_minute%15==0 and 'IDX:15M' in time_frame_interval): 
       for symbol in index_list:index_trade(symbol,"15m")
     if 'IDX:1M' in time_frame_interval:
@@ -909,6 +911,7 @@ def loop_code():
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
   marketclose = now.replace(hour=14, minute=50, second=0, microsecond=0)
   day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
+  all_near_options()
   if now > marketclose: close_day_end_trade()
   while now < marketclose:
     now = datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0)
