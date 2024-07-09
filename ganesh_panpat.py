@@ -613,11 +613,11 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
         if close > st_7_3:
           stop_loss=st_7_3
           target_price=int(close+(2*(close-stop_loss)))
-          indicator_strategy=f"{indicator_strategy} ({stop_loss}:{target_price}) SL:ST"
+          indicator_strategy=f"{indicator_strategy} {close}({stop_loss}:{target_price}) SL:ST"
         elif close > st_10_2:
           stop_loss=st_10_2
           target_price=int(close+(2*(close-stop_loss)))
-          indicator_strategy=f"{indicator_strategy} ({stop_loss}:{target_price}) SL:ST_10_2"
+          indicator_strategy=f"{indicator_strategy} {close}({stop_loss}:{target_price}) SL:ST_10_2"
     except:pass
     orderId=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=int(0),
                           variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
