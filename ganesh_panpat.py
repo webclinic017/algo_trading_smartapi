@@ -614,11 +614,11 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
         if close > st_7_3:
           stop_loss=st_7_3
           target_price=int(close+(2*(close-stop_loss)))
-          indicator_strategy=f"{indicator_strategy} {close}({stop_loss}:{target_price}) SL:ST"
+          indicator_strategy=f"{indicator_strategy} ({stop_loss}:{target_price}"
         elif close > st_10_2:
           stop_loss=st_10_2
           target_price=int(close+(2*(close-stop_loss)))
-          indicator_strategy=f"{indicator_strategy} {close}({stop_loss}:{target_price}) SL:ST_10_2"
+          indicator_strategy=f"{indicator_strategy} ({stop_loss}:{target_price}"
     except:pass
     orderId=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=int(0),
                           variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
@@ -894,9 +894,7 @@ def sub_loop_code(now_minute):
     if (now_minute%5==0 and 'IDX:5M' in time_frame_interval):
       st.session_state['options_trade_list']=[]
       for symbol in index_list: index_trade(symbol,"5m")
-      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
       if 'OPT:5M' in time_frame_interval:trade_near_options('5m')
-      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if (now_minute%15==0 and 'IDX:15M' in time_frame_interval): 
       for symbol in index_list:index_trade(symbol,"15m")
     if 'IDX:1M' in time_frame_interval:
@@ -910,8 +908,8 @@ def sub_loop_code(now_minute):
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now.replace(hour=16, minute=50, second=0, microsecond=0)
-  day_end = now.replace(hour=17, minute=30, second=0, microsecond=0)
+  marketclose = now.replace(hour=18, minute=50, second=0, microsecond=0)
+  day_end = now.replace(hour=18, minute=30, second=0, microsecond=0)
   all_near_options()
   if now > marketclose: close_day_end_trade()
   while now < marketclose:
@@ -925,8 +923,12 @@ def loop_code():
       position,open_position=get_open_position()
       get_todays_trade(orderbook)
       if now.minute%5==0: trail_sl_todays_trade()
-      index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       all_near_options()
+      now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
+      while now.second < 50:
+        index_ltp_string.text(f"Index Ltp: {print_ltp()}")
+        now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
+        time.sleep(1)
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
       time.sleep(60-now.second+1)
     except Exception as e:
@@ -1371,5 +1373,3 @@ if restart:
 login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 if backtest: index_backtest()
-orderbook,pending_orders=get_order_book()
-position,open_position=get_open_position()
