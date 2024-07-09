@@ -613,11 +613,11 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
         if close > st_7_3:
           stop_loss=st_7_3
           target_price=int(close+(2*(close-stop_loss)))
-          indicator_strategy=f"{indicator_strategy} ({stop_loss}:{target_price}"
+          indicator_strategy=f"{indicator_strategy} ({stop_loss}:{target_price}) SL:ST"
         elif close > st_10_2:
           stop_loss=st_10_2
           target_price=int(close+(2*(close-stop_loss)))
-          indicator_strategy=f"{indicator_strategy} ({stop_loss}:{target_price}"
+          indicator_strategy=f"{indicator_strategy} ({stop_loss}:{target_price}) SL:ST_10_2"
     except:pass
     orderId=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=int(0),
                           variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
@@ -1367,3 +1367,5 @@ if restart:
 login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 if backtest: index_backtest()
+orderbook,pending_orders=get_order_book()
+position,open_position=get_open_position()
