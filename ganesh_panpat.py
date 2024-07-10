@@ -723,7 +723,7 @@ def index_trade(symbol,interval):
     if fut_data is None: return None
     trade=str(fut_data['Trade'].values[-1])
     if trade!="-":
-      indicator_strategy=fut_data['Indicator'].values[-1]
+      indicator_strategy=f"{fut_data['Indicator'].values[-1]} ATR: {fut_data['Atr'].values[-1]}"
       indexLtp=fut_data['Close'].values[-1]
       indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(symbol,indexLtp=indexLtp)
       if trade=="Buy" : buy_option(ce_strike_symbol,indicator_strategy,interval)
@@ -792,9 +792,7 @@ def trade_near_options(time_frame):
                 'RSI':opt_data['RSI'].values[-1]}
           st.session_state['options_trade_list'].append(information)
           if opt_data['Trade'].values[-1]=="Buy":
-            sl=int(opt_data['Close'].values[-1]-(opt_data['Atr'].values[-1]))
-            tgt=int(opt_data['Close'].values[-1]+(opt_data['Atr'].values[-1]))
-            indicator=f"{opt_data['Indicator'].values[-1]} ({sl}:{tgt})"
+            indicator=f"{opt_data['Indicator'].values[-1]} ATR: {opt_data['Atr'].values[-1]}"
             strike_symbol=option_list.iloc[i]
             buy_option(symbol=strike_symbol,indicator_strategy=indicator,interval=time_frame,index_sl="-")
             break
