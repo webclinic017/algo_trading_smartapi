@@ -972,7 +972,7 @@ def update_target_sl(buy_df):
         buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i])-10
       elif 'ATR' in buy_df['ordertag'].iloc[i]:
         indicator_text=buy_df['ordertag'].iloc[i]
-        pattern = r"ATR:\s*(\d+\.\d+)"
+        pattern = r"ATR:\s*([^ (\n]*)"
         match = re.search(pattern, indicator_text)
         if match:
           atr_value = float(match.group(1))
