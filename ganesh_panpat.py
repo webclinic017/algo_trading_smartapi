@@ -962,15 +962,15 @@ def update_price_orderbook(df):
 def update_target_sl(buy_df):
   for i in range(0,len(buy_df)):
     try:
-      if "(" in buy_df['ordertag'].iloc[i] and ")" in buy_df['ordertag'].iloc[i]:
-        sl=(buy_df['ordertag'].iloc[i].split('('))[1].split(':')[0]
-        tgt=(buy_df['ordertag'].iloc[i].split(sl+':'))[1].split(')')[0]
-        buy_df['SL'].iloc[i]=sl
-        buy_df['Target'].iloc[i]=tgt
-      elif 'TEMA_EMA_9 Trade' in buy_df['ordertag'].iloc[i] :
-        buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i])+10
-        buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i])-10
-      elif 'ATR' in buy_df['ordertag'].iloc[i]:
+      if "(" in buy_df['ordertag'].iloc[i] and ")" in buy_df['ordertag'].iloc[i] and ":" in buy_df['ordertag'].iloc[i]:
+        pattern = r"\((\d+):(\d+)\)"
+        match = re.search(pattern, buy_df['ordertag'].iloc[i])
+        if match:
+          sl=int(match.group(1))
+          tgt=int(match.group(2))
+          buy_df['SL'].iloc[i]=sl
+          buy_df['Target'].iloc[i]=tgt
+      elif'ATR' in buy_df['ordertag'].iloc[i]:
         indicator_text=buy_df['ordertag'].iloc[i]
         pattern = r"ATR:\s*([^ (\n]*)"
         match = re.search(pattern, indicator_text)
@@ -978,21 +978,14 @@ def update_target_sl(buy_df):
           atr_value = float(match.group(1))
           buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]+(atr_value*3))
           buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]-(atr_value*3))
+      elif 'TEMA_EMA_9 Trade' in buy_df['ordertag'].iloc[i] :
+        buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i])+10
+        buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i])-10
       else:
         if buy_df['price'].iloc[i]!="-":
-          if target_type=="Per Cent":
-            buy_df['Target'].iloc[i]=int(float(buy_df['price'].iloc[i]*((100+target_point)/100)))
-            buy_df['SL'].iloc[i]=int(float(buy_df['price'].iloc[i]*((100-sl_point)/100)))
-          elif target_type=="Points":
-            buy_df['Target'].iloc[i]=int(float(buy_df['price'].iloc[i])+target_point)
-            buy_df['SL'].iloc[i]=int(float(buy_df['price'].iloc[i])-sl_point)
-          else:
-            buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]*2)
-            buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]*0.5)
-      if buy_df['Target'].iloc[i]=="-":
-        buy_df['Target'].iloc[i]=int(float(buy_df['price'].iloc[i]*((100+50)/100)))
-        buy_df['SL'].iloc[i]=int(float(buy_df['price'].iloc[i]*((100-30)/100)))
-      trail_sl=st.session_state['stop_loss'].get(buy_df['tradingsymbol'].iloc[i])
+          buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]*2)
+          buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]*0.5)
+      trail_sl=stop_loss_dict.get(buy_df['tradingsymbol'].iloc[i])
       if trail_sl is not None and int(trail_sl) > int(buy_df['SL'].iloc[i]): buy_df['SL'].iloc[i]=int(trail_sl)
     except Exception as e:
       logger.info(f"error in update_target_sl: {e}")
