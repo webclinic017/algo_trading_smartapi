@@ -910,6 +910,7 @@ def loop_code():
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
   marketclose = now.replace(hour=18, minute=50, second=0, microsecond=0)
   day_end = now.replace(hour=18, minute=30, second=0, microsecond=0)
+  if algo_state==False:return
   all_near_options()
   if now > marketclose: close_day_end_trade()
   while now < marketclose:
@@ -1371,3 +1372,8 @@ if restart:
 login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 if backtest: index_backtest()
+if __name__ == "__main__":
+  try:loop_code()
+  except Exception as e:
+    st.error(f"An error occurred: {e}")
+    st.experimental_rerun()
