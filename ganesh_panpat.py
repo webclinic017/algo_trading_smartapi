@@ -11,6 +11,7 @@ import pandas_ta as pdta
 import warnings
 import yfinance as yf
 import time
+import re
 warnings.filterwarnings('ignore')
 NoneType = type(None)
 import math
