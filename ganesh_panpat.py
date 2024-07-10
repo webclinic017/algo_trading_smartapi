@@ -121,8 +121,14 @@ with tab5:
     fut_list=st.multiselect('Select Future',['SILVERMIC','SILVER'],[])
     with ind_col2:
       target_order_type = st.selectbox('Target Order',('Target', 'Stop_Loss', 'NA'),1)
-      target_type = st.selectbox('Target Type',('Points', 'Per Cent','Indicator'),1)
-      if target_type!="Indicator":
+      target_type = st.selectbox('Target Type',('Points', 'Per Cent','Indicator','ATR'),1)
+      if target_type=="ATR":
+        sl_point=st.number_input(label="SL",min_value=1, max_value=100, value=3, step=None)
+        target_point=st.number_input(label="Target",min_value=1, max_value=100, value=3, step=None)
+      elif target_type!="Per Cent":
+        sl_point=st.number_input(label="SL",min_value=1, max_value=100, value=30, step=None)
+        target_point=st.number_input(label="Target",min_value=1, max_value=100, value=50, step=None)
+      elif target_type!="Indicator":
         sl_point=st.number_input(label="SL",min_value=1, max_value=100, value=30, step=None)
         target_point=st.number_input(label="Target",min_value=1, max_value=100, value=50, step=None)
     with ind_col3:
@@ -495,12 +501,12 @@ def get_trade_info(df):
         if df[indicator_trade][i]=="Buy":
           df.loc[i,'Trade']="Buy"
           df.loc[i,'Trade End']="Buy"
-          df.loc[i,'Indicator']=df['Trade'][i]+" "+df['Indicator'][i]+":"+indicator_trade+' RSI:'+str(int(df['RSI'][i]))
+          df.loc[i,'Indicator']=df['Trade'][i]+" "+df['Indicator'][i]+":"+indicator_trade+' RSI:'+str(int(df['RSI'][i])))
           break
         elif df[indicator_trade][i]=="Sell":
           df.loc[i,'Trade']="Sell"
           df.loc[i,'Trade End']="Sell"
-          df.loc[i,'Indicator']=df['Trade'][i]+" "+df['Indicator'][i]+":"+indicator_trade+' RSI:'+str(int(df['RSI'][i]))
+          df.loc[i,'Indicator']=df['Trade'][i]+" "+df['Indicator'][i]+":"+indicator_trade+' RSI:'+str(int(df['RSI'][i])))
           break
     except Exception as e:pass
   return df
@@ -605,21 +611,6 @@ def get_ce_pe_data(symbol,indexLtp="-"):
 def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"):
   try:
     option_token=symbol['token']; option_symbol=symbol['symbol']; exch_seg=symbol['exch_seg']; lotsize=int(symbol['lotsize'])
-    try:
-      if "(" not in indicator_strategy and ")" not in indicator_strategy:
-        opt_data=get_historical_data(symbol=option_symbol,interval=interval,token=option_token,exch_seg=exch_seg)
-        close=opt_data['Close'].values[-1]
-        st_7_3=opt_data['Supertrend'].values[-1]
-        st_10_2=opt_data['Supertrend_10_2'].values[-1]
-        if close > st_7_3:
-          stop_loss=st_7_3
-          target_price=int(close+(2*(close-stop_loss)))
-          indicator_strategy=f"{indicator_strategy} ({stop_loss}:{target_price}"
-        elif close > st_10_2:
-          stop_loss=st_10_2
-          target_price=int(close+(2*(close-stop_loss)))
-          indicator_strategy=f"{indicator_strategy} ({stop_loss}:{target_price}"
-    except:pass
     orderId=place_order(token=option_token,symbol=option_symbol,qty=lotsize,buy_sell='BUY',ordertype='MARKET',price=int(0),
                           variety='NORMAL',exch_seg=exch_seg,producttype='CARRYFORWARD',ordertag=indicator_strategy)
     if str(orderId)=='Order placement failed':
@@ -979,6 +970,11 @@ def update_target_sl(buy_df):
       elif 'TEMA_EMA_9 Trade' in buy_df['ordertag'].iloc[i] :
         buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i])+10
         buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i])-10
+      elif 'ATR' in buy_df['ordertag'].iloc[i]:
+        indicator_text=buy_df['ordertag'].iloc[i]
+        res=int(indicator_text[indicator_text.find('ATR: ')+len(indicator_text):])
+        buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]+(res*target_point))
+        buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]-(res*sl_point))
       else:
         if buy_df['price'].iloc[i]!="-":
           if target_type=="Per Cent":
