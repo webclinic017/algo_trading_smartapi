@@ -972,9 +972,12 @@ def update_target_sl(buy_df):
         buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i])-10
       elif 'ATR' in buy_df['ordertag'].iloc[i]:
         indicator_text=buy_df['ordertag'].iloc[i]
-        res=int(indicator_text[indicator_text.find('ATR:')+len(indicator_text):])
-        buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]+(res*target_point))
-        buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]-(res*sl_point))
+        pattern = r"ATR:\s*(\d+\.\d+)"
+        match = re.search(pattern, indicator_text)
+        if match:
+          atr_value = float(match.group(1))
+          buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]+(atr_value*3))
+          buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]-(atr_value*3))
       else:
         if buy_df['price'].iloc[i]!="-":
           if target_type=="Per Cent":
