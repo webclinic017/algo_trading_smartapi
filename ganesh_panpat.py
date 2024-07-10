@@ -972,7 +972,7 @@ def update_target_sl(buy_df):
         buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i])-10
       elif 'ATR' in buy_df['ordertag'].iloc[i]:
         indicator_text=buy_df['ordertag'].iloc[i]
-        res=int(indicator_text[indicator_text.find('ATR: ')+len(indicator_text):])
+        res=int(indicator_text[indicator_text.find('ATR:')+len(indicator_text):])
         buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]+(res*target_point))
         buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]-(res*sl_point))
       else:
