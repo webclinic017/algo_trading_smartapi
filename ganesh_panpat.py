@@ -967,8 +967,8 @@ def update_target_sl(buy_df):
         pattern = r"\((\d+):(\d+)\)"
         match = re.search(pattern, buy_df['ordertag'].iloc[i])
         if match:
-          sl=max(int(match.group(1)),int(buy_df['price'].iloc[i]*0.7))
-          tgt=max(int(match.group(2)),int(buy_df['price'].iloc[i]*1.5))
+          sl=int(match.group(1))
+          tgt=int(match.group(2))
           buy_df['SL'].iloc[i]=sl
           buy_df['Target'].iloc[i]=tgt
       elif'ATR' in buy_df['ordertag'].iloc[i]:
@@ -977,8 +977,8 @@ def update_target_sl(buy_df):
         match = re.search(pattern, indicator_text)
         if match:
           atr_value = float(match.group(1))
-          buy_df['Target'].iloc[i]=max(int(buy_df['price'].iloc[i]+(atr_value*3)),int(buy_df['price'].iloc[i]*0.7))
-          buy_df['SL'].iloc[i]=max(int(buy_df['price'].iloc[i]-(atr_value*3)),int(buy_df['price'].iloc[i]*1.3))
+          buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]+(atr_value*3))
+          buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]-(atr_value*3))
       elif 'TEMA_EMA_9 Trade' in buy_df['ordertag'].iloc[i] :
         buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i])+10
         buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i])-10
@@ -986,8 +986,8 @@ def update_target_sl(buy_df):
         if buy_df['price'].iloc[i]!="-":
           buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]*2)
           buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]*0.5)
-      trail_sl=stop_loss_dict.get(buy_df['tradingsymbol'].iloc[i])
-      if trail_sl is not None and int(trail_sl) > int(buy_df['SL'].iloc[i]): buy_df['SL'].iloc[i]=int(trail_sl)
+      #trail_sl=stop_loss_dict.get(buy_df['tradingsymbol'].iloc[i])
+      #if trail_sl is not None and int(trail_sl) > int(buy_df['SL'].iloc[i]): buy_df['SL'].iloc[i]=int(trail_sl)
     except Exception as e:
       logger.info(f"error in update_target_sl: {e}")
   return buy_df
