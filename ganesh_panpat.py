@@ -894,7 +894,9 @@ def sub_loop_code(now_minute):
     st.session_state['options_trade_list']=[]
     if (now_minute%5==0 and 'IDX:5M' in time_frame_interval):
       for symbol in index_list: index_trade(symbol,"5m")
+      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
       if 'OPT:5M' in time_frame_interval:trade_near_options('5m')
+      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if (now_minute%15==0 and 'IDX:15M' in time_frame_interval): 
       for symbol in index_list:index_trade(symbol,"15m")
     if 'IDX:1M' in time_frame_interval:
