@@ -606,7 +606,7 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
   try:
     option_token=symbol['token']; option_symbol=symbol['symbol']; exch_seg=symbol['exch_seg']; lotsize=int(symbol['lotsize'])
     try:
-      if "(" not in indicator_strategy:
+      if "(" not in indicator_strategy and ")" not in indicator_strategy:
         opt_data=get_historical_data(symbol=option_symbol,interval=interval,token=option_token,exch_seg=exch_seg)
         close=opt_data['Close'].values[-1]
         st_7_3=opt_data['Supertrend'].values[-1]
@@ -794,7 +794,7 @@ def trade_near_options(time_frame):
           if opt_data['Trade'].values[-1]=="Buy":
             sl=int(opt_data['Close'].values[-1]-(opt_data['Atr'].values[-1]))
             tgt=int(opt_data['Close'].values[-1]+(opt_data['Atr'].values[-1]))
-            indicator=f"{opt_data['Indicator'].values[-1]} ({sl}:{tgt}"
+            indicator=f"{opt_data['Indicator'].values[-1]} ({sl}:{tgt})"
             strike_symbol=option_list.iloc[i]
             buy_option(symbol=strike_symbol,indicator_strategy=indicator,interval=time_frame,index_sl="-")
             break
