@@ -977,7 +977,7 @@ def update_target_sl(buy_df):
         match = re.search(pattern, indicator_text)
         if match:
           atr_value = float(match.group(1))
-          buy_df['Target'].iloc[i]=max(int(buy_df['price'].iloc[i]+(atr_value*3)),int(buy_df['price'].iloc[i]*0.7)))
+          buy_df['Target'].iloc[i]=max(int(buy_df['price'].iloc[i]+(atr_value*3)),int(buy_df['price'].iloc[i]*0.7))
           buy_df['SL'].iloc[i]=max(int(buy_df['price'].iloc[i]-(atr_value*3)),int(buy_df['price'].iloc[i]*1.3))
       elif 'TEMA_EMA_9 Trade' in buy_df['ordertag'].iloc[i] :
         buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i])+10
