@@ -501,12 +501,12 @@ def get_trade_info(df):
         if df[indicator_trade][i]=="Buy":
           df.loc[i,'Trade']="Buy"
           df.loc[i,'Trade End']="Buy"
-          df.loc[i,'Indicator']=df['Trade'][i]+" "+df['Indicator'][i]+":"+indicator_trade+' RSI:'+str(int(df['RSI'][i])))
+          df.loc[i,'Indicator']=df['Trade'][i]+" "+df['Indicator'][i]+":"+indicator_trade+' RSI:'+str(int(df['RSI'][i]))
           break
         elif df[indicator_trade][i]=="Sell":
           df.loc[i,'Trade']="Sell"
           df.loc[i,'Trade End']="Sell"
-          df.loc[i,'Indicator']=df['Trade'][i]+" "+df['Indicator'][i]+":"+indicator_trade+' RSI:'+str(int(df['RSI'][i])))
+          df.loc[i,'Indicator']=df['Trade'][i]+" "+df['Indicator'][i]+":"+indicator_trade+' RSI:'+str(int(df['RSI'][i]))
           break
     except Exception as e:pass
   return df
