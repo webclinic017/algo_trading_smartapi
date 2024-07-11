@@ -984,8 +984,8 @@ def update_target_sl(buy_df):
         buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i])-10
       else:
         if buy_df['price'].iloc[i]!="-":
-          buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]*2)
-          buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]*0.5)
+          buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]*1.5)
+          buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]*0.7)
       #trail_sl=stop_loss_dict.get(buy_df['tradingsymbol'].iloc[i])
       #if trail_sl is not None and int(trail_sl) > int(buy_df['SL'].iloc[i]): buy_df['SL'].iloc[i]=int(trail_sl)
     except Exception as e:
