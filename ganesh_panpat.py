@@ -971,7 +971,7 @@ def update_target_sl(buy_df):
           tgt=int(match.group(2))
           buy_df['SL'].iloc[i]=sl
           buy_df['Target'].iloc[i]=tgt
-      elif'ATR' in buy_df['ordertag'].iloc[i]:
+      elif 'OPT' in buy_df['ordertag'].iloc[i] and 'ATR' in buy_df['ordertag'].iloc[i]:
         indicator_text=buy_df['ordertag'].iloc[i]
         pattern = r"ATR:\s*([^ (\n]*)"
         match = re.search(pattern, indicator_text)
