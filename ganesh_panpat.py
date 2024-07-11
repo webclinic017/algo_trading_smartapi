@@ -358,7 +358,11 @@ def angel_data(token,interval,exch_seg,period=5):
     fromdate = from_date.strftime("%Y-%m-%d %H:%M")
     todate = to_date.strftime("%Y-%m-%d %H:%M")
     historicParam={"exchange": exch_seg,"symboltoken": token,"interval": interval,"fromdate": fromdate, "todate": todate}
-    res_json=obj.getCandleData(historicParam)
+    for i in range(0,3):
+      try:
+        res_json=obj.getCandleData(historicParam)
+        break
+      except:time.sleep(1)
     df = pd.DataFrame(res_json['data'], columns=['timestamp','O','H','L','C','V'])
     df = df.rename(columns={'timestamp':'Datetime','O':'Open','H':'High','L':'Low','C':'Close','V':'Volume'})
     df['Datetime'] = df['Datetime'].apply(lambda x: datetime.datetime.fromisoformat(x))
@@ -414,7 +418,7 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     logger.info(f"error in get_historical_data: {e}")
     return None
 
-def get_trade_info(df):
+def get_trade_info_old(df):
   for i in ['ST_7_3 Trade','MACD Trade','PSAR Trade','DI Trade','MA Trade','EMA Trade','BB Trade','Trade','Trade End',
             'Rainbow MA','Rainbow Trade','MA 21 Trade','ST_10_2 Trade','Two Candle Theory','HMA Trade','VWAP Trade',
             'EMA_5_7 Trade','ST_10_4_8 Trade','EMA_High_Low Trade','RSI MA Trade','RSI_60 Trade','ST_10_1 Trade','TEMA_EMA_9 Trade']:df[i]='-'
@@ -509,6 +513,76 @@ def get_trade_info(df):
           break
     except Exception as e:pass
   return df
+
+def get_trade_info(df):
+    # Initialize all the trade columns with '-'
+    trade_columns = ['ST_7_3 Trade','MACD Trade','PSAR Trade','DI Trade','MA Trade','EMA Trade','BB Trade','Trade','Trade End',
+                     'Rainbow MA','Rainbow Trade','MA 21 Trade','ST_10_2 Trade','Two Candle Theory','HMA Trade','VWAP Trade',
+                     'EMA_5_7 Trade','ST_10_4_8 Trade','EMA_High_Low Trade','RSI MA Trade','RSI_60 Trade','ST_10_1 Trade','TEMA_EMA_9 Trade']
+    
+    for col in trade_columns:df[col] = '-'
+    time_frame = df['Time Frame'][0]
+    Symbol = df['Symbol'][0]
+    symbol_type = "IDX" if Symbol in ["^NSEBANK", "BANKNIFTY", "^NSEI", "NIFTY", "SENSEX", "^BSESN"] else "OPT"
+    indicator_list = []
+    if symbol_type == "IDX":
+        if time_frame == "5m":indicator_list = five_buy_indicator
+        elif time_frame == "15m":indicator_list = fifteen_buy_indicator
+        else:indicator_list = ['ST_7_3 Trade', 'ST_10_2 Trade', 'TEMA_EMA_9 Trade', 'RSI_60 Trade']
+    elif symbol_type == "OPT":
+        if time_frame == "5m":indicator_list = five_opt_buy_indicator
+        elif time_frame == "15m":indicator_list = []
+        elif time_frame == "1m":indicator_list = one_opt_buy_indicator
+        else:indicator_list = ['ST_7_3 Trade', 'ST_10_2 Trade', 'TEMA_EMA_9 Trade', 'RSI_60 Trade']
+    
+    df['Indicator'] = symbol_type + " " + df['Time Frame']
+    df['Trade'] = "-"
+    df['Trade End'] = "-"
+
+    # Ensure that the DataFrame has at least two rows to perform the check
+    if len(df) >= 2:
+      i = len(df) - 1  # Get the index of the last row
+      try:
+        if df.iloc[i-1]['Close'] <= df.iloc[i-1]['Supertrend'] and df.iloc[i]['Close'] > df.iloc[i]['Supertrend']:
+          df.loc[i, 'ST_7_3 Trade'] = "Buy"
+        elif df.iloc[i-1]['Close'] >= df.iloc[i-1]['Supertrend'] and df.iloc[i]['Close'] < df.iloc[i]['Supertrend']:
+          df.loc[i, 'ST_7_3 Trade'] = "Sell"
+
+        if df.iloc[i]['MACD'] > df.iloc[i]['MACD signal'] and df.iloc[i-1]['MACD'] < df.iloc[i-1]['MACD signal']:
+          df.loc[i, 'MACD Trade'] = "Buy"
+        elif df.iloc[i]['MACD'] < df.iloc[i]['MACD signal'] and df.iloc[i-1]['MACD'] > df.iloc[i-1]['MACD signal']:
+          df.loc[i, 'MACD Trade'] = "Sell"
+
+        if df.iloc[i-1]['Close'] < df.iloc[i-1]['Supertrend_10_2'] and df.iloc[i]['Close'] > df.iloc[i]['Supertrend_10_2']:
+          df.loc[i, 'ST_10_2 Trade'] = "Buy"
+        elif df.iloc[i-1]['Close'] > df.iloc[i-1]['Supertrend_10_2'] and df.iloc[i]['Close'] < df.iloc[i]['Supertrend_10_2']:
+          df.loc[i, 'ST_10_2 Trade'] = "Sell"
+
+        if df.iloc[i-1]['Close'] < df.iloc[i-1]['Supertrend_10_1'] and df.iloc[i]['Close'] > df.iloc[i]['Supertrend_10_1']:
+          df.loc[i, 'ST_10_1 Trade'] = "Buy"
+        elif df.iloc[i-1]['Close'] > df.iloc[i-1]['Supertrend_10_1'] and df.iloc[i]['Close'] < df.iloc[i]['Supertrend_10_1']:
+          df.loc[i, 'ST_10_1 Trade'] = "Sell"
+
+        if df.iloc[i-1]['Tema_9'] < df.iloc[i-1]['EMA_9'] and df.iloc[i]['Tema_9'] > df.iloc[i]['EMA_9'] and int(df.iloc[i]['RSI']) >= 55:
+          df.loc[i, 'TEMA_EMA_9 Trade'] = "Buy"
+        elif df.iloc[i-1]['Tema_9'] > df.iloc[i-1]['EMA_9'] and df.iloc[i]['Tema_9'] < df.iloc[i]['EMA_9']:
+          df.loc[i, 'TEMA_EMA_9 Trade'] = "Sell"
+
+        if int(df.iloc[i]['RSI']) >= 60 and int(df.iloc[i-1]['RSI']) < 60:df.loc[i, 'RSI_60 Trade'] = "Buy"
+
+        for indicator_trade in indicator_list:
+            if df[indicator_trade][i] == "Buy":
+                df.loc[i, 'Trade'] = "Buy"
+                df.loc[i, 'Trade End'] = "Buy"
+                df.loc[i, 'Indicator'] = df['Trade'][i] + " " + df['Indicator'][i] + ":" + indicator_trade + ' RSI:' + str(int(df['RSI'][i]))
+                break
+            elif df[indicator_trade][i] == "Sell":
+                df.loc[i, 'Trade'] = "Sell"
+                df.loc[i, 'Trade End'] = "Sell"
+                df.loc[i, 'Indicator'] = df['Trade'][i] + " " + df['Indicator'][i] + ":" + indicator_trade + ' RSI:' + str(int(df['RSI'][i]))
+                break
+      except Exception as e: pass
+    return df
 
 def calculate_indicator(df):
   try:
@@ -915,8 +989,8 @@ def sub_loop_code(now_minute):
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now.replace(hour=14, minute=48, second=0, microsecond=0)
-  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
+  marketclose = now.replace(hour=21, minute=50, second=0, microsecond=0)
+  day_end = now.replace(hour=22, minute=30, second=0, microsecond=0)
   if algo_state==False:return
   all_near_options()
   if now > marketclose: close_day_end_trade()
