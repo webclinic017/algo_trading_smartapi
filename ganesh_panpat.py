@@ -1110,8 +1110,8 @@ def update_ltp_buy_df(buy_df):
     except Exception as e: logger.info(f"Error in update_ltp_buy_df: {e}")
   return buy_df
 
-def recheck_pnl():
-  buy_df=st.session_state['todays_trade']
+def recheck_pnl(buy_df):
+  #buy_df=st.session_state['todays_trade']
   if len(buy_df)!=0:
     buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
     buy_df=buy_df.sort_values(by = ['Status', 'updatetime'], ascending = [False, True], na_position = 'first')
@@ -1222,7 +1222,7 @@ def get_todays_trade(orderbook):
     buy_df=update_target_sl(buy_df)
     buy_df=update_ltp_buy_df(buy_df)
     st.session_state['todays_trade']=buy_df
-    if len(buy_df)!=0:recheck_pnl()
+    if len(buy_df)!=0:recheck_pnl(buy_df)
     sl_container.text("Trail Sl:"+str(st.session_state['stop_loss']))
     buy_df = buy_df.sort_values(by=['Status', 'updatetime'], ascending=[False, True])
     todays_trade_datatable.dataframe(buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
@@ -1265,7 +1265,7 @@ def close_day_end_trade():
     except: pass
 def check_ltp_todays_trade(buy_df):
   buy_df=update_ltp_buy_df(buy_df)
-  if len(buy_df)!=0:recheck_pnl()
+  if len(buy_df)!=0:recheck_pnl(buy_df)
   todays_trade_datatable.dataframe(buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
                                     'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']],hide_index=True)
 def multi_time_frame():
