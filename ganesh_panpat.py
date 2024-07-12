@@ -1122,7 +1122,7 @@ def recheck_pnl(buy_df):
       pending_trade['Margin'] = pending_trade['price'] * pending_trade['quantity']
       total_margin = pending_trade['Margin'].sum()
       active_trades_count = len(pending_trade)
-      margin = f"{int(total_margin)}, Active Trades: {active_trades_count}"
+      margin = f"{int(total_margin)}, Active Trades: {active_trades_count} Total Trade:{len(buy_df)}"
     except:margin=0
     buy_df= buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
                                       'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']]
