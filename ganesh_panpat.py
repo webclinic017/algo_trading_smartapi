@@ -1010,9 +1010,9 @@ def loop_code():
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
       index_exit.text("Index Exit:"+str(st.session_state['index_trade_end']))
       if datetime.datetime.now(tz=gettz('Asia/Kolkata')) < next_loop:
-        orderbook,pending_orders=get_order_book()
-        buy_df=get_todays_trade(orderbook)
-        check_pnl_todays_trade(buy_df)
+        while datetime.datetime.now(tz=gettz('Asia/Kolkata')).second< 50:
+         check_ltp_todays_trade(buy_df)
+         time sleep(1)
         login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']} Next Check: {next_loop.time()}")
         time.sleep(1+(next_loop-datetime.datetime.now(tz=gettz('Asia/Kolkata'))).seconds)
     except Exception as e:
@@ -1263,7 +1263,11 @@ def close_day_end_trade():
         telegram_bot_sendtext(multiline_string)
         buy_df.loc[i,'Status']="Day End"
     except: pass
-
+def check_ltp_todays_trade(buy_df):
+  buy_df=update_ltp_buy_df(buy_df)
+  if len(buy_df)!=0:recheck_pnl()
+  todays_trade_datatable.dataframe(buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
+                                    'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']],hide_index=True)
 def multi_time_frame():
   st.session_state['options_trade_list']=[]
   try:
