@@ -989,18 +989,18 @@ def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
   marketclose = now.replace(hour=14, minute=48, second=0, microsecond=0)
-  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
+  day_end = now.replace(hour=20, minute=30, second=0, microsecond=0)
   if algo_state==False:return
   all_near_options()
-  if now > marketclose: close_day_end_trade()
-  while now < marketclose:
+  #if now > marketclose: close_day_end_trade()
+  while now < day_end:
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     next_loop=now.replace(second=0, microsecond=0)+ datetime.timedelta(minutes=1)
     st.session_state['last_check']=now.time()
     login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
     try:
       if now > marketopen and now < marketclose: sub_loop_code(now.minute)
-      elif now > marketclose: close_day_end_trade()
+      #elif now > marketclose: close_day_end_trade()
       orderbook,pending_orders=get_order_book()
       position,open_position=get_open_position()
       buy_df=get_todays_trade(orderbook)
@@ -1010,8 +1010,9 @@ def loop_code():
       index_exit.text("Index Exit:"+str(st.session_state['index_trade_end']))
       if datetime.datetime.now(tz=gettz('Asia/Kolkata')) < next_loop:
         while datetime.datetime.now(tz=gettz('Asia/Kolkata')).second< 50:
-         check_ltp_todays_trade(buy_df)
-         time.sleep(1)
+          check_ltp_todays_trade(buy_df)
+          index_ltp_string.text(f"Index Ltp: {print_ltp()}")
+          time.sleep(1)
         login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']} Next Check: {next_loop.time()}")
         time.sleep(1+(next_loop-datetime.datetime.now(tz=gettz('Asia/Kolkata'))).seconds)
     except Exception as e:
@@ -1112,7 +1113,7 @@ def update_ltp_buy_df(buy_df):
 def recheck_pnl(buy_df):
   #buy_df=st.session_state['todays_trade']
   if len(buy_df)!=0:
-    buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
+    #buy_df['Profit %']=buy_df['Profit %'].astype(float).round(2)
     buy_df=buy_df.sort_values(by = ['Status', 'updatetime'], ascending = [False, True], na_position = 'first')
     try:
       pending_trade = buy_df[buy_df['Status'] == 'Pending'].copy()
@@ -1264,7 +1265,7 @@ def close_day_end_trade():
     except: pass
 def check_ltp_todays_trade(buy_df):
   buy_df=update_ltp_buy_df(buy_df)
-  if len(buy_df)!=0:recheck_pnl(buy_df)
+  recheck_pnl(buy_df)
   todays_trade_datatable.dataframe(buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
                                     'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']],hide_index=True)
 def multi_time_frame():
