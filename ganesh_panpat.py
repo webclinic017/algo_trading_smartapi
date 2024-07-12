@@ -69,14 +69,13 @@ def get_token_df():
   fut_token = fut_token.sort_values(by = ['name', 'expiry'], ascending = [True, True], na_position = 'first')
   st.session_state['fut_list']=fut_token
 if st.session_state['bnf_expiry_day']==None:get_token_df()
-
+index_ltp_string=st.empty()
+index_ltp_string.text(f"Index Ltp: ")
 tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7,tab8, tab9, tab10= st.tabs(["Log","Order Book", "Position","Todays Trade",
                 "Open Order", "Settings","Token List","Future List","GTT Orders",'Back Test','Near Options'])
 with tab0:
   login_details=st.empty()
   login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
-  index_ltp_string=st.empty()
-  index_ltp_string.text(f"Index Ltp: ")
   index_exit=st.empty()
   index_exit.text(f"Index Exit : ")
   col1,col2=st.columns([1,9])
