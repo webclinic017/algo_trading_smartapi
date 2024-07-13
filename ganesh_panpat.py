@@ -988,8 +988,8 @@ def sub_loop_code(now_minute):
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now.replace(hour=14, minute=48, second=0, microsecond=0)
-  day_end = now.replace(hour=20, minute=30, second=0, microsecond=0)
+  marketclose = now.replace(hour=22, minute=48, second=0, microsecond=0)
+  day_end = now.replace(hour=22, minute=30, second=0, microsecond=0)
   if algo_state==False:return
   all_near_options()
   #if now > marketclose: close_day_end_trade()
@@ -1131,6 +1131,8 @@ def recheck_pnl(buy_df):
     todays_trade_updated.text(f"Todays Trade : {now_time} Profit: {int(buy_df['Profit'].sum())} Margin:{margin}")
 
 def check_pnl_todays_trade(buy_df):
+  if buy_df is None:
+    return None
   for i in range(0,len(buy_df)):
       try:
         if buy_df['Status'].iloc[i]=="Pending" and buy_df['price'].iloc[i]!="-":
@@ -1187,6 +1189,10 @@ def check_pnl_todays_trade(buy_df):
 
 def get_todays_trade(orderbook):
   try:
+    if orderbook is None:
+      now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
+      todays_trade_updated.text(f"Todays Trade : {now_time} : No Trade")
+      return None
     orderbook=update_price_orderbook(orderbook)
     orderbook['updatetime'] = pd.to_datetime(orderbook['updatetime']).dt.time
     sell_df=orderbook[(orderbook['transactiontype']=="SELL") & ((orderbook['status']=="complete") | (orderbook['status']=="rejected"))]
