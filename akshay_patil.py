@@ -173,7 +173,7 @@ def telegram_bot_sendtext(bot_message):
     response = requests.get(send_text)
   except Exception as e: pass
 
-user=="Akshay"; username='A325394'; pwd='1443'; apikey='OeSllszj'; token='G4OKBQKHXPS67EN2WMVP3TZ7X4'
+user="Akshay"; username='A325394'; pwd='1443'; apikey='OeSllszj'; token='G4OKBQKHXPS67EN2WMVP3TZ7X4'
 obj = SmartConnect(apikey)
 totp = pyotp.TOTP(token).now()
 correlation_id = "abcde"
