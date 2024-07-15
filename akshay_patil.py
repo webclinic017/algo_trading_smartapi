@@ -1271,10 +1271,12 @@ def close_day_end_trade():
         buy_df.loc[i,'Status']="Day End"
     except: pass
 def check_ltp_todays_trade(buy_df):
-  buy_df=update_ltp_buy_df(buy_df)
-  recheck_pnl(buy_df)
-  todays_trade_datatable.dataframe(buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
-                                    'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']],hide_index=True)
+  try:
+    buy_df=update_ltp_buy_df(buy_df)
+    recheck_pnl(buy_df)
+    todays_trade_datatable.dataframe(buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
+                                      'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']],hide_index=True)
+  except:pass
 def multi_time_frame():
   st.session_state['options_trade_list']=[]
   try:
