@@ -115,7 +115,7 @@ with tab5:
                   'TEMA_EMA_9 Trade','Multi Time ST Trade']
   with ind_col1:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX'],['BANKNIFTY'])
-    time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M','GTT:5M'],'OPT:1M'])
+    time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M','GTT:5M'],['OPT:1M'])
     five_buy_indicator = st.multiselect('5M Indicator',indicator_list,[])
     five_opt_buy_indicator = st.multiselect('5M OPT Indicator',indicator_list,[])
     gtt_indicator=st.multiselect('GTT Indicator',['5M_ST','5M_ST_10_2','1M_10_1','1M_10_2'],[])
