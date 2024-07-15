@@ -585,7 +585,8 @@ def get_trade_info(df):
 
 def calculate_indicator(df):
   try:
-    df['RSI']=pdta.rsi(df['Close'],timeperiod=14)
+    df['RSI']=pdta.rsi(df['Close'],timeperiod=9)
+    df['RSI_14']=pdta.rsi(df['Close'],timeperiod=14)
     df['MACD']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACD_12_26_9']
     df['MACD signal']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACDs_12_26_9']
     df['Macdhist']=pdta.macd(close=df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)['MACDh_12_26_9']
