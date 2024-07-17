@@ -855,27 +855,29 @@ def trade_near_options(time_frame="5m",symbol="NIFTY"):
   try:
     option_list=st.session_state['near_opt_df']
     for i in range(0,len(option_list)):
-      symbol_name=option_list['symbol'].iloc[i]
-      if symbol_name.startswith(symbol):
-        token_symbol=option_list['token'].iloc[i]
-        exch_seg=option_list['exch_seg'].iloc[i]
-        opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
-        information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
-                     'Symbol':symbol_name,
-                     'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
-                     'Indicator':opt_data['Indicator'].values[-1],
-                     'Trade':opt_data['Trade'].values[-1],
-                     'Trade End':opt_data['Trade End'].values[-1],
-                     'Supertrend':opt_data['Supertrend'].values[-1],
-                     'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
-                     'RSI':opt_data['RSI'].values[-1]}
-        st.session_state['options_trade_list'].append(information)
-        st.session_state['index_trade_end'][symbol_name+"_"+time_frame] = opt_data['Trade'].values[-1]
-        if opt_data['Trade'].values[-1]=="Buy":
-          indicator=f"{opt_data['Indicator'].values[-1]} ATR:{opt_data['Atr'].values[-1]}"
-          strike_symbol=option_list.iloc[i]
-          buy_option(symbol=strike_symbol,indicator_strategy=indicator,interval=time_frame,index_sl="-")
-          break
+      try:
+        symbol_name=option_list['symbol'].iloc[i]
+        if symbol_name.startswith(symbol):
+          token_symbol=option_list['token'].iloc[i]
+          exch_seg=option_list['exch_seg'].iloc[i]
+          opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
+          information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+                       'Symbol':symbol_name,
+                       'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
+                       'Indicator':opt_data['Indicator'].values[-1],
+                       'Trade':opt_data['Trade'].values[-1],
+                       'Trade End':opt_data['Trade End'].values[-1],
+                       'Supertrend':opt_data['Supertrend'].values[-1],
+                       'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
+                       'RSI':opt_data['RSI'].values[-1]}
+          st.session_state['options_trade_list'].append(information)
+          st.session_state['index_trade_end'][symbol_name+"_"+time_frame] = opt_data['Trade'].values[-1]
+          if opt_data['Trade'].values[-1]=="Buy":
+            indicator=f"{opt_data['Indicator'].values[-1]} ATR:{opt_data['Atr'].values[-1]}"
+            strike_symbol=option_list.iloc[i]
+            buy_option(symbol=strike_symbol,indicator_strategy=indicator,interval=time_frame,index_sl="-")
+            break
+        except:pass
   except Exception as e:logger.info(f"Trade Near Option Error {e}")
 
 def closing_trade():
