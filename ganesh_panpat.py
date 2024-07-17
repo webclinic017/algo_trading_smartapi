@@ -982,6 +982,7 @@ def sub_loop_code(now_minute):
     if 'OPT:1M' in time_frame_interval:
       for symbol in index_list:
         trade_near_options('1m',symbol)
+        log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if "Multi Time ST Trade" in five_buy_indicator: multi_time_frame()
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
   except Exception as e:
