@@ -999,9 +999,10 @@ def loop_code():
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
   marketclose = now.replace(hour=14, minute=48, second=0, microsecond=0)
   day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
+  day_end_a = now.replace(hour=15, minute=0, second=0, microsecond=0)
   if algo_state==False:return
   all_near_options()
-  if now > day_end: close_day_end_trade()
+  if now > day_end_a: close_day_end_trade()
   while now < day_end:
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     next_loop=now.replace(second=0, microsecond=0)+ datetime.timedelta(minutes=1)
