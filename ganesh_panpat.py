@@ -22,7 +22,7 @@ st.markdown("""
     .block-container {padding-top: 0.1rem;padding-bottom: 0rem;padding-left: 2rem;padding-right: 2rem;}
   </style>
   """, unsafe_allow_html=True)
-st.write("Welcome To Algo Trading")
+st.text("Welcome To Algo Trading")
 
 if 'Logged_in' not in st.session_state:st.session_state['Logged_in']="Guest"
 if 'login_time' not in st.session_state:st.session_state['login_time']="login_time"
@@ -76,8 +76,6 @@ index_ltp_string.text(f"Index Ltp: ")
 tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7,tab8, tab9, tab10= st.tabs(["Log","Order Book", "Position","Todays Trade",
                 "Open Order", "Settings","Token List","Future List","GTT Orders",'Back Test','Near Options'])
 with tab0:
-  index_exit=st.empty()
-  index_exit.text(f"Index Exit : ")
   col1,col2=st.columns([1,9])
   with col1:
     nf_ce=st.button(label="NF CE")
@@ -991,6 +989,7 @@ def sub_loop_code(now_minute):
       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if "Multi Time ST Trade" in five_buy_indicator: multi_time_frame()
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+    if (now_minute%5==0 and 'GTT:5M' in time_frame_interval):gtt_sub_loop()
   except Exception as e:
     logger.info(f"error in sub_loop_code: {e}")
 
@@ -998,8 +997,9 @@ def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
   marketclose = now.replace(hour=14, minute=48, second=0, microsecond=0)
+  int_marketclose = now.replace(hour=15, minute=0, second=0, microsecond=0)
   day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
-  day_end_a = now.replace(hour=15, minute=0, second=0, microsecond=0)
+  
   if algo_state==False:return
   all_near_options()
   while now < day_end:
@@ -1010,14 +1010,13 @@ def loop_code():
     try:
       if now > marketopen and now < marketclose: sub_loop_code(now.minute)
       #elif now > marketclose: close_day_end_trade()
-      if now > day_end_a: close_day_end_trade()
+      elif now > int_marketclose: close_day_end_trade()
       orderbook,pending_orders=get_order_book()
       position,open_position=get_open_position()
       buy_df=get_todays_trade(orderbook)
       check_pnl_todays_trade(buy_df)
       all_near_options()
       index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-      index_exit.text("Index Exit:"+str(st.session_state['index_trade_end']))
       if datetime.datetime.now(tz=gettz('Asia/Kolkata')) < next_loop:
         while datetime.datetime.now(tz=gettz('Asia/Kolkata')).second< 50:
           check_ltp_todays_trade(buy_df)
@@ -1149,8 +1148,7 @@ def recheck_pnl(buy_df):
     todays_trade_updated.text(f"Todays Trade : {now_time} Profit: {int(buy_df['Profit'].sum())} Margin:{margin}")
 
 def check_pnl_todays_trade(buy_df):
-  if buy_df is None:
-    return None
+  if buy_df is None: return None
   for i in range(0,len(buy_df)):
       try:
         if buy_df['Status'].iloc[i]=="Pending" and buy_df['price'].iloc[i]!="-":
@@ -1189,8 +1187,8 @@ def check_pnl_todays_trade(buy_df):
             exit_trade=st.session_state['index_trade_end'].get(tradingsymbol+"_"+time_frame)
             if exit_trade is not None:
               if exit_trade=="Sell":
-                exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Indicaor Exit:'+ordertag,producttype='CARRYFORWARD')
-                multiline_string = "Indicaor Exit: "+trade_info
+                exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Opt Exit:'+ordertag,producttype='CARRYFORWARD')
+                multiline_string = "OPT Indicaor Exit: "+trade_info
                 telegram_bot_sendtext(multiline_string)
                 buy_df.loc[i,'Status']="Indicaor Exit"
             else:
@@ -1198,8 +1196,17 @@ def check_pnl_todays_trade(buy_df):
               trade=opt_data['Trade'].values[-1]
               st.session_state['index_trade_end'][tradingsymbol+"_"+time_frame] = trade
               if trade=="Sell":
-                exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Indicaor Exit:'+ordertag,producttype='CARRYFORWARD')
-                multiline_string = "Indicaor Exit: "+trade_info
+                exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Opt Exit:'+ordertag,producttype='CARRYFORWARD')
+                multiline_string = "OPT Indicaor Exit: "+trade_info
+                telegram_bot_sendtext(multiline_string)
+                buy_df.loc[i,'Status']="Indicaor Exit"
+            if buy_df['Status'].iloc[i]=="Pending":
+              index_name=re.match(r'^([A-Z]+)',tradingsymbol).group(1)
+              option_type=re.search(r'[CE|PE]{2}$',tradingsymbol).group()
+              index_exit_trade=st.session_state['index_trade_end'].get(index_name+"_"+time_frame)
+              if (index_exit_trade=="Buy" and option_type=="PE") or (index_exit_trade=="Sell" and option_type=="CE"):
+                exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='IDX Exit:'+ordertag,producttype='CARRYFORWARD')
+                multiline_string = "IDX Indicaor Exit: "+trade_info
                 telegram_bot_sendtext(multiline_string)
                 buy_df.loc[i,'Status']="Indicaor Exit"
       except Exception as e: logger.info(f"error in check_pnl_todays_trade: {e}")
@@ -1343,6 +1350,113 @@ def multi_time_frame():
           st.session_state['options_trade_list'].append(information)
   except Exception as e:pass
 
+#GTT
+def get_gtt_list():
+  try:
+    status=["FORALL"] #should be a list
+    page=1
+    count=100
+    lists=obj.gttLists(status,page,count)['data']
+    lists=pd.DataFrame.from_dict(lists)
+    lists['createddate'] = lists['createddate'].apply(lambda x: datetime.datetime.fromisoformat(x))
+    lists['createddate'] = lists['createddate'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    lists['createddate'] = pd.to_datetime(lists['createddate']).dt.time
+    lists['updateddate'] = lists['updateddate'].apply(lambda x: datetime.datetime.fromisoformat(x))
+    lists['updateddate'] = lists['updateddate'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    #lists['updateddate'] = pd.to_datetime(lists['updateddate']).dt.time
+    lists['expirydate'] = lists['expirydate'].apply(lambda x: datetime.datetime.fromisoformat(x))
+    lists['expirydate'] = lists['expirydate'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    lists['expirydate'] = pd.to_datetime(lists['expirydate']).dt.time
+    lists['LTP']='-'
+    lists=update_ltp_gtt(lists)
+    lists=lists.sort_values(by = ['updateddate','tradingsymbol', 'price'], ascending = [True,False, True], na_position = 'first')
+    gtt_order_datatable.dataframe(lists[['updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status','LTP']],hide_index=True)
+    now_time=datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)
+    gtt_order_updated.text(f"GTT Order : {now_time}")
+    return lists
+  except Exception as e:
+    logger.exception(f"GTT Rule List failed: {e}")
+    lists=pd.DataFrame(columns=['id','updateddate','symboltoken','tradingsymbol','exchange','producttype','transactiontype','price','qty','status','LTP'])
+    return lists
+def create_gtt(tradingsymbol,symboltoken,exchange,producttype,transactiontype,price,qty,triggerprice):
+  try:
+    gttCreateParams={"tradingsymbol" : tradingsymbol,"symboltoken" : symboltoken,"exchange" : exchange, "producttype" : producttype,
+            "transactiontype" : transactiontype,"price" : price,"qty" : qty,"disclosedqty": qty,"triggerprice" : triggerprice,"timeperiod" : 1}
+    rule_id=obj.gttCreateRule(gttCreateParams)
+    logger.info(f"The GTT rule id is: {rule_id}")
+  except Exception as e:
+    logger.exception(f"GTT Rule creation failed: {e}")
+def cancel_gtt():
+  lists=get_gtt_list()
+  for i in range(0,len(lists)):
+    if lists['status'].iloc[i]!='NEW':continue
+    gttCreateParams={"id": str(lists['id'].iloc[i]),"symboltoken": str(lists['symboltoken'].iloc[i]),"exchange": str(lists['exchange'].iloc[i]),
+      "price": str(lists['price'].iloc[i]),"qty": str(lists['qty'].iloc[i]),"triggerprice": str(lists['price'].iloc[i]),
+      "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
+    obj.gttCancelRule(gttCreateParams)
+def modify_gtt(lists):
+  for i in range(0,len(lists)):
+    if lists['status'].iloc[i]=='NEW':
+      try:
+        tradingsymbol=lists['tradingsymbol'].iloc[i]
+        symboltoken=lists['symboltoken'].iloc[i]
+        exchange=lists['exchange'].iloc[i]
+        price=lists['price'].iloc[i]
+        old_data=get_historical_data(symbol=tradingsymbol,interval='5m',token=symboltoken,exch_seg=exchange,candle_type="NORMAL")
+        if int(old_data.iloc[-1]['Supertrend'])>int(old_data.iloc[-1]['Close']) and int(old_data.iloc[-1]['Supertrend'])!=int(price):
+          price=int(old_data.iloc[-1]['Supertrend'])
+          gttCreateParams={"id": str(lists['id'].iloc[i]),"symboltoken": str(lists['symboltoken'].iloc[i]),"exchange": str(lists['exchange'].iloc[i]),
+            "price": str(price),"qty": str(lists['qty'].iloc[i]),"triggerprice": str(price),
+            "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
+          obj.gttModifyRule(gttCreateParams)
+        if old_data.iloc[-1]['Supertrend']<old_data.iloc[-1]['Close'] and old_data.iloc[-1]['Supertrend_10_2']<old_data.iloc[-1]['Close']:
+          gttCreateParams={"id": str(lists['id'].iloc[i]),"symboltoken": str(lists['symboltoken'].iloc[i]),"exchange": str(lists['exchange'].iloc[i]),
+          "price": str(lists['price'].iloc[i]),"qty": str(lists['qty'].iloc[i]),"triggerprice": str(lists['price'].iloc[i]),
+          "disclosedqty": str(lists['qty'].iloc[i]),"timeperiod": "1"}
+          obj.gttCancelRule(gttCreateParams)
+      except:pass
+def update_ltp_gtt(lists):
+  nfo_list=numpy.unique(lists[lists['exchange']=="NFO"]['symboltoken'].values.tolist())
+  bfo_list=numpy.unique(lists[lists['exchange']=="BFO"]['symboltoken'].values.tolist())
+  if len(nfo_list)+ len(bfo_list) >50:
+    nfo_list = nfo_list[:49]
+    ltp_df_nf=get_ltp_token(nfo_list,[])
+    bfo_list = bfo_list[:49]
+    ltp_df_bf=get_ltp_token([],bfo_list)
+    ltp_df = pd.concat([ltp_df_nf, ltp_df_bf], ignore_index=True)
+  else:ltp_df=get_ltp_token(nfo_list,bfo_list)
+  for i in range(0,len(lists)):
+    try:
+      symboltoken=str(lists['symboltoken'].iloc[i])
+      n_ltp_df=ltp_df[ltp_df['symbolToken']==symboltoken]
+      if len(n_ltp_df)!=0:lists['LTP'].iloc[i]=n_ltp_df['ltp'].iloc[0]
+    except:pass
+  return lists
+def gtt_sub_loop():
+  lists=get_gtt_list()
+  gtt_symbol_list=lists['tradingsymbol'].tolist()
+  for index in index_list:
+    try:
+      indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(index,indexLtp="-")
+      for strike_symbol in [ce_strike_symbol,pe_strike_symbol]:
+        try:
+          tradingsymbol=strike_symbol['symbol']
+          if tradingsymbol not in gtt_symbol_list:
+            symboltoken=strike_symbol['token']
+            qty=strike_symbol['lotsize']
+            exchange=strike_symbol['exch_seg']
+            old_data=get_historical_data(symbol=tradingsymbol,interval='5m',token=symboltoken,exch_seg=exchange,candle_type="NORMAL")
+            if old_data.iloc[-1]['Supertrend']>old_data.iloc[-1]['Close']:
+              price=int(old_data.iloc[-1]['Supertrend'])
+              create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
+            #elif old_data.iloc[-1]['Supertrend_10_2']>old_data.iloc[-1]['Close']:
+            #  price=int(old_data.iloc[-1]['Supertrend_10_2'])
+            #  create_gtt(tradingsymbol,symboltoken,exchange,'CARRYFORWARD',"BUY",price,qty,price)
+        except:pass
+    except:pass
+  modify_gtt(lists)
+  lists=get_gtt_list()
+       
 if algo_state:
   loop_code()
 if nf_ce:
@@ -1365,6 +1479,7 @@ position,open_position=get_open_position()
 get_todays_trade(orderbook)
 all_near_options()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
+lists=get_gtt_list()
 if __name__ == "__main__":
   try:loop_code()
   except Exception as e:
