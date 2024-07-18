@@ -851,33 +851,36 @@ def all_near_options():
   near_opt_df.dataframe(df,hide_index=True)
   near_opt_updated.text(f"Near Option Updated : {datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)}")
 
-def trade_near_options(time_frame="5m",symbol="NIFTY"):
+def trade_near_options(time_frame):
   try:
     option_list=st.session_state['near_opt_df']
-    for i in range(0,len(option_list)):
-      try:
-        symbol_name=option_list['symbol'].iloc[i]
-        if symbol_name.startswith(symbol):
-          token_symbol=option_list['token'].iloc[i]
-          exch_seg=option_list['exch_seg'].iloc[i]
-          opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
-          information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
-                       'Symbol':symbol_name,
-                       'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
-                       'Indicator':opt_data['Indicator'].values[-1],
-                       'Trade':opt_data['Trade'].values[-1],
-                       'Trade End':opt_data['Trade End'].values[-1],
-                       'Supertrend':opt_data['Supertrend'].values[-1],
-                       'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
-                       'RSI':opt_data['RSI'].values[-1]}
-          st.session_state['options_trade_list'].append(information)
-          st.session_state['index_trade_end'][symbol_name+"_"+time_frame] = opt_data['Trade'].values[-1]
-          if opt_data['Trade'].values[-1]=="Buy":
-            indicator=f"{opt_data['Indicator'].values[-1]} ATR:{opt_data['Atr'].values[-1]}"
-            strike_symbol=option_list.iloc[i]
-            buy_option(symbol=strike_symbol,indicator_strategy=indicator,interval=time_frame,index_sl="-")
-            break
-      except:pass
+    for symbol in index_list:
+      index_exit_trade=st.session_state['index_trade_end'].get(symbol+"_"+time_frame)
+      if index_exit_trade is None or index_exit_trade=="-":
+        for i in range(0,len(option_list)):
+          try:
+            symbol_name=option_list['symbol'].iloc[i]
+            if symbol_name.startswith(symbol):
+              token_symbol=option_list['token'].iloc[i]
+              exch_seg=option_list['exch_seg'].iloc[i]
+              opt_data=get_historical_data(symbol=symbol_name,interval=time_frame,token=token_symbol,exch_seg=exch_seg)
+              information={'Time':str(datetime.datetime.now(tz=gettz('Asia/Kolkata')).time().replace(microsecond=0)),
+                           'Symbol':symbol_name,
+                           'Datetime':str(opt_data['Datetime'].values[-1]),'Close':opt_data['Close'].values[-1],
+                           'Indicator':opt_data['Indicator'].values[-1],
+                           'Trade':opt_data['Trade'].values[-1],
+                           'Trade End':opt_data['Trade End'].values[-1],
+                           'Supertrend':opt_data['Supertrend'].values[-1],
+                           'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
+                           'RSI':opt_data['RSI'].values[-1]}
+              st.session_state['options_trade_list'].append(information)
+              st.session_state['index_trade_end'][symbol_name+"_"+time_frame] = opt_data['Trade'].values[-1]
+              if opt_data['Trade'].values[-1]=="Buy":
+                indicator=f"{opt_data['Indicator'].values[-1]} ATR:{opt_data['Atr'].values[-1]}"
+                strike_symbol=option_list.iloc[i]
+                buy_option(symbol=strike_symbol,indicator_strategy=indicator,interval=time_frame,index_sl="-")
+                break
+          except:pass
   except Exception as e:logger.info(f"Trade Near Option Error {e}")
 
 def closing_trade():
@@ -975,16 +978,16 @@ def sub_loop_code(now_minute):
       st.session_state['index_trade_end']={}
       for symbol in index_list: 
         index_trade(symbol,"5m")
-        if 'OPT:5M' in time_frame_interval:trade_near_options('5m',symbol)
+        log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+      if 'OPT:5M' in time_frame_interval:trade_near_options('5m')
         log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if (now_minute%15==0 and 'IDX:15M' in time_frame_interval): 
       for symbol in index_list:index_trade(symbol,"15m")
     if 'IDX:1M' in time_frame_interval:
       for symbol in index_list: index_trade(symbol,"1m")
     if 'OPT:1M' in time_frame_interval:
-      for symbol in index_list:
-        trade_near_options('1m',symbol)
-        log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+      trade_near_options('1m')
+      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if "Multi Time ST Trade" in five_buy_indicator: multi_time_frame()
     log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
   except Exception as e:
@@ -993,8 +996,8 @@ def sub_loop_code(now_minute):
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now.replace(hour=23, minute=48, second=0, microsecond=0)
-  day_end = now.replace(hour=23, minute=30, second=0, microsecond=0)
+  marketclose = now.replace(hour=14, minute=48, second=0, microsecond=0)
+  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
   if algo_state==False:return
   all_near_options()
   #if now > marketclose: close_day_end_trade()
