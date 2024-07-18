@@ -1081,6 +1081,14 @@ def update_target_sl(buy_df):
           atr_value = float(match.group(1))
           buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]+(atr_value*3))
           buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]-(atr_value*3))
+      elif 'IDX' in buy_df['ordertag'].iloc[i] and 'ATR' in buy_df['ordertag'].iloc[i]:
+        indicator_text=buy_df['ordertag'].iloc[i]
+        pattern = r"ATR:\s*([^ (\n]*)"
+        match = re.search(pattern, indicator_text)
+        if match:
+          atr_value = float(match.group(1))
+          buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]+(atr_value*1.5))
+          buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]-(atr_value*1.5))
       elif 'TEMA_EMA_9 Trade' in buy_df['ordertag'].iloc[i] :
         buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i])+10
         buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i])-10
