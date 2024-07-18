@@ -880,7 +880,7 @@ def trade_near_options(time_frame):
                 strike_symbol=option_list.iloc[i]
                 buy_option(symbol=strike_symbol,indicator_strategy=indicator,interval=time_frame,index_sl="-")
                 break
-          except:pass
+        except:pass
   except Exception as e:logger.info(f"Trade Near Option Error {e}")
 
 def closing_trade():
