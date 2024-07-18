@@ -1282,7 +1282,7 @@ def close_day_end_trade():
         f"Indicator: {buy_df['ordertag'].iloc[i]}\n"
         f"Profit: {int(buy_df['Profit'].iloc[i])}")
         ordertag=f"{ltp_price} : {orderid}"
-        exit_position(symboltoken,tradingsymbol,exch_seg,qty,max(ltp_price,1),sl,ordertag='Day End:'+ordertag,producttype='CARRYFORWARD')
+        exit_position(symboltoken,tradingsymbol,exch_seg,qty,max(float(ltp_price),1),max(float(ltp_price),1),ordertag='Day End:'+ordertag,producttype='CARRYFORWARD')
         multiline_string = "Day End: "+trade_info
         telegram_bot_sendtext(multiline_string)
         buy_df.loc[i,'Status']="Day End"
