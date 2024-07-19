@@ -508,6 +508,14 @@ def get_trade_info_old(df):
           df.loc[i,'Trade End']="Sell"
           df.loc[i,'Indicator']=df['Trade'][i]+" "+df['Indicator'][i]+":"+indicator_trade+' RSI:'+str(int(df['RSI'][i]))
           break
+      if df.iloc[i]['Supertrend_10_2'] < df.iloc[i]['Close']:
+        tgt=2*(int(df.iloc[i]['Close'])-int(df.iloc[i]['Supertrend_10_2']))
+        sl= df.iloc[i]['Supertrend_10_2']
+        df.loc[i,'Indicator']=df.loc[i,'Indicator'] + "("+ str(sl)+":"+str(tgt)+")"
+      elif df.iloc[i]['Supertrend'] < df.iloc[i]['Close']:
+        tgt=2*(int(df.iloc[i]['Close'])-int(df.iloc[i]['Supertrend']))
+        sl= df.iloc[i]['Supertrend']
+        df.loc[i,'Indicator']=df.loc[i,'Indicator'] + "("+ str(sl)+":"+str(tgt)+")"
     except Exception as e:pass
   return df
 
@@ -1200,7 +1208,7 @@ def check_pnl_todays_trade(buy_df):
                 multiline_string = "OPT Indicaor Exit: "+trade_info
                 telegram_bot_sendtext(multiline_string)
                 buy_df.loc[i,'Status']="Indicaor Exit"
-            if buy_df['Status'].iloc[i]=="Pending":
+            if buy_df['Status'].iloc[i]=="Pending" and "IDX" in buy_df['ordertag'].iloc[i]:
               index_name=re.match(r'^([A-Z]+)',tradingsymbol).group(1)
               option_type=re.search(r'[CE|PE]{2}$',tradingsymbol).group()
               index_exit_trade=st.session_state['index_trade_end'].get(index_name+"_"+time_frame)
