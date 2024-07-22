@@ -882,7 +882,7 @@ def trade_near_options(time_frame):
               st.session_state['options_trade_list'].append(information)
               st.session_state['index_trade_end'][symbol_name+"_"+time_frame] = opt_data['Trade'].values[-1]
               if opt_data['Trade'].values[-1]=="Buy":
-                indicator=f"{opt_data['Indicator'].values[-1]} ATR: {opt_data['Atr'].values[-1]} Signal: {{opt_data['Datetime'].values[-1]}"
+                indicator=f"{opt_data['Indicator'].values[-1]} ATR: {opt_data['Atr'].values[-1]} Signal: {opt_data['Datetime'].values[-1]}"
                 strike_symbol=option_list.iloc[i]
                 buy_option(symbol=strike_symbol,indicator_strategy=indicator,interval=time_frame,index_sl="-")
                 break
