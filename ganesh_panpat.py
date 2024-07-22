@@ -1031,7 +1031,7 @@ def loop_code():
           index_ltp_string.text(f"Index Ltp: {print_ltp()}")
           time.sleep(1)
         login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']} Next Check: {next_loop.time()}")
-        time.sleep(1+(next_loop-datetime.datetime.now(tz=gettz('Asia/Kolkata'))).seconds)
+        time.sleep(2+(next_loop-datetime.datetime.now(tz=gettz('Asia/Kolkata'))).seconds)
     except Exception as e:
       logger.info(f"error in loop_code: {e}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
