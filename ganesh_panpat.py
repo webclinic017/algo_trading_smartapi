@@ -579,12 +579,12 @@ def get_trade_info(df):
             if df[indicator_trade][i] == "Buy":
                 df.loc[i, 'Trade'] = "Buy"
                 df.loc[i, 'Trade End'] = "Buy"
-                df.loc[i, 'Indicator'] = df['Trade'][i] + " " + df['Indicator'][i] + ":" + indicator_trade + ' RSI:' + str(int(df['RSI'][i]))
+                df.loc[i, 'Indicator'] = df['Indicator'][i] + ":" + indicator_trade + ' RSI:' + str(int(df['RSI'][i]))  + ' ATR:' + str(int(df['Atr'][i]))
                 break
             elif df[indicator_trade][i] == "Sell":
                 df.loc[i, 'Trade'] = "Sell"
                 df.loc[i, 'Trade End'] = "Sell"
-                df.loc[i, 'Indicator'] = df['Trade'][i] + " " + df['Indicator'][i] + ":" + indicator_trade + ' RSI:' + str(int(df['RSI'][i]))
+                df.loc[i, 'Indicator'] = df['Indicator'][i] + ":" + indicator_trade + ' RSI:' + str(int(df['RSI'][i])) + ' ATR:' + str(int(df['Atr'][i]))
                 break
       except Exception as e: pass
     return df
@@ -809,7 +809,7 @@ def index_trade(symbol,interval):
     if fut_data is None: return None
     trade=str(fut_data['Trade'].values[-1])
     if trade!="-":
-      indicator_strategy=f"{fut_data['Indicator'].values[-1]} ATR: {fut_data['Atr'].values[-1]} Signal: {fut_data['Datetime'].values[-1]}"
+      indicator_strategy=f"{fut_data['Indicator'].values[-1]} Signal: {fut_data['Datetime'].values[-1]}"
       indexLtp=fut_data['Close'].values[-1]
       indexLtp, ce_strike_symbol,pe_strike_symbol=get_ce_pe_data(symbol,indexLtp=indexLtp)
       if trade=="Buy" : buy_option(ce_strike_symbol,indicator_strategy,interval)
@@ -882,7 +882,7 @@ def trade_near_options(time_frame):
               st.session_state['options_trade_list'].append(information)
               st.session_state['index_trade_end'][symbol_name+"_"+time_frame] = opt_data['Trade'].values[-1]
               if opt_data['Trade'].values[-1]=="Buy":
-                indicator=f"{opt_data['Indicator'].values[-1]} ATR: {opt_data['Atr'].values[-1]} Signal: {opt_data['Datetime'].values[-1]}"
+                indicator=f"{opt_data['Indicator'].values[-1]} Signal: {opt_data['Datetime'].values[-1]}"
                 strike_symbol=option_list.iloc[i]
                 buy_option(symbol=strike_symbol,indicator_strategy=indicator,interval=time_frame,index_sl="-")
                 break
