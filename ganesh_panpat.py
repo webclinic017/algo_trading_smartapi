@@ -1149,11 +1149,11 @@ def update_ltp_buy_df(buy_df):
       if buy_df['Status'].iloc[i]!='Closed' and buy_df['price'].iloc[i]!="-":
           #buy_df['LTP'].iloc[i]=get_ltp_price(symbol=buy_df['tradingsymbol'].iloc[i],token=buy_df['symboltoken'].iloc[i],exch_seg=buy_df['exchange'].iloc[i])
           buy_df['Profit'].iloc[i]=(float(buy_df['LTP'].iloc[i])-float(buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
-          buy_df['Profit %'].iloc[i]=int(((buy_df['LTP'].iloc[i]/buy_df['price'].iloc[i])-1)*100)
+          buy_df['Profit %'].iloc[i]=round(((buy_df['LTP'].iloc[i]/buy_df['price'].iloc[i])-1)*100,2)
       else:
           if buy_df['price'].iloc[i]!="-":
             buy_df['Profit'].iloc[i]=float((buy_df['Sell'].iloc[i]-buy_df['price'].iloc[i]))*float(buy_df['quantity'].iloc[i])
-            buy_df['Profit %'].iloc[i]=int(((buy_df['Sell'].iloc[i]/buy_df['price'].iloc[i])-1)*100)
+            buy_df['Profit %'].iloc[i]=round(((buy_df['Sell'].iloc[i]/buy_df['price'].iloc[i])-1)*100,2)
           else:
             buy_df['Profit'].iloc[i]=0
             buy_df['Profit %'].iloc[i]=0
