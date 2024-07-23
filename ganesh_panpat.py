@@ -1015,10 +1015,9 @@ def sub_loop_code(now_minute):
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now.replace(hour=14, minute=48, second=0, microsecond=0)
-  int_marketclose = now.replace(hour=14, minute=51, second=0, microsecond=0)
-  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
-  
+  marketclose = now.replace(hour=20, minute=48, second=0, microsecond=0)
+  int_marketclose = now.replace(hour=20, minute=51, second=0, microsecond=0)
+  day_end = now.replace(hour=20, minute=30, second=0, microsecond=0)
   if algo_state==False:return
   all_near_options()
   while now < day_end:
@@ -1518,12 +1517,12 @@ if bnf_pe:
 if restart:
   pass
 login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
-orderbook,pending_orders=get_order_book()
-position,open_position=get_open_position()
-get_todays_trade(orderbook)
-all_near_options()
+#orderbook,pending_orders=get_order_book()
+#position,open_position=get_open_position()
+#get_todays_trade(orderbook)
+#all_near_options()
+#lists=get_gtt_list()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
-lists=get_gtt_list()
 if __name__ == "__main__":
   try:loop_code()
   except Exception as e:
