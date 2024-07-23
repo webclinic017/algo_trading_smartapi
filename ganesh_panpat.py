@@ -1005,7 +1005,7 @@ def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
   marketclose = now.replace(hour=14, minute=48, second=0, microsecond=0)
-  int_marketclose = now.replace(hour=15, minute=0, second=0, microsecond=0)
+  int_marketclose = now.replace(hour=14, minute=51, second=0, microsecond=0)
   day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
   
   if algo_state==False:return
