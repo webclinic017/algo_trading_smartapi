@@ -256,6 +256,7 @@ def get_ltp_price(symbol="-",token="-",exch_seg='-'):
     if symbol=="BANKNIFTY" or symbol=="^NSEBANK": symbol_i="^NSEBANK";token='99926009';exch_seg='NSE'
     elif symbol=="NIFTY" or symbol=="^NSEI": symbol_i="^NSEI";token='99926000';exch_seg='NSE'
     elif symbol=="SENSEX" or symbol=="^BSESN": symbol_i="^BSESN";token='99919000';exch_seg='BSE'
+    elif symbol=="FINNIFTY" : symbol_i="-";token='99926037';exch_seg='NSE'
     if symbol_i!="-":ltp=get_yf_ltp(symbol=symbol_i,token=token,exch_seg=exch_seg)
     if ltp=="Unable to get LTP":ltp=get_angel_ltp(symbol=symbol,token=token,exch_seg=exch_seg)
     return ltp
@@ -265,13 +266,14 @@ def get_ltp_price(symbol="-",token="-",exch_seg='-'):
 
 def print_ltp():
   try:
-    data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={"NSE": ["99926000","99926009"],"BSE": ['99919000']})['data']['fetched'])
+    data=pd.DataFrame(obj.getMarketData(mode="OHLC",exchangeTokens={"NSE": ["99926000","99926009","99926037"],"BSE": ['99919000']})['data']['fetched'])
     data['change']=data['ltp']-data['close']
     data.sort_values(by=['tradingSymbol'], inplace=True)
     print_sting=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None).time()
     for i in range(0,len(data)):
       print_sting=f"{print_sting} {data.iloc[i]['tradingSymbol']} {int(data.iloc[i]['ltp'])}({int(data.iloc[i]['change'])})"
     print_sting=print_sting.replace("Nifty 50","Nifty")
+    print_sting=print_sting.replace("Nifty Fin Service","FinNifty")
     print_sting=print_sting.replace("Nifty Bank","BankNifty")
     return print_sting
   except Exception as e:
@@ -381,6 +383,7 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     if (symbol=="^NSEI" or symbol=="NIFTY") : symbol_i,token,exch_seg="^NSEI",99926000,"NSE"
     elif (symbol=="^NSEBANK" or symbol=="BANKNIFTY") : symbol_i,token,exch_seg="^NSEBANK",99926009,"NSE"
     elif (symbol=="^BSESN" or symbol=="SENSEX") : symbol_i,token,exch_seg="^BSESN",99919000,"BSE"
+    elif symbol=="FINNIFTY" : symbol_i="-";token='99926037';exch_seg='NSE'
     if symbol[3:]=='-EQ': symbol=symbol[:-3]+".NS"
     if (interval=="5m" or interval=='FIVE_MINUTE'): period,delta_time,agl_interval,yf_interval=5,5,"FIVE_MINUTE","5m"
     elif (interval=="1m" or interval=='ONE_MINUTE') : period,delta_time,agl_interval,yf_interval=1,1,"ONE_MINUTE","1m"
@@ -528,7 +531,7 @@ def get_trade_info(df):
     for col in trade_columns:df[col] = '-'
     time_frame = df['Time Frame'][0]
     Symbol = df['Symbol'][0]
-    symbol_type = "IDX" if Symbol in ["^NSEBANK", "BANKNIFTY", "^NSEI", "NIFTY", "SENSEX", "^BSESN"] else "OPT"
+    symbol_type = "IDX" if Symbol in ["^NSEBANK", "BANKNIFTY", "^NSEI", "NIFTY", "SENSEX", "^BSESN","FINNIFTY"] else "OPT"
     indicator_list = []
     if symbol_type == "IDX":
         if time_frame == "5m":indicator_list = five_buy_indicator
@@ -674,6 +677,13 @@ def get_ce_pe_data(symbol,indexLtp="-"):
     ATMStrike = math.floor(indexLtp/100)*100
     expiry_day=st.session_state['sensex_expiry_day']
     exch_seg="BFO"
+  elif symbol=='FINNIFTY':
+    symbol='FINNIFTY'
+    val2 = math.fmod(indexLtp, 50)
+    val3 = 50 if val2 >= 25 else 0
+    ATMStrike = indexLtp - val2 + val3
+    expiry_day=st.session_state['fnnf_expiry_day']
+    exch_seg="NFO"
   else:
     symbol="Cant Find"
     ATMStrike=0
@@ -849,6 +859,7 @@ def all_near_options():
       if symbol=="NIFTY":symbol_expiry=st.session_state['nf_expiry_day']
       elif symbol=="BANKNIFTY":symbol_expiry=st.session_state['bnf_expiry_day']
       elif symbol=="SENSEX":symbol_expiry=st.session_state['sensex_expiry_day']
+      elif symbol=="FINNIFTY":symbol_expiry=st.session_state['fnnf_expiry_day']
       else:symbol_expiry="-"
       option_list=get_near_options(symbol,index_ltp,symbol_expiry)
       df=pd.concat([df,option_list])
