@@ -1021,9 +1021,9 @@ def sub_loop_code(now_minute):
 def loop_code():
   now = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
   marketopen = now.replace(hour=9, minute=20, second=0, microsecond=0)
-  marketclose = now.replace(hour=20, minute=48, second=0, microsecond=0)
-  int_marketclose = now.replace(hour=20, minute=51, second=0, microsecond=0)
-  day_end = now.replace(hour=20, minute=30, second=0, microsecond=0)
+  marketclose = now.replace(hour=14, minute=48, second=0, microsecond=0)
+  int_marketclose = now.replace(hour=14, minute=51, second=0, microsecond=0)
+  day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
   if algo_state==False:return
   all_near_options()
   while now < day_end:
@@ -1033,7 +1033,6 @@ def loop_code():
     login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
     try:
       if now > marketopen and now < marketclose: sub_loop_code(now.minute)
-      #elif now > marketclose: close_day_end_trade()
       elif now > int_marketclose: close_day_end_trade()
       orderbook,pending_orders=get_order_book()
       position,open_position=get_open_position()
@@ -1047,7 +1046,7 @@ def loop_code():
           index_ltp_string.text(f"Index Ltp: {print_ltp()}")
           time.sleep(1)
         login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']} Next Check: {next_loop.time()}")
-        time.sleep(2+(next_loop-datetime.datetime.now(tz=gettz('Asia/Kolkata'))).seconds)
+        time.sleep(1+(next_loop-datetime.datetime.now(tz=gettz('Asia/Kolkata'))).seconds)
     except Exception as e:
       logger.info(f"error in loop_code: {e}")
       now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
