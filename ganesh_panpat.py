@@ -1110,7 +1110,7 @@ def update_target_sl(buy_df):
         buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i])-10
       elif 'OPT' in buy_df['ordertag'].iloc[i] and 'ATR' in buy_df['ordertag'].iloc[i]:
         indicator_text=buy_df['ordertag'].iloc[i]
-        pattern = r"ATR:\s*([^ (\n]*)"
+        pattern = r"ATR:(\d+)"
         match = re.search(pattern, indicator_text)
         if match:
           atr_value = float(match.group(1))
@@ -1118,7 +1118,7 @@ def update_target_sl(buy_df):
           buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]-(atr_value*sl_point))
       elif 'IDX' in buy_df['ordertag'].iloc[i] and 'ATR' in buy_df['ordertag'].iloc[i]:
         indicator_text=buy_df['ordertag'].iloc[i]
-        pattern = r"ATR:\s*([^ (\n]*)"
+        pattern = r"ATR:(\d+)"
         match = re.search(pattern, indicator_text)
         if match:
           atr_value = float(match.group(1))
