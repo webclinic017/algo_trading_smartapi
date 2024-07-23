@@ -895,7 +895,7 @@ def trade_near_options(time_frame):
                            'Supertrend':opt_data['Supertrend'].values[-1],
                            'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
                            'RSI':opt_data['RSI'].values[-1],
-                           'VWAP':fut_data['VWAP'].values[-1]}
+                           'VWAP':opt_data['VWAP'].values[-1]}
               st.session_state['options_trade_list'].append(information)
               st.session_state['index_trade_end'][symbol_name+"_"+time_frame] = opt_data['Trade'].values[-1]
               if opt_data['Trade'].values[-1]=="Buy":
