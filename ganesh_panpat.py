@@ -836,7 +836,8 @@ def index_trade(symbol,interval):
                 'Trade End':fut_data['Trade End'].values[-1],
                 'Supertrend':fut_data['Supertrend'].values[-1],
                 'Supertrend_10_2':fut_data['Supertrend_10_2'].values[-1],
-                'RSI':fut_data['RSI'].values[-1]}
+                'RSI':fut_data['RSI'].values[-1],
+                'VWAP':fut_data['VWAP'].values[-1]}
     st.session_state['options_trade_list'].append(information)
     st.session_state['index_trade_end'][symbol+"_"+interval] = trade
   except Exception as e:
@@ -893,7 +894,8 @@ def trade_near_options(time_frame):
                            'Trade End':opt_data['Trade End'].values[-1],
                            'Supertrend':opt_data['Supertrend'].values[-1],
                            'Supertrend_10_2':opt_data['Supertrend_10_2'].values[-1],
-                           'RSI':opt_data['RSI'].values[-1]}
+                           'RSI':opt_data['RSI'].values[-1],
+                           'VWAP':fut_data['VWAP'].values[-1]}
               st.session_state['options_trade_list'].append(information)
               st.session_state['index_trade_end'][symbol_name+"_"+time_frame] = opt_data['Trade'].values[-1]
               if opt_data['Trade'].values[-1]=="Buy":
@@ -1307,7 +1309,7 @@ def get_todays_trade(orderbook):
     buy_df=update_ltp_buy_df(buy_df)
     st.session_state['todays_trade']=buy_df
     if len(buy_df)!=0:recheck_pnl(buy_df)
-    sl_container.text("Trail Sl:"+str(st.session_state['stop_loss']))
+    #sl_container.text("Trail Sl:"+str(st.session_state['stop_loss']))
     buy_df = buy_df.sort_values(by=['Status', 'updatetime'], ascending=[False, True])
     todays_trade_datatable.dataframe(buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
                                     'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']],hide_index=True)
