@@ -41,6 +41,7 @@ if 'todays_trade' not in st.session_state:st.session_state['todays_trade']=[]
 if 'orderbook' not in st.session_state:st.session_state['orderbook']=[]
 if 'pending_orders' not in st.session_state:st.session_state['pending_orders']=[]
 if 'near_opt_df' not in st.session_state:st.session_state['near_opt_df']=[]
+if 'new_idx_list' not in st.session_state:st.session_state['new_idx_list']=['BANKNIFTY', 'NIFTY', 'SENSEX','FINNIFTY']
 
 def get_token_df():
   url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
@@ -68,6 +69,9 @@ def get_token_df():
   fut_token = fut_token[fut_token['name'].isin(fut_list)]
   fut_token = fut_token.sort_values(by = ['name', 'expiry'], ascending = [True, True], na_position = 'first')
   st.session_state['fut_list']=fut_token
+  g = token_df[(token_df['instrumenttype'] == 'OPTIDX') & (token_df['name'].isin(['FINNIFTY', 'BANKNIFTY', 'NIFTY', 'SENSEX']))]
+  first_values = g.groupby('name').first().reset_index().sort_values('expiry')
+  st.session_state['new_idx_list']=first_values['name'].to_list()
 if st.session_state['bnf_expiry_day']==None:get_token_df()
 login_details=st.empty()
 login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
@@ -112,7 +116,7 @@ with tab5:
                   'MA Trade','EMA Trade','EMA_5_7 Trade','MA 21 Trade','HMA Trade','RSI_60 Trade','EMA_High_Low Trade','Two Candle Theory',
                   'TEMA_EMA_9 Trade','Multi Time ST Trade']
   with ind_col1:
-    index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX','FINNIFTY'],['NIFTY','BANKNIFTY','SENSEX','FINNIFTY'])
+    index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX','FINNIFTY'],st.session_state['new_idx_list'])
     time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M','GTT:5M'],['IDX:5M','OPT:5M','OPT:1M','GTT:5M'])
     five_buy_indicator = st.multiselect('5M Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
     five_opt_buy_indicator = st.multiselect('5M OPT Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
