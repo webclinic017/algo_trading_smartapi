@@ -1059,8 +1059,8 @@ def get_ltp_token(nfo_list,bfo_list):
       bnf_ltp_df=pd.DataFrame(obj.getMarketData(mode="LTP",exchangeTokens={ "NFO": list(nfo_list),})['data']['fetched'])
       ltp_df=pd.concat([nf_ltp_df,bnf_ltp_df])
       ltp_df=ltp_df.reset_index(drop=True)
-    else:
-      ltp_df=pd.DataFrame(obj.getMarketData(mode="LTP",exchangeTokens={ "BFO": list(bfo_list), "NFO": list(nfo_list),})['data']['fetched'])
+    else:pass
+    ltp_df=pd.DataFrame(obj.getMarketData(mode="LTP",exchangeTokens={ "BFO": list(bfo_list), "NFO": list(nfo_list),})['data']['fetched'])
     return ltp_df
   except Exception as e:
     ltp_df=pd.DataFrame(columns = ['exchange','tradingSymbol','symbolToken','ltp'])
