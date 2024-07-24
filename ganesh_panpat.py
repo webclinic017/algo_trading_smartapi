@@ -1041,6 +1041,7 @@ def loop_code():
       if datetime.datetime.now(tz=gettz('Asia/Kolkata')) < next_loop:
         while datetime.datetime.now(tz=gettz('Asia/Kolkata')).second< 50:
           check_ltp_todays_trade(buy_df)
+          
           index_ltp_string.text(f"Index Ltp: {print_ltp()}")
           time.sleep(1)
         login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']} Next Check: {next_loop.time()}")
@@ -1349,6 +1350,7 @@ def check_ltp_todays_trade(buy_df):
   try:
     buy_df=st.session_state['todays_trade']
     buy_df=update_ltp_buy_df(buy_df)
+    buy_df=check_pnl_todays_trade(buy_df)
     recheck_pnl(buy_df)
     todays_trade_datatable.dataframe(buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
                                       'Sell', 'LTP', 'Profit','Target','SL', 'Profit %', 'Sell Indicator']],hide_index=True)
