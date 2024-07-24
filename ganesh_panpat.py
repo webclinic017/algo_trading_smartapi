@@ -1099,12 +1099,15 @@ def trail_sl_with_st(buy_df):
             elif "15m" in buy_df['ordertag'].iloc[i]:time_frame="15m"
             else: time_frame="5m"
             opt_data=get_historical_data(symbol=tradingsymbol,interval=time_frame,token=symboltoken,exch_seg=exch_seg)
-            if "ST_7_3" in indicator_text or "Supertrend" in indicator_text: new_sl=opt_data['Supertrend'].values[-1]
-            elif "ST_10_2" in indicator_text : new_sl=opt_data['Supertrend_10_2'].values[-1]
             close=opt_data['Close'].values[-1]
-            if close > new_sl:
-              buy_df['SL'].iloc[i]=int(new_sl)
-              buy_df['Sell Indicator'].iloc[i]='SL Trail With ST'
+            st_7_3=opt_data['Supertrend'].values[-1]
+            st_10_2=opt_data['Supertrend_10_2'].values[-1]
+            if close > st_10_2:
+              buy_df['SL'].iloc[i]=int(st_10_2)
+              buy_df['Sell Indicator'].iloc[i]='SL Trail With ST 10_2'
+            elif close > st_7_3:
+              buy_df['SL'].iloc[i]=int(st_7_3)
+              buy_df['Sell Indicator'].iloc[i]='SL Trail With ST 7_3'
       except:pass
   return buy_df
 def update_target_sl(buy_df):
