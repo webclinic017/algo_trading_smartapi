@@ -1171,6 +1171,7 @@ def update_ltp_buy_df(buy_df):
             buy_df['Profit'].iloc[i]=0
             buy_df['Profit %'].iloc[i]=0
     except Exception as e: logger.info(f"Error in update_ltp_buy_df: {e}")
+  buy_df = buy_df.sort_values(by=['Status', 'updatetime'], ascending=[False, True])
   st.session_state['todays_trade']=buy_df
   return buy_df
 
