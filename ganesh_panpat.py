@@ -1023,6 +1023,7 @@ def loop_code():
   day_end = now.replace(hour=15, minute=30, second=0, microsecond=0)
   if algo_state==False:return
   all_near_options()
+  cancel_gtt()
   while now < day_end:
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata'))
     next_loop=now.replace(second=0, microsecond=0)+ datetime.timedelta(minutes=1)
@@ -1170,6 +1171,7 @@ def update_ltp_buy_df(buy_df):
             buy_df['Profit'].iloc[i]=0
             buy_df['Profit %'].iloc[i]=0
     except Exception as e: logger.info(f"Error in update_ltp_buy_df: {e}")
+  st.session_state['todays_trade']=buy_df
   return buy_df
 
 def recheck_pnl(buy_df):
@@ -1341,6 +1343,7 @@ def close_day_end_trade():
     except: pass
 def check_ltp_todays_trade(buy_df):
   try:
+    buy_df=st.session_state['todays_trade']
     buy_df=update_ltp_buy_df(buy_df)
     recheck_pnl(buy_df)
     todays_trade_datatable.dataframe(buy_df[['updatetime','tradingsymbol','price','quantity','ordertag','Exit Time','Status',
