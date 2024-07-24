@@ -1085,8 +1085,8 @@ def update_price_orderbook(df):
           df['price'].iloc[j]=float(abc)
           #df['price'].iloc[j]=float(ordertag.split("LTP: ",1)[1])
         if df['price'].iloc[j]==0:df['price'].iloc[j]='-'
-      #if df['price'].iloc[j]=='-':
-      #  df['price'].iloc[j]=get_ltp_price(symbol=df['tradingsymbol'].iloc[j],token=df['symboltoken'].iloc[j],exch_seg=df['exchange'].iloc[j])
+      if df['price'].iloc[j]=='-':
+        df['price'].iloc[j]=get_ltp_price(symbol=df['tradingsymbol'].iloc[j],token=df['symboltoken'].iloc[j],exch_seg=df['exchange'].iloc[j])
     except Exception as e:
       pass
   return df
