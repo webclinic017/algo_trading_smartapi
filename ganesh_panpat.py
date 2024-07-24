@@ -128,7 +128,7 @@ with tab5:
     fut_list=st.multiselect('Select Future',['SILVERMIC','SILVER'],[])
     with ind_col2:
       target_order_type = st.selectbox('Target Order',('Target', 'Stop_Loss', 'NA'),1)
-      target_type = st.selectbox('Target Type',('Points', 'Per Cent','Indicator','ATR'),1)
+      target_type = st.selectbox('Target Type',('Points', 'Per Cent','Indicator','ATR'),3)
       if target_type=="ATR":
         sl_point=st.number_input(label="SL",min_value=1, max_value=100, value=3, step=None)
         target_point=st.number_input(label="Target",min_value=1, max_value=100, value=3, step=None)
@@ -1054,12 +1054,6 @@ def loop_code():
 
 def get_ltp_token(nfo_list,bfo_list):
   try:
-    if len(nf_ltp_df)+len(bnf_ltp_df)>40:
-      nf_ltp_df=pd.DataFrame(obj.getMarketData(mode="LTP",exchangeTokens={ "BFO": list(bfo_list),})['data']['fetched'])
-      bnf_ltp_df=pd.DataFrame(obj.getMarketData(mode="LTP",exchangeTokens={ "NFO": list(nfo_list),})['data']['fetched'])
-      ltp_df=pd.concat([nf_ltp_df,bnf_ltp_df])
-      ltp_df=ltp_df.reset_index(drop=True)
-    else:pass
     ltp_df=pd.DataFrame(obj.getMarketData(mode="LTP",exchangeTokens={ "BFO": list(bfo_list), "NFO": list(nfo_list),})['data']['fetched'])
     return ltp_df
   except Exception as e:
@@ -1528,11 +1522,11 @@ if bnf_pe:
 if restart:
   pass
 login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
-#orderbook,pending_orders=get_order_book()
-#position,open_position=get_open_position()
-#get_todays_trade(orderbook)
-#all_near_options()
-#lists=get_gtt_list()
+orderbook,pending_orders=get_order_book()
+position,open_position=get_open_position()
+get_todays_trade(orderbook)
+all_near_options()
+lists=get_gtt_list()
 index_ltp_string.text(f"Index Ltp: {print_ltp()}")
 if __name__ == "__main__":
   try:loop_code()
