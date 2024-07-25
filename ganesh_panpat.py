@@ -70,6 +70,7 @@ def get_token_df():
   st.session_state['fut_list']=fut_token
   
 if st.session_state['bnf_expiry_day']==None:get_token_df()
+
 login_details=st.empty()
 login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']}")
 index_ltp_string=st.empty()
@@ -109,9 +110,9 @@ with tab4:
   open_order=st.empty()
 with tab5:
   ind_col1,ind_col2,ind_col3,ind_col4=st.columns([5,1.5,1.5,1.5])
-  indicator_list=['ST_7_3 Trade', 'ST_10_2 Trade','ST_10_1 Trade', 'RSI MA Trade','RSI_60 Trade','MACD Trade','PSAR Trade','DI Trade',
-                  'MA Trade','EMA Trade','EMA_5_7 Trade','MA 21 Trade','HMA Trade','RSI_60 Trade','EMA_High_Low Trade','Two Candle Theory',
-                  'TEMA_EMA_9 Trade','Multi Time ST Trade']
+  indicator_list=['ST_7_3 Trade', 'ST_10_2 Trade','ST_10_1 Trade', 'TEMA_EMA_9 Trade','RSI MA Trade','RSI_60 Trade','MACD Trade','PSAR Trade',
+                  'DI Trade','MA Trade','EMA Trade','EMA_5_7 Trade','MA 21 Trade','HMA Trade','RSI_60 Trade','EMA_High_Low Trade',
+                  'Two Candle Theory','Multi Time ST Trade']
   with ind_col1:
     index_list=st.multiselect('Select Index',['NIFTY','BANKNIFTY','SENSEX','FINNIFTY'],['BANKNIFTY', 'NIFTY', 'SENSEX','FINNIFTY'])
     time_frame_interval = st.multiselect('Select Time Frame',['IDX:5M', 'IDX:15M','IDX:1M', 'OPT:5M', 'OPT:1M','GTT:5M'],['IDX:5M','OPT:5M','OPT:1M','GTT:5M'])
@@ -119,7 +120,7 @@ with tab5:
     five_opt_buy_indicator = st.multiselect('5M OPT Indicator',indicator_list,['ST_7_3 Trade', 'ST_10_2 Trade'])
     gtt_indicator=st.multiselect('GTT Indicator',['5M_ST','5M_ST_10_2','1M_10_1','1M_10_2'],['5M_ST','5M_ST_10_2'])
     one_buy_indicator = st.multiselect('1M Indicator',indicator_list,[])
-    one_opt_buy_indicator = st.multiselect('1M OPT Indicator',indicator_list,['ST_7_3 Trade'])
+    one_opt_buy_indicator = st.multiselect('1M OPT Indicator',indicator_list,['ST_7_3 Trade','TEMA_EMA_9 Trade'])
     fifteen_buy_indicator = st.multiselect('15M Indicator',indicator_list,[])
     three_buy_indicator = st.multiselect('3M Indicator',indicator_list,[])
     fut_list=st.multiselect('Select Future',['SILVERMIC','SILVER'],[])
@@ -305,7 +306,7 @@ def get_open_position():
 def get_order_book():
   try:
     orderbook=obj.orderBook()
-    if orderbook['status']==True:
+    if orderbook['status']==True and orderbook['data'] is not None:
       orderbook=orderbook['data']
       orderbook=pd.DataFrame(orderbook)
       #orderbook[['price','squareoff','stoploss','triggerprice']]=orderbook[['price','squareoff','stoploss','triggerprice']].astype(float)
@@ -396,12 +397,6 @@ def get_historical_data(symbol="-",interval='5m',token="-",exch_seg="-",candle_t
     else:df=angel_data(token,agl_interval,exch_seg,period)
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
     if now - df.index[-1] > datetime.timedelta(minutes=5):df=angel_data(token,agl_interval,exch_seg,period)
-    #else:df=angel_data(token,agl_interval,exch_seg,period)
-    # if odd_candle ==True:
-    #   df=df.groupby(pd.Grouper(freq=odd_interval+'in')).agg({"Date":"first","Datetime":"first","Open": "first", "High": "max",
-    #                                                     "Low": "min", "Close": "last","Volume": "sum"})
-    #   df=df[(df['Open']>0)]
-    #if df is None:return None
     now=datetime.datetime.now(tz=gettz('Asia/Kolkata')).replace(microsecond=0, tzinfo=None)
     last_candle=now.replace(second=0, microsecond=0)- datetime.timedelta(minutes=delta_time)
     df = df[(df.index <= last_candle)]
@@ -524,7 +519,6 @@ def get_trade_info_old(df):
   return df
 
 def get_trade_info(df):
-    # Initialize all the trade columns with '-'
     trade_columns = ['ST_7_3 Trade','MACD Trade','PSAR Trade','DI Trade','MA Trade','EMA Trade','BB Trade','Trade','Trade End',
                      'Rainbow MA','Rainbow Trade','MA 21 Trade','ST_10_2 Trade','Two Candle Theory','HMA Trade','VWAP Trade',
                      'EMA_5_7 Trade','ST_10_4_8 Trade','EMA_High_Low Trade','RSI MA Trade','RSI_60 Trade','ST_10_1 Trade','TEMA_EMA_9 Trade']
@@ -695,6 +689,39 @@ def get_ce_pe_data(symbol,indexLtp="-"):
   pe_strike_symbol = getTokenInfo(symbol,exch_seg,'OPTIDX',ATMStrike,'PE',expiry_day).iloc[0]
   return indexLtp, ce_strike_symbol,pe_strike_symbol
 
+def get_sl_tgt(ltp_price,indicator_strategy):
+  target_price=int(float(ltp_price*1.5))
+  stop_loss=int(float(ltp_price*0.7))
+  try:
+    if "(" in indicator_strategy and ")" in indicator_strategy and ":" in indicator_strategy:
+      pattern = r"\((\d+):(\d+)\)"
+      match = re.search(pattern, indicator_strategy)
+      if match:
+        stop_loss=int(match.group(1))
+        target_price=int(match.group(2))
+        return target_price,stop_loss
+    elif 'TEMA_EMA_9 Trade' in indicator_strategy:
+      target_price=int(ltp_price)+10
+      stop_loss=int(ltp_price)-10
+      return target_price,stop_loss
+    elif 'ATR' in indicator_strategy and target_type=="ATR":
+      pattern = r"ATR:\s*([^ (\n]*)"
+      match = re.search(pattern, indicator_strategy)
+      multiply=1 if 'OPT' in indicator_strategy else 0.5
+      if match:
+        atr_value = float(match.group(1))
+        target_price=int(ltp_price+(atr_value*target_point*multiply))
+        stop_loss=int(ltp_price-(atr_value*sl_point*multiply))
+        return target_price,stop_loss
+      else:
+        return target_price,stop_loss
+    else:
+      return target_price,stop_loss
+  except:
+    target_price=int(ltp_price*1.5)
+    stop_loss=int(ltp_price*0.7)
+    return target_price,stop_loss
+
 def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"):
   try:
     option_token=symbol['token']; option_symbol=symbol['symbol']; exch_seg=symbol['exch_seg']; lotsize=int(symbol['lotsize'])
@@ -705,43 +732,7 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
       return
     try:
       ltp_price=round(float(get_ltp_price(symbol=option_symbol,token=option_token,exch_seg=exch_seg)),2)
-      target_price=int(float(ltp_price*1.5))
-      stop_loss=int(float(ltp_price*0.7))
-      try:
-        if "(" in indicator_strategy and ")" in indicator_strategy and ":" in indicator_strategy:
-            pattern = r"\((\d+):(\d+)\)"
-            match = re.search(pattern, indicator_strategy)
-            if match:
-                stop_loss=int(match.group(1))
-                target_price=int(match.group(2))
-        elif 'TEMA_EMA_9 Trade' in indicator_strategy:
-            target_price=int(ltp_price)+10
-            stop_loss=int(ltp_price)-10
-        elif 'OPT' in indicator_strategy and 'ATR' in indicator_strategy:
-            pattern = r"ATR:\s*([^ (\n]*)"
-            match = re.search(pattern, indicator_strategy)
-            if match:
-                atr_value = float(match.group(1))
-                target_price=int(ltp_price+(atr_value*target_point))
-                stop_loss=int(ltp_price-(atr_value*sl_point))
-        else:
-            target_price=int(ltp_price*1.5)
-            stop_loss=int(ltp_price*0.7)
-      except:
-        target_price=int(ltp_price*1.5)
-        stop_loss=int(ltp_price*0.7)
-      if target_type=="Per Cent":
-        target_price=int(float(ltp_price*((100+target_point)/100)))
-        stop_loss=int(float(ltp_price*((100-sl_point)/100)))
-      elif target_type=="Points":
-        target_price=int(ltp_price+target_point)
-        stop_loss=int(ltp_price-sl_point)
-      elif 'TEMA_EMA_9 Trade' in indicator_strategy:
-        target_price=int(ltp_price+10)
-        stop_loss=int(ltp_price-10)
-      else:
-        target_price=int(ltp_price*2)
-        stop_loss=int(ltp_price*0.5)
+      target_price,stop_loss=get_sl_tgt(ltp_price,indicator_strategy)
       indicator_strategy=indicator_strategy+ " LTP:"+str(int(ltp_price))+"("+str(int(stop_loss))+":"+str(int(target_price))+")"
       buy_msg=(f'Buy: {option_symbol}\nLTP: {ltp_price}\n{indicator_strategy}\nTarget: {target_price} Stop Loss: {stop_loss}')
       telegram_bot_sendtext(buy_msg)
@@ -765,8 +756,8 @@ def buy_option(symbol,indicator_strategy="Manual Buy",interval="5m",index_sl="-"
 def exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='',producttype='CARRYFORWARD'):
   try:
     cancel_all_order(tradingsymbol)
-    orderId=place_order(token=symboltoken,symbol=tradingsymbol,qty=qty,buy_sell='SELL',ordertype='STOPLOSS_LIMIT',price=sl,
-                        variety='STOPLOSS',exch_seg=exch_seg,producttype=producttype,triggerprice=sl,squareoff=sl, stoploss=sl,ordertag=ordertag)
+    place_order(token=symboltoken,symbol=tradingsymbol,qty=qty,buy_sell='SELL',ordertype='STOPLOSS_LIMIT',price=sl,
+                variety='STOPLOSS',exch_seg=exch_seg,producttype=producttype,triggerprice=sl,squareoff=sl, stoploss=sl,ordertag=ordertag)
     logger.info(f"Exit Alert In Option: {tradingsymbol} LTP:{ltp_price} SL:{sl} Ordertag {ordertag}")
     #telegram_bot_sendtext(sell_msg)
   except Exception as e:
@@ -996,21 +987,22 @@ def sub_loop_code(now_minute):
     st.session_state['options_trade_list']=[]
     if (now_minute%5==0 and 'IDX:5M' in time_frame_interval):
       st.session_state['index_trade_end']={}
-      for symbol in index_list: 
+      for symbol in index_list:
         index_trade(symbol,"5m")
         log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
       if 'OPT:5M' in time_frame_interval:
         trade_near_options('5m')
         log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    if (now_minute%15==0 and 'IDX:15M' in time_frame_interval): 
+    if (now_minute%15==0 and 'IDX:15M' in time_frame_interval):
       for symbol in index_list:index_trade(symbol,"15m")
     if 'IDX:1M' in time_frame_interval:
       for symbol in index_list: index_trade(symbol,"1m")
     if 'OPT:1M' in time_frame_interval:
       trade_near_options('1m')
       log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
-    if "Multi Time ST Trade" in five_buy_indicator: multi_time_frame()
-    log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
+    if "Multi Time ST Trade" in five_buy_indicator:
+      multi_time_frame()
+      log_holder.dataframe(st.session_state['options_trade_list'],hide_index=True)
     if (now_minute%5==0 and 'GTT:5M' in time_frame_interval):gtt_sub_loop()
   except Exception as e:
     logger.info(f"error in sub_loop_code: {e}")
@@ -1041,7 +1033,6 @@ def loop_code():
       if datetime.datetime.now(tz=gettz('Asia/Kolkata')) < next_loop:
         while datetime.datetime.now(tz=gettz('Asia/Kolkata')).second< 50:
           check_ltp_todays_trade(buy_df)
-          
           index_ltp_string.text(f"Index Ltp: {print_ltp()}")
           time.sleep(1)
         login_details.text(f"Welcome:{st.session_state['Logged_in']} Login:{st.session_state['login_time']} Last Check:{st.session_state['last_check']} Next Check: {next_loop.time()}")
@@ -1058,99 +1049,6 @@ def get_ltp_token(nfo_list,bfo_list):
   except Exception as e:
     ltp_df=pd.DataFrame(columns = ['exchange','tradingSymbol','symbolToken','ltp'])
     return ltp_df
-
-def update_price_orderbook(df):
-  for j in range(0,len(df)):
-    try:
-      if df['ordertag'].iloc[j]=="": df['ordertag'].iloc[j]="GTT Buy OPT 5m:Supertrend Trade"
-      if df['averageprice'].iloc[j]!=0:df['price'].iloc[j]=df['averageprice'].iloc[j]
-      elif df['price'].iloc[j]==0:
-        text=df['text'].iloc[j]
-        ordertag=df['ordertag'].iloc[j]+" "
-        if 'You require Rs. ' in text and ' funds to execute this order.' in text and type(text)==str :
-          abc='-'
-          abc=(text.split('You require Rs. '))[1].split(' funds to execute this order.')[0]
-          if abc!='-' and int(float(abc)) <= 50000:
-            df['price'].iloc[j]=(round(float(abc)/float(df['quantity'].iloc[j]),2))
-        if df['price'].iloc[j]==0 and "LTP: " in ordertag:
-          abc='-'
-          abc=(ordertag.split('LTP: '))[1].split(' ')[0]
-          df['price'].iloc[j]=float(abc)
-          #df['price'].iloc[j]=float(ordertag.split("LTP: ",1)[1])
-        if df['price'].iloc[j]==0:df['price'].iloc[j]='-'
-      if df['price'].iloc[j]=='-':
-        df['price'].iloc[j]=get_ltp_price(symbol=df['tradingsymbol'].iloc[j],token=df['symboltoken'].iloc[j],exch_seg=df['exchange'].iloc[j])
-    except Exception as e:
-      pass
-  return df
-
-def trail_sl_with_st(buy_df):
-  if buy_df is None: return None
-  for i in range(0,len(buy_df)):
-      try:
-        if buy_df['Status'].iloc[i]=="Pending" and buy_df['price'].iloc[i]!="-":
-          symboltoken=buy_df['symboltoken'].iloc[i]
-          tradingsymbol=buy_df['tradingsymbol'].iloc[i]
-          exch_seg=buy_df['exchange'].iloc[i]
-          sl=buy_df['LTP'].iloc[i]
-          indicator_text=buy_df['ordertag'].iloc[i]
-          if "ST" in indicator_text or "Supertrend" in indicator_text:
-            if "5m" in buy_df['ordertag'].iloc[i] or "Supertrend" in buy_df['ordertag'].iloc[i]:time_frame="5m"
-            elif "1m" in buy_df['ordertag'].iloc[i]: time_frame="1m"
-            elif "15m" in buy_df['ordertag'].iloc[i]:time_frame="15m"
-            else: time_frame="5m"
-            opt_data=get_historical_data(symbol=tradingsymbol,interval=time_frame,token=symboltoken,exch_seg=exch_seg)
-            close=opt_data['Close'].values[-1]
-            st_7_3=opt_data['Supertrend'].values[-1]
-            st_10_2=opt_data['Supertrend_10_2'].values[-1]
-            if close > st_10_2:
-              buy_df['SL'].iloc[i]=int(st_10_2)
-              buy_df['Sell Indicator'].iloc[i]='SL Trail With ST 10_2'
-            elif close > st_7_3:
-              buy_df['SL'].iloc[i]=int(st_7_3)
-              buy_df['Sell Indicator'].iloc[i]='SL Trail With ST 7_3'
-      except:pass
-  return buy_df
-def update_target_sl(buy_df):
-  for i in range(0,len(buy_df)):
-    try:
-      if "(" in buy_df['ordertag'].iloc[i] and ")" in buy_df['ordertag'].iloc[i] and ":" in buy_df['ordertag'].iloc[i]:
-        pattern = r"\((\d+):(\d+)\)"
-        match = re.search(pattern, buy_df['ordertag'].iloc[i])
-        if match:
-          sl=int(match.group(1))
-          tgt=int(match.group(2))
-          buy_df['SL'].iloc[i]=sl
-          buy_df['Target'].iloc[i]=tgt
-      elif 'TEMA_EMA_9 Trade' in buy_df['ordertag'].iloc[i] :
-        buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i])+10
-        buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i])-10
-      elif 'OPT' in buy_df['ordertag'].iloc[i] and 'ATR' in buy_df['ordertag'].iloc[i]:
-        indicator_text=buy_df['ordertag'].iloc[i]
-        pattern = r"ATR:(\d+)"
-        match = re.search(pattern, indicator_text)
-        if match:
-          atr_value = float(match.group(1))
-          buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]+(atr_value*target_point))
-          buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]-(atr_value*sl_point))
-      elif 'IDX' in buy_df['ordertag'].iloc[i] and 'ATR' in buy_df['ordertag'].iloc[i]:
-        indicator_text=buy_df['ordertag'].iloc[i]
-        pattern = r"ATR:(\d+)"
-        match = re.search(pattern, indicator_text)
-        if match:
-          atr_value = float(match.group(1))
-          buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]+(atr_value*1.5))
-          buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]-(atr_value*1.5))
-      else:
-        if buy_df['price'].iloc[i]!="-":
-          buy_df['Target'].iloc[i]=int(buy_df['price'].iloc[i]*1.5)
-          buy_df['SL'].iloc[i]=int(buy_df['price'].iloc[i]*0.7)
-      #trail_sl=stop_loss_dict.get(buy_df['tradingsymbol'].iloc[i])
-      #if trail_sl is not None and int(trail_sl) > int(buy_df['SL'].iloc[i]): buy_df['SL'].iloc[i]=int(trail_sl)
-    except Exception as e:
-      logger.info(f"error in update_target_sl: {e}")
-  buy_df=trail_sl_with_st(buy_df)
-  return buy_df
 
 def update_ltp_buy_df(buy_df):
   nfo_list=numpy.unique(buy_df[buy_df['exchange']=="NFO"]['symboltoken'].values.tolist())
@@ -1201,6 +1099,7 @@ def recheck_pnl(buy_df):
 
 def check_pnl_todays_trade(buy_df):
   if buy_df is None: return None
+  recheck_todays_trade=False
   for i in range(0,len(buy_df)):
       try:
         if buy_df['Status'].iloc[i]=="Pending" and buy_df['price'].iloc[i]!="-":
@@ -1226,11 +1125,13 @@ def check_pnl_todays_trade(buy_df):
             multiline_string = "SL Hit: "+trade_info
             telegram_bot_sendtext(multiline_string)
             buy_df.loc[i,'Status']="SL Hit"
+            recheck_todays_trade=True
           elif int(buy_df['LTP'].iloc[i])> int(buy_df['Target'].iloc[i]):
             exit_position(symboltoken,tradingsymbol,exch_seg,qty,ltp_price,sl,ordertag='Target Hit:'+ordertag,producttype='CARRYFORWARD')
             multiline_string = "Target Hit: "+trade_info
             telegram_bot_sendtext(multiline_string)
             buy_df.loc[i,'Status']="Target Hit"
+            recheck_todays_trade=True
           else:
             if "1m" in buy_df['ordertag'].iloc[i]: time_frame="1m"
             elif "5m" in buy_df['ordertag'].iloc[i]:time_frame="5m"
@@ -1243,6 +1144,7 @@ def check_pnl_todays_trade(buy_df):
                 multiline_string = "OPT Indicaor Exit: "+trade_info
                 telegram_bot_sendtext(multiline_string)
                 buy_df.loc[i,'Status']="Indicaor Exit"
+                recheck_todays_trade=True
             else:
               opt_data=get_historical_data(symbol=tradingsymbol,interval=time_frame,token=symboltoken,exch_seg=exch_seg)
               trade=opt_data['Trade'].values[-1]
@@ -1252,6 +1154,7 @@ def check_pnl_todays_trade(buy_df):
                 multiline_string = "OPT Indicaor Exit: "+trade_info
                 telegram_bot_sendtext(multiline_string)
                 buy_df.loc[i,'Status']="Indicaor Exit"
+                recheck_todays_trade=True
             if buy_df['Status'].iloc[i]=="Pending" and "IDX" in buy_df['ordertag'].iloc[i]:
               index_name=re.match(r'^([A-Z]+)',tradingsymbol).group(1)
               option_type=re.search(r'[CE|PE]{2}$',tradingsymbol).group()
@@ -1261,7 +1164,73 @@ def check_pnl_todays_trade(buy_df):
                 multiline_string = "IDX Indicaor Exit: "+trade_info
                 telegram_bot_sendtext(multiline_string)
                 buy_df.loc[i,'Status']="Indicaor Exit"
+                recheck_todays_trade=True
       except Exception as e: logger.info(f"error in check_pnl_todays_trade: {e}")
+  if recheck_todays_trade==True:
+    orderbook,pending_orders=get_order_book()
+    buy_df=get_todays_trade(orderbook)
+  return buy_df
+
+def update_price_orderbook(df):
+  for j in range(0,len(df)):
+    try:
+      if df['ordertag'].iloc[j]=="": df['ordertag'].iloc[j]="GTT Buy OPT 5m:Supertrend Trade"
+      if df['averageprice'].iloc[j]!=0:df['price'].iloc[j]=df['averageprice'].iloc[j]
+      elif df['price'].iloc[j]==0:
+        text=df['text'].iloc[j]
+        ordertag=df['ordertag'].iloc[j]+" "
+        if 'You require Rs. ' in text and ' funds to execute this order.' in text and type(text)==str :
+          abc='-'
+          abc=(text.split('You require Rs. '))[1].split(' funds to execute this order.')[0]
+          if abc!='-' and int(float(abc)) <= 50000:
+            df['price'].iloc[j]=(round(float(abc)/float(df['quantity'].iloc[j]),2))
+        if df['price'].iloc[j]==0 and "LTP: " in ordertag:
+          abc='-'
+          abc=(ordertag.split('LTP: '))[1].split(' ')[0]
+          df['price'].iloc[j]=float(abc)
+          #df['price'].iloc[j]=float(ordertag.split("LTP: ",1)[1])
+        if df['price'].iloc[j]==0:df['price'].iloc[j]='-'
+      if df['price'].iloc[j]=='-':
+        df['price'].iloc[j]=get_ltp_price(symbol=df['tradingsymbol'].iloc[j],token=df['symboltoken'].iloc[j],exch_seg=df['exchange'].iloc[j])
+    except Exception as e:
+      pass
+  return df
+def update_target_sl(buy_df):
+  for i in range(0,len(buy_df)):
+    try:
+      buy_price=int(buy_df['price'].iloc[i])
+      indicator_strategy=buy_df['ordertag'].iloc[i]
+      target_price,stop_loss=get_sl_tgt(buy_price,indicator_strategy)
+      buy_df['SL'].iloc[i]=stop_loss
+      buy_df['Target'].iloc[i]=target_price
+    except Exception as e:
+      logger.info(f"error in update_target_sl: {e}")
+  return buy_df
+def trail_sl_with_st(buy_df):
+  if buy_df is None: return None
+  for i in range(0,len(buy_df)):
+      try:
+        if buy_df['Status'].iloc[i]=="Pending" and buy_df['price'].iloc[i]!="-":
+          symboltoken=buy_df['symboltoken'].iloc[i]
+          tradingsymbol=buy_df['tradingsymbol'].iloc[i]
+          exch_seg=buy_df['exchange'].iloc[i]
+          if "5m" in buy_df['ordertag'].iloc[i] or "Supertrend" in buy_df['ordertag'].iloc[i]:time_frame="5m"
+          elif "1m" in buy_df['ordertag'].iloc[i]: time_frame="1m"
+          elif "15m" in buy_df['ordertag'].iloc[i]:time_frame="15m"
+          else: time_frame="5m"
+          opt_data=get_historical_data(symbol=tradingsymbol,interval=time_frame,token=symboltoken,exch_seg=exch_seg)
+          close=opt_data['Close'].values[-1]
+          st_7_3=opt_data['Supertrend'].values[-1]
+          st_10_2=opt_data['Supertrend_10_2'].values[-1]
+          if close > st_10_2:
+            buy_df['SL'].iloc[i]=int(st_10_2)
+            buy_df['Sell Indicator'].iloc[i]='SL Trail With ST 10_2'
+          elif close > st_7_3:
+            buy_df['SL'].iloc[i]=int(st_7_3)
+            buy_df['Sell Indicator'].iloc[i]='SL Trail With ST 7_3'
+          exit_trade=st.session_state['index_trade_end'].get(tradingsymbol+"_"+time_frame)
+          if exit_trade is not None:st.session_state['index_trade_end'][tradingsymbol+"_"+time_frame] = opt_data['Trade'].values[-1]
+      except:pass
   return buy_df
 
 def get_todays_trade(orderbook):
@@ -1304,6 +1273,7 @@ def get_todays_trade(orderbook):
             break
     buy_df=update_target_sl(buy_df)
     buy_df=update_ltp_buy_df(buy_df)
+    buy_df=trail_sl_with_st(buy_df)
     st.session_state['todays_trade']=buy_df
     if len(buy_df)!=0:recheck_pnl(buy_df)
     #sl_container.text("Trail Sl:"+str(st.session_state['stop_loss']))
